@@ -1,0 +1,24 @@
+{
+  "version": "1.0.0-beta.2",
+  "edition": "public-source-preview.1",
+  "prepared_utc": "2026-10-29T01:59:07Z",
+  "public_native_build_run": false,
+  "public_native_qualification_run": false,
+  "public_live_pool_tested": false,
+  "full_live_fee_cycle_verified": false,
+  "prior_private_rig_live_acceptance": true,
+  "new_public_packaging_not_equivalent_to_private_live_validation": true,
+  "source_binary_included": false,
+  "tests": [
+    {
+      "name": "test_public_preview",
+      "passed": true,
+      "count": 21
+    },
+    {
+      "name": "test_overxelis_fee",
+      "passed": true,
+      "count": 33
+    }
+  ]
+}

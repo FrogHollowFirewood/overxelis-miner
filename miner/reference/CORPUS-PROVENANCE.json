@@ -1,0 +1,8 @@
+{
+  "upstream_commit": "f48262b931438fdbf2932711613e020c02f1ea04",
+  "cases": 1031,
+  "inputs_sha256": "b0afd167b54508d4a27527176637600ad9e1b08649efb767cb53cdfdd4b7e587",
+  "saved_rust_hashes_sha256": "2c532a277b446ea5cf3cb751b390357f6f9dbc033f57bf3a084cf7d322651e73",
+  "meaning": "Retained independent Rust-reference outputs from private kernel qualification. Public qualification replays these outputs; it does not execute Rust.",
+  "includes_wrapping_isqrt_regression": true
+}

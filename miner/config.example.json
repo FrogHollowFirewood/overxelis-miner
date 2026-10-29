@@ -1,0 +1,8 @@
+{
+  "pool": "stratum+tcp://xel-us.kryptex.network:7019",
+  "wallet": "YOUR_XELIS_MAINNET_PAYOUT_ADDRESS",
+  "worker": "overxelis-cpu",
+  "password": "x",
+  "threads": 8,
+  "page_mode": "ordinary"
+}

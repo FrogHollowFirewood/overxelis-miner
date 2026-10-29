@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/><meta content="#07110f" name="theme-color"/><meta content="OverXelis Miner: an experimental Linux CPU miner for XELIS. Open source, configurable pool and wallet, and a disclosed 1% developer mining-time fee." name="description"/><title>Install guide — OverXelis Miner</title><link href="assets/favicon.svg" rel="icon" type="image/svg+xml"/><link href="assets/style.css" rel="stylesheet"/><script defer="" src="release.js"></script><script defer="" src="assets/app.js"></script></head><body><a class="skip" href="#main">Skip to content</a><header class="wrap"><nav aria-label="Main navigation" class="nav"><a class="brand" href="index.html"><span aria-hidden="true" class="brand-mark">OX</span><span>OverXelis<small>CPU MINER</small></span></a><div class="nav-links"><a href="index.html#overview">Overview</a><a href="guide.html">Install guide</a><a href="index.html#fee">Developer fee</a><a href="index.html#feedback">Feedback</a><a class="nav-cta" href="index.html#download">Get the beta <span aria-hidden="true">↗</span></a></div></nav></header><main class="wrap doc" id="main"><section class="section"><div class="eyebrow">Documentation / public-source-preview.1</div><h1>Installation guide</h1>
+<h2 id="public-source-preview-1-linux-cpu-mining-for-xelis">Public source preview 1 · Linux CPU mining for XELIS</h2>
+<p><strong>Experimental software for volunteer testers.</strong> This is a build-from-source
+preview, not a Windows executable, universal Linux binary, or stable release.
+The native hashing sources and developer-fee schedule come from the tested
+private beta.2 rig edition. The general-purpose setup wizard, launcher, and
+packaging are new; live operation of this exact public package is not yet
+verified. A complete live developer-fee cycle and long-term reliability remain
+open validation items. No speed advantage or earnings level is guaranteed.</p>
+<h2 id="what-it-does">What it does</h2>
+<p>OverXelis performs XelisHashV3 CPU work and connects to a compatible XELIS
+Stratum pool. You supply your own <strong>public payout address</strong>, worker name, and
+pool. You keep control of your wallet. No seed phrase, private key, exchange
+login, deposit, browser miner, or account registration is needed by this program.</p>
+<p>The source includes a disclosed <strong>1% scheduled developer mining-time allocation</strong>.
+It starts with 5,940 seconds (99 minutes) of active user work, then allows a
+fee window of up to 60 seconds, including connection setup. USER and FEE use
+separate connections and worker names. The developer destination is:</p>
+<ul>
+<li>Pool: <code>stratum+tcp://xel-us.kryptex.network:7019</code></li>
+<li>Public payout address: <code>xel:pqu4e39zln0g7lx9grdhj3tavuy6e45sjglp9ss9n6lx2zc0w9fqqxhxxvt</code></li>
+</ul>
+<p>The user's password is not reused for the developer login. Already-mined user
+shares are not relabelled as developer shares. Paused/offline user time does
+not count toward the next fee window. Failed fee connections are skipped,
+without accumulated debt or catch-up. Restart resets this beta's schedule;
+short sessions can contribute less than 1%. Scheduler timing is not hard
+real-time and is logged. Share discovery is random, so <strong>1% time does not mean
+exactly 1% of coins</strong>. Pool fees, network charges, energy costs, and brief
+connection handovers are separate. The fee is not a wallet withdrawal.</p>
+<h2 id="requirements-and-scope">Requirements and scope</h2>
+<p>Linux x86-64, an AES-NI-capable CPU, Python 3.10+, GCC with GNU binutils, and
+an Internet connection to your chosen XELIS pool. Compilation uses
+<code>-march=native</code>: build on the machine that will mine. Do not move that resulting
+library to a CPU with different instruction support. No Windows, macOS, ARM,
+GPU, or automatic service installation is supplied.</p>
+<p>Run as a normal user. The public program refuses root. Use <code>ordinary</code> memory
+for a first test; it needs no system huge-page configuration. <code>hugetlb</code> is an
+optional explicit choice for users who already have Linux huge pages and
+permissions configured. The program never changes CPU clocks, power limits,
+GPU settings, firewall rules, system services, or kernel memory settings.
+The published private-test rates used huge pages; ordinary-memory performance
+may be different. A public non-root huge-page setup is not assumed to work.</p>
+<p>On Ubuntu/Debian, the prerequisites can be installed through the system's
+package manager (administrator permission is needed only for that operation):</p>
+<pre><code class="language-bash">sudo apt update
+sudo apt install python3 build-essential binutils
+</code></pre>
+<p>Review those commands and your operating system's package instructions first.
+The miner does not execute them automatically. Stop any existing CPU miner
+normally before building, qualifying, or running this preview.</p>
+<h2 id="download-and-verify">Download and verify</h2>
+<p>Obtain the archive and matching <code>SHA256SUMS.txt</code> from the same release page.
+Compare against the release's independently displayed SHA-256 when available.
+A checksum detects unexpected file changes; it is <strong>not a publisher signature</strong>.</p>
+<pre><code class="language-bash">sha256sum --check SHA256SUMS.txt
+tar -xzf OverXelis-Miner-1.0.0-beta.2-public-source.tar.gz
+cd OverXelis-Miner-1.0.0-beta.2-public-source
+</code></pre>
+<p>Do not proceed on a checksum failure. The tarball contains source and retained
+public test vectors, not a precompiled binary or anyone's user configuration.</p>
+<h2 id="build-and-check-the-hash-engine">Build and check the hash engine</h2>
+<pre><code class="language-bash">python3 -I -B build_public.py
+python3 -I -B qualify_public.py
+bash run.sh --self-test
+</code></pre>
+<p>The build refuses unresolved native symbols and checks all required exports.
+The qualifier checks 1,031 inputs through four C implementations, compares
+full scratchpad contents, and replays saved answers from the independent Rust
+reference. It does not newly execute Rust on your computer. Any failure blocks
+mining. Preserve <code>build/</code> and <code>evidence/</code> logs rather than forcing past a failed
+check. Existing output is not overwritten by a second build; extract a fresh
+copy when rebuilding and retain the failed evidence separately.</p>
+<h2 id="add-your-wallet-pool-and-worker">Add your wallet, pool, and worker</h2>
+<p>The wizard writes a private local configuration file, but does not start mining:</p>
+<pre><code class="language-bash">bash run.sh --configure
+</code></pre>
+<p>Enter your mainnet <code>xel:</code> payout address. This is <strong>not</strong> your seed phrase. Enter
+a compatible pool URL, such as Kryptex's North America TCP endpoint:</p>
+<pre><code class="language-text">stratum+tcp://xel-us.kryptex.network:7019
+</code></pre>
+<p>The endpoint is a suggested default, not a requirement. Only the fee destination
+is fixed by this preview. Other pool compatibility is not guaranteed. Supported
+URL forms are <code>stratum+tcp://host:port</code>, <code>stratum+ssl://host:port</code>, and
+<code>stratum+tls://host:port</code>; use the port published by the pool. TLS connections
+verify the certificate and hostname. TCP traffic is unencrypted. Do not place
+passwords inside a pool URL or use your exchange-account password as a worker
+password. The usual pool worker password is <code>x</code>, unless the pool specifies another.</p>
+<p>Choose a unique worker label, a thread count your computer supports, and
+<code>ordinary</code> or <code>hugetlb</code>. The wizard's default thread count uses discovered
+physical cores first; you may choose a different number. Too many threads can
+make the computer unresponsive and does not guarantee more hashrate.</p>
+<p>Review the file and check it without hashing or connecting:</p>
+<pre><code class="language-bash">bash run.sh --check
+</code></pre>
+<p>The payout check is basic syntax validation, not a cryptographic address-checksum
+or ownership proof. Double-check the address; the pool must accept it. There is
+no default user payout address. The distributed example deliberately contains
+an invalid placeholder so it cannot silently mine to the developer as USER.</p>
+<h2 id="start-and-stop">Start and stop</h2>
+<pre><code class="language-bash">bash run.sh --config config.json --accept-dev-fee
+</code></pre>
+<p>Keep the terminal open. Press <strong>Ctrl+C</strong> to stop. To run a finite initial test:</p>
+<pre><code class="language-bash">bash run.sh --config config.json --accept-dev-fee --duration 900
+</code></pre>
+<p>A short test does not validate the fee transition. The first fee window follows
+99 <strong>active</strong> user-mining minutes. Keep a session running through an observed
+<code>DEV FEE START</code> → <code>DEV FEE END</code> → resumed USER work before claiming fee-cycle
+success. A fee window can find no share by chance; that alone is not failure.</p>
+<p>Look for authorization, accepted USER shares, the intended worker count, and
+no invalid-local results. The console separates USER and FEE shares, reports
+local completed-hash rate, and logs elapsed active time. Its local/session
+rate includes both roles and is <strong>gross throughput</strong>, not net user payout.
+Pool-side rates depend on accepted shares and may vary in short samples.</p>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<ul>
+<li><strong>Missing files / checksum mismatch:</strong> stop and obtain a fresh matching release.
+Do not bypass the integrity check or mix source editions.</li>
+<li><strong>Build or hash qualification fails:</strong> preserve logs, compiler version and CPU
+model. Do not mine with the failed binary.</li>
+<li><strong>Another miner detected:</strong> stop that CPU miner using its own normal procedure.
+OverXelis never kills it or disables its service.</li>
+<li><strong>Huge pages unavailable:</strong> use <code>ordinary</code> for the initial test, or configure
+huge pages yourself using trusted instructions. The program refuses silent
+fallback when <code>hugetlb</code> was requested.</li>
+<li><strong>Authorization fails:</strong> check your public address, pool, worker and worker
+password. This is not a reason to send a private key to anyone.</li>
+<li><strong>Paused connection:</strong> this source preview reconnects after 30 continuously
+paused seconds without usable work. An active miner is not reconnected solely
+because no share was found.</li>
+<li><strong>Low rate:</strong> record a sustained sample after warmup. Compare equal thread,
+memory, power, thermal and workload settings. Startup peaks are not a benchmark.</li>
+<li><strong>Duplicate cache full:</strong> the retained 32,768-entry protection stops this beta.
+Save the log and restart manually. This is a known long-session limit.</li>
+<li><strong>Security software warning:</strong> do not disable protections blindly. Review the
+source, checksum, release identity and the warning before deciding to proceed.</li>
+</ul>
+<h2 id="feedback">Feedback</h2>
+<p>Use the project's GitHub issue forms for bugs or benchmark results. Provide the
+version <strong>and packaging edition</strong>, Linux distribution, CPU model, compiler,
+threads, memory mode, duration, local average, accepted/rejected counts, reconnects,
+and a short redacted log. State whether a full fee cycle completed. For a speed
+comparison, name the other miner/version and match settings. Do not post seed
+phrases, private keys, passwords, API tokens, IP addresses, full payout addresses,
+or unredacted configuration files. Public issues are visible to everyone.</p>
+<h2 id="evidence-and-limitations">Evidence and limitations</h2>
+<p>Private beta.2 builds have shown pool-accepted work with 192, 32, and 24 threads.
+Those observations do not establish every CPU or distribution, the new public
+launcher, prolonged operation, or a matched 5% advantage over BzMiner. Public
+packaging changes are recorded in <code>PUBLIC-PREVIEW-NOTES.md</code>. This is for willing,
+informed testers and machines they own or are authorized to use.</p>
+<h2 id="license-and-sources">License and sources</h2>
+<p>MIT-licensed project code and third-party notices are included. See <code>LICENSE</code>,
+<code>THIRD_PARTY_NOTICES.md</code>, and the retained vendor license files. Portions of the
+consensus hashing/cryptography originate from XELIS, BLAKE3, ChaCha20-SIMD and
+TNN-derived work; the project does not claim those components as new inventions.
+It is an independent project, not an official XELIS or Kryptex product.</p>
+<p>References: <a href="https://docs.xelis.io/developers-api/stratum">XELIS Stratum specification</a>,
+<a href="https://pool.kryptex.com/xel/">Kryptex Xelis endpoints</a>,
+<a href="https://github.com/xelis-project/xelis-hash">XELIS reference source</a>.</p>
+</section></main><footer class="wrap footer"><a class="brand" href="index.html"><span aria-hidden="true" class="brand-mark">OX</span>OverXelis Miner</a><div class="footer-right"><p>Independent community software. Not affiliated with or endorsed by the XELIS project or Kryptex.</p><p>Open-source project code · Third-party licenses retained · <a class="textlink" href="privacy.html">Privacy &amp; safety</a></p><p>No mining in this website. Mine only on computers you own or have permission to use.</p></div></footer></body></html>

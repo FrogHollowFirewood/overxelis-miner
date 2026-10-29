@@ -1,0 +1,8 @@
+/build/
+/evidence/
+/logs/
+/config.json
+**/__pycache__/
+*.pyc
+*.so
+*.o
