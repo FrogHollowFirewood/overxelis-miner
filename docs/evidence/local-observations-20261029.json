@@ -1,0 +1,83 @@
+{
+  "schema": 1,
+  "published_scope": "Preliminary local observation summary; not a matched performance ranking or an independent audit.",
+  "checked_utc_date": "2026-10-29",
+  "hardware": {
+    "cpu": "AMD Ryzen Threadripper PRO 7995WX",
+    "requested_threads": 192
+  },
+  "oxm": {
+    "label": "Selected round-specialized private development kernel",
+    "khs": 110.61494925929337,
+    "completed_hashes": 26547895,
+    "seconds": 240.00277700050174,
+    "windows": 4,
+    "seconds_each": 60,
+    "warmup_seconds_each": 45,
+    "page_mode": "hugetlb",
+    "compared_to_bzminer_in_campaign": false
+  },
+  "bzminer": {
+    "version": "100.46",
+    "historical_mean_reported_khs": 106.35967237903226,
+    "reports_after_warmup": 1984,
+    "run_hours": 34.59881583333333,
+    "warmup_excluded_seconds": 600,
+    "date_range": "2026-10-19 to 2026-10-21 (saved log local dates)",
+    "arithmetic_difference_percent": 4.000836769312954,
+    "source_raw_log_sha256": "e0b151809bf42d963025a8fe86edd748b901b05f654dbcca8da7e116bf65db2d",
+    "matched_comparison": false
+  },
+  "hoo_cpu": {
+    "version_tested": "1.4.3",
+    "version_listed_by_developer_when_checked": "1.4.24",
+    "started_utc": "2026-10-29T02:01:56.484065+00:00",
+    "stopped_utc": "2026-10-29T02:05:22.529581+00:00",
+    "all_rolling_display_khs": [
+      82.5,
+      97.48,
+      97.17,
+      96.98,
+      96.9,
+      96.56
+    ],
+    "excluded_startup_reading_khs": 82.5,
+    "later_five_mean_khs": 97.018,
+    "arithmetic_difference_percent": 14.014872765150145,
+    "user_accepted": 19,
+    "fee_accepted": 95,
+    "rejected_log_count": 0,
+    "complete_fee_cycle_verified": false,
+    "source_summary_sha256": "dde3c5a4fbbadf0546f7518c9d7b8086124a3c93dab31a059e6b6c504c2aa1ad",
+    "matched_comparison": false
+  },
+  "hydrax": {
+    "version": "3.4.5",
+    "started_utc": "2026-10-29T02:08:06.452986+00:00",
+    "stopped_utc": "2026-10-29T02:09:33.755048+00:00",
+    "displayed_khs": [
+      18.96,
+      18.95,
+      18.95,
+      18.94
+    ],
+    "mean_displayed_khs": 18.95,
+    "arithmetic_display_difference_percent": 483.72004886170646,
+    "actual_page_mode": "4 KB fallback",
+    "accepted_shares_observed": 0,
+    "validated_throughput_comparison": false,
+    "source_summary_sha256": "262a8a26c34020724d25d2ac56b11752f1106d894f1f6e07d62b966b0088da04"
+  },
+  "no_audited_speed_result_published_for": [
+    "SRBMiner-MULTI",
+    "TNN-Miner",
+    "cpuminer-opt-supr"
+  ],
+  "limitations": [
+    "Different sessions and measurement methods.",
+    "Fee percentages are publisher statements; effective payout efficiency is not measured.",
+    "No universal or all-six-miner speed advantage is established.",
+    "Original raw personal logs are not in this public summary.",
+    "Native-kernel or private-build results do not automatically validate the public launcher."
+  ]
+}

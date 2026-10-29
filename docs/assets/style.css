@@ -8,3 +8,23 @@
 .doc{overflow-wrap:anywhere}.doc pre{white-space:pre;overflow-wrap:normal;max-width:100%}
 
 .hero:after{content:"";position:absolute;z-index:-1;right:-15%;top:-20%;width:85%;height:110%;opacity:.09;transform:rotate(-12deg);background-image:linear-gradient(#66f9c7 1px,transparent 1px),linear-gradient(90deg,#66f9c7 1px,transparent 1px);background-size:52px 52px;mask-image:radial-gradient(ellipse at center,#000,transparent 68%)}.hero{isolation:isolate}
+
+/* Comparison evidence and accessible responsive navigation. */
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.table-scroll{overflow-x:auto;max-width:100%;border:1px solid var(--line);border-radius:12px;margin:22px 0;scrollbar-color:#44705e #07110f}
+.table-scroll table{border-collapse:collapse;width:100%;min-width:800px;background:#0b1712}
+.table-scroll caption{text-align:left;padding:16px 18px;color:var(--muted);font-size:12px;caption-side:top}
+.table-scroll th,.table-scroll td{text-align:left;vertical-align:top;padding:16px 18px;border-top:1px solid var(--line);font-size:13px;line-height:1.7}
+.table-scroll thead th{color:var(--mint);font-weight:600;background:#10231c}
+.table-scroll tbody th{font-weight:600;min-width:155px;max-width:240px}
+.table-scroll td{color:var(--muted)}.table-scroll td:nth-child(3){min-width:150px}
+.table-scroll code{font:12px/1.8 ui-monospace,monospace;overflow-wrap:anywhere}
+.comparison-highlights .card .stat-number{font-size:29px;font-weight:600;color:var(--mint);margin:15px 0}
+.stat-number span{display:block;font-size:12px;letter-spacing:0;font-weight:500;color:var(--muted);margin-top:7px}
+.comparison-note{margin:24px 0}.comparison-highlights{margin-top:26px}
+.doc .table-scroll th,.doc .table-scroll td{font-size:12px}.doc .notice a{color:var(--mint)}
+.form-card>button{margin-top:18px}.nav-links a{min-height:36px;display:inline-flex;align-items:center}
+@media(max-width:1000px){.nav{height:auto;min-height:94px;flex-wrap:wrap;padding:20px 0;gap:18px}.nav-links{flex-wrap:wrap;gap:12px 20px}}
+@media(max-width:680px){.nav{min-height:79px;gap:13px;padding:17px 0}.nav-links{width:100%;gap:6px 18px;flex-wrap:wrap}.nav-links>a:not(.nav-cta){display:inline-flex}.nav-links a{font-size:12px;min-height:36px}.nav-cta{padding:7px 11px}.table-scroll th,.table-scroll td{padding:13px 15px}.comparison-highlights .card .stat-number{font-size:28px}}
+
+.table-scroll{position:relative}.sr-only{clip-path:inset(50%)}
