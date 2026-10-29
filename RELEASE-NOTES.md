@@ -27,7 +27,50 @@ https://froghollowfirewood.github.io/overxelis-miner/guide.html
 
 SHA-256: `2f0e922007fc6a2fe2c36ad7d1c1cb3f69438ae08f1435d26ae93417ac29b847`
 
-## Post-release validation checkpoint — 29 October 2026 UTC
+## Final partial-validation update — 29 October 2026 UTC
+
+**The maintainer intentionally ended this run early. The planned 24-hour
+stability test was NOT completed.** The observer ran from 12:36:01.587 to
+15:31:52.151 UTC: 10,550.559 seconds, or approximately 2 h 55 min 51 s.
+The actual stop request was at 15:31:46.136 UTC; native workers closed at
+15:31:47.140 UTC. The CLI returned 130 for the handled interruption, with no
+fatal log message or forced termination recorded. Both original processes were
+absent and their locks were released when checked afterward.
+
+The unchanged exact public package passed its native build, public CLI self-test
+and 1,031-input qualification across four C implementations with full scratchpad
+comparisons and saved Rust-reference answers. Its separate 180-second ordinary-
+memory test completed normally with 23 accepted USER shares. In the subsequent
+192-worker huge-page run, the final display reported **110.342 kH/s** gross
+session average, **1,193 accepted USER shares**, **6 accepted FEE shares**, and
+zero reported rejected or unresolved submissions.
+
+One real USER → FEE → USER cycle was observed: developer authorization, six
+accepted FEE shares, return to USER authorization and renewed accepted USER
+work. It logged 60.029303 seconds between fee-start and fee-end messages and
+59.243 FEE-active seconds. Final USER-active time was 10,484.358 seconds.
+No fee window was skipped; no USER connection-interruption message was recorded.
+Highest sampled temperature: 72.375 C against the existing 85 C test cutoff.
+That cutoff is a test policy, not a hardware certification.
+
+The original `live_smoke_passed: false` and
+`full_24h_observation_completed: false` values remain intact. The smoke predicate
+requires an ordinary zero-code completion without a stop request; its false
+value does not erase the recorded accepted work or imply an unexplained crash.
+The original logs and all earlier evidence are preserved.
+
+This is **partial functional validation on one machine**, not an all-day
+stability pass, repeated-cycle qualification, comprehensive security review or
+matched speed/earnings result. USER and FEE used the same maintainer wallet with
+distinct workers; separate-wallet payouts were not independently verified.
+GPU mining and desktop activity continued. The historical 110.615 kH/s comparison
+reference, source archives, tags, checksums and packaged VALIDATION.json have not
+been changed. The package remains experimental Public Source Preview 2.
+
+Final sanitized record:
+https://froghollowfirewood.github.io/overxelis-miner/evidence/preview2-early-ended-validation-20261029.json
+
+## Historical checkpoint — 29 October 2026 at 12:38 UTC (superseded above)
 
 The exact published Preview 2 archive subsequently passed a normal-user native
 build, the 1,031-input/four-implementation qualification and the public CLI
@@ -35,8 +78,9 @@ self-test. Its 180-second ordinary-memory run ended cleanly with 23 accepted
 user shares and no rejected or unresolved submissions. A later normal-user
 192/192 huge-page session authorized and produced accepted user work.
 
-At this checkpoint a bounded 24-hour observation is running; it is NOT a
-completed 24-hour or full real fee-cycle result. The real 5,940-active-user-
+At that earlier checkpoint a bounded 24-hour observation was running; it was NOT
+a completed 24-hour or full real fee-cycle result. The final early-stop record
+above supersedes the running status without altering the original evidence. The real 5,940-active-user-
 second fee schedule is unchanged. All observed performance is descriptive,
 not a matched benchmark. Both test roles use the maintainer wallet with distinct
 worker labels. Existing source archives and their packaging-time VALIDATION.json

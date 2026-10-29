@@ -1,0 +1,172 @@
+{
+  "schema": 1,
+  "recorded_utc": "2026-10-29T15:44:42.591500+00:00",
+  "version": "1.0.0-beta.2",
+  "edition": "public-source-preview.2",
+  "classification": "partial_validation_user_ended_early",
+  "scope": "Maintainer-run native correctness and live-pool observations on one desktop. The planned 24-hour run was intentionally ended early. This is not a 24-hour pass or a matched performance benchmark.",
+  "source_archive_sha256": "2f0e922007fc6a2fe2c36ad7d1c1cb3f69438ae08f1435d26ae93417ac29b847",
+  "native_library_sha256": "66e186b20fcfa95686a4e4682e1ff954946d0ec88cfc68bf26e445e441876426",
+  "source_archive_unchanged": true,
+  "package_sources_unchanged": true,
+  "platform": {
+    "cpu_model": "AMD Ryzen Threadripper PRO 7995WX 96-Cores",
+    "topology": {
+      "Architecture": "x86_64",
+      "CPU(s)": "192",
+      "On-line CPU(s) list": "0-191",
+      "Vendor ID": "AuthenticAMD",
+      "Model name": "AMD Ryzen Threadripper PRO 7995WX 96-Cores",
+      "Thread(s) per core": "2",
+      "Core(s) per socket": "96",
+      "Socket(s)": "1",
+      "NUMA node(s)": "4"
+    },
+    "kernel": "5.15.0-168-generic",
+    "python": "Python 3.10.12",
+    "compiler": "gcc (Ubuntu 11.4.0-1ubuntu1~22.04.3) 11.4.0"
+  },
+  "previously_completed_stages": {
+    "native_build_passed": true,
+    "native_qualification": {
+      "utc": "2026-10-29T12:28:09.629485+00:00",
+      "passed": true,
+      "library_sha256": "66e186b20fcfa95686a4e4682e1ff954946d0ec88cfc68bf26e445e441876426",
+      "cases": 1031,
+      "c_implementations": 4,
+      "full_scratchpad_comparisons": 1031,
+      "retained_rust_output_replay": true,
+      "rust_executed_on_rig": false,
+      "inputs_sha256": "b0afd167b54508d4a27527176637600ad9e1b08649efb767cb53cdfdd4b7e587",
+      "expected_sha256": "2c532a277b446ea5cf3cb751b390357f6f9dbc033f57bf3a084cf7d322651e73"
+    },
+    "public_cli_self_test_passed": true,
+    "ordinary_memory_test": {
+      "passed": true,
+      "started_utc": "2026-10-29T12:32:08.363269+00:00",
+      "finished_utc": "2026-10-29T12:35:09.866460+00:00",
+      "requested_duration_seconds": 180,
+      "observer_elapsed_seconds": 181.4959793760063,
+      "workers": 192,
+      "hugetlb_workers": 0,
+      "accepted_user_events": 23,
+      "rejected": 0,
+      "unresolved": 0,
+      "final_local_session_avg_khs": 92.462,
+      "time_accounting": {
+        "user_active_seconds": 179.444,
+        "fee_active_seconds": 0.0,
+        "fee_windows": 0,
+        "skipped": 0
+      },
+      "exit_code": 0,
+      "native_workers_closed": true,
+      "source_log_sha256": "dc9402c6448181834b6e5e69697620f692f79fb024d99a8d2bd37d0217debf33",
+      "maximum_observed_temperature_c": 64.5
+    }
+  },
+  "final_huge_page_observation": {
+    "started_utc": "2026-10-29T12:36:01.586709+00:00",
+    "stop_requested_utc": "2026-10-29T15:31:46.136461+00:00",
+    "last_rate_report_utc": "2026-10-29T15:31:47.130472+00:00",
+    "workers_closed_utc": "2026-10-29T15:31:47.139501+00:00",
+    "observer_finished_utc": "2026-10-29T15:31:52.151394+00:00",
+    "planned_duration_seconds": 86400,
+    "observer_elapsed_seconds": 10550.558822678999,
+    "display_duration_rounded": "2 hours 55 minutes 51 seconds",
+    "threads": 192,
+    "hugetlb_workers": 192,
+    "normal_user": true,
+    "memory_mode": "hugetlb",
+    "user_authorizations": 2,
+    "accepted_user_shares": 1193,
+    "accepted_fee_shares": 6,
+    "reported_rejected": 0,
+    "reported_unresolved": 0,
+    "user_connection_interruption_messages": 0,
+    "fatal_messages_observed": 0,
+    "final_displayed_gross_session_avg_khs": 110.342,
+    "rate_reports": 1050,
+    "time_accounting": {
+      "user_active_seconds": 10484.358,
+      "fee_active_seconds": 59.243,
+      "fee_windows": 1,
+      "skipped": 0
+    },
+    "observer_elapsed_minus_recorded_active_seconds": 6.957822678998518,
+    "duration_accounting_note": "Observer elapsed includes process startup and cleanup. The residual is not a separately measured network-outage duration; active totals are logged to three decimal places.",
+    "fee_cycles": [
+      {
+        "started_utc": "2026-10-29T14:15:02.514806+00:00",
+        "ended_utc": "2026-10-29T14:16:02.544109+00:00",
+        "fee_authorized": true,
+        "accepted_fee_events": 6,
+        "skipped": false,
+        "returned_to_user": true,
+        "user_reauthorized": true,
+        "user_accepted_after_return": true,
+        "transition_verified": true,
+        "fee_active_seconds": 59.243,
+        "window_wall_seconds": 60.029303,
+        "fee_authorized_utc": "2026-10-29T14:15:03.254525+00:00",
+        "user_reauthorized_utc": "2026-10-29T14:16:02.829469+00:00",
+        "first_user_share_after_return_utc": "2026-10-29T14:16:20.575456+00:00"
+      }
+    ],
+    "fee_schedule_modified": false,
+    "process_stop_reason": "user_stop_request",
+    "miner_exit_code": 130,
+    "native_workers_closed": true,
+    "forced_termination_recorded": false,
+    "shutdown_interpretation": "The owner requested the existing graceful-stop path. The CLI handles interruption and returns 130; the log records normal worker cleanup, with no fatal message observed. This is an intentional early stop, not completion of the configured duration.",
+    "original_observer_flags": {
+      "live_smoke_passed": false,
+      "real_fee_transition_observed": true,
+      "full_24h_observation_completed": false
+    },
+    "observer_flag_note": "The original live_smoke_passed flag requires exit code 0 and no stop reason. It is therefore false for this requested interruption; the saved result is not rewritten."
+  },
+  "sampled_resources": {
+    "samples": 2028,
+    "first_sample_utc": "2026-10-29T12:36:01.603902+00:00",
+    "last_sample_utc": "2026-10-29T15:31:46.972605+00:00",
+    "maximum_sample_gap_seconds": 6.872000470000785,
+    "maximum_temperature_c": 72.375,
+    "test_temperature_cutoff_c": 85.0,
+    "competing_cpu_miner_observations": 0,
+    "last_process_thread_count": 193,
+    "last_process_rss_kib": 28828,
+    "maximum_sampled_process_rss_kib": 28828,
+    "resource_scope": "Sampled process RSS does not represent all HugeTLB-backed memory. Polling does not prove continuous host isolation or absence of all transient faults."
+  },
+  "cleanup_review": {
+    "checked_utc": "2026-10-29T15:44:42.591500+00:00",
+    "original_miner_process_absent": true,
+    "original_observer_process_absent": true,
+    "cpu_lock_released": true,
+    "observer_lock_released": true,
+    "processes_signaled_during_publication": false
+  },
+  "evidence_identities": {
+    "attempt.json": "d5cc8a3e4cdae558df5897d3383c9ae4de2384c8af53922a1fd150a5be49e628",
+    "result.json": "124a63783ab7982d0bc568e9cb1737b137af8b186571ab52603bb3169e08d6bd",
+    "STOP-REQUESTED.json": "e2e4650a87d5086c08b6a0dbe894251947a87cca111463fa1c4733bb0f50a177",
+    "console.private.log": "470725a9c3702ef3f573c567cec02983bda469b89d5248726d133cacbb8e0c9b",
+    "resources.jsonl": "99d207f9f460a97a6a94629b3bdc14e0763628970de37965bb28e4a4d7c76f04"
+  },
+  "completed_24_hour_stability_test": false,
+  "one_real_fee_transition_observed": true,
+  "historical_comparison_reference_khs_unchanged": 110.61494925929337,
+  "prior_record": "preview2-runtime-validation-20261029.json",
+  "limitations": [
+    "The originally planned 24-hour observation was not completed; repeated fee cycles and extended reliability remain unverified.",
+    "USER and FEE used the same maintainer-controlled wallet with distinct worker roles; separate-wallet settlement and actual payout amounts were not independently validated.",
+    "One fee window logged 60.029303 wall seconds and 59.243 active fee seconds. This is measured timing, not a hard-real-time 60.000-second guarantee or a 1% coin-yield measurement.",
+    "The gross session-rate display includes both roles and is not net user earnings. Pool difficulty and fee time prevent reading payout efficiency from raw share counts.",
+    "GPU mining and normal desktop activity were preserved; this was not an isolated or matched comparative speed test.",
+    "Zero rejected/unresolved values are the final reported counters. Unreported stale, duplicate or dropped-work metrics are not inferred to be zero.",
+    "The saved Rust answers were replayed rather than rebuilding/rerunning Rust. Correctness qualification is scoped to the retained tests.",
+    "One machine does not establish broad platform compatibility, security certification, or production readiness.",
+    "Original release assets, packaging-time VALIDATION.json, source manifests and earlier evidence remain unchanged. This is a sanitized summary, not publication of private raw logs."
+  ]
+}

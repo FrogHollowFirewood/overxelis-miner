@@ -7,9 +7,10 @@ preview, not a Windows executable, universal Linux binary, or stable release.
 The native hashing sources and developer-fee schedule come from the tested
 private beta.2 rig edition. The exact public Preview 2 package has now compiled and passed the 1,031-input
 native qualification on one 192-thread Linux desktop. Initial accepted shares
-were observed in ordinary-memory and normal-user huge-page modes. A complete
-real developer-fee cycle and extended reliability remain open validation items.
-See the <a href="site-status.html#runtime-validation">dated post-release checkpoint</a>. No speed advantage or earnings level is guaranteed.</p>
+were observed in ordinary-memory and normal-user huge-page modes. One real developer-fee cycle and subsequent accepted USER work were observed
+before the maintainer ended the huge-page run after 2 hours 55 minutes 51 seconds.
+The planned 24-hour stability test was not completed; repeated cycles and extended
+reliability remain unverified. See the <a href="site-status.html#runtime-validation">final partial-validation report</a>. No speed advantage or earnings level is guaranteed.</p>
 <h2 id="what-it-does">What it does</h2>
 <p>OverXelis performs XelisHashV3 CPU work and connects to a compatible XELIS
 Stratum pool. You supply your own <strong>public payout address</strong>, worker name, and
@@ -153,7 +154,7 @@ prolonged operation, or a matched 5% advantage over BzMiner. The public package
 now has its own separate, limited native and accepted-share evidence above. Public
 packaging changes are recorded in <code>PUBLIC-PREVIEW-NOTES.md</code>. This is for willing,
 informed testers and machines they own or are authorized to use.</p>
-<h2 id="preview2-correction">What changed in Preview 2</h2><p>This is a separately versioned attribution and packaging correction, not a new hashing optimization. The older release remains unchanged. The new package identifies the actual shipped kernels and the TNN-derived code used on supported CPUs; all upstream licenses remain. Read <code>THIRD_PARTY_NOTICES.md</code>, <code>ATTRIBUTION.json</code> and <code>PUBLIC-PREVIEW-NOTES.md</code>. Its 62 passing offline tests alone do not establish a native build, native qualification, live-pool operation or a real fee cycle. Subsequent real build, qualification and initial accepted-share results are recorded separately in the dated checkpoint; the full fee cycle remains pending. Do not run those checks beside another CPU miner or bypass the workload-conflict guard.</p><h2 id="license-and-sources">License and sources</h2>
+<h2 id="preview2-correction">What changed in Preview 2</h2><p>This is a separately versioned attribution and packaging correction, not a new hashing optimization. The older release remains unchanged. The new package identifies the actual shipped kernels and the TNN-derived code used on supported CPUs; all upstream licenses remain. Read <code>THIRD_PARTY_NOTICES.md</code>, <code>ATTRIBUTION.json</code> and <code>PUBLIC-PREVIEW-NOTES.md</code>. Its 62 passing offline tests alone do not establish a native build, native qualification, live-pool operation or a real fee cycle. Subsequent native build, qualification, accepted-share work and one real fee transition are recorded in the final partial-validation report. The run was ended early by the maintainer; 24-hour stability remains unverified. Do not run those checks beside another CPU miner or bypass the workload-conflict guard.</p><h2 id="license-and-sources">License and sources</h2>
 <p>MIT-licensed project code and third-party notices are included. See <code>LICENSE</code>,
 <code>THIRD_PARTY_NOTICES.md</code>, and the retained vendor license files. Portions of the
 consensus hashing/cryptography originate from XELIS, BLAKE3, ChaCha20-SIMD and
