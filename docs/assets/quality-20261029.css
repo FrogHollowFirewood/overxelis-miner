@@ -1,0 +1,29 @@
+/* Progressive enhancement, readable controls, and keyboard/print support. */
+fieldset.config-fields{border:0;padding:0;margin:0;min-width:0}
+.config-fields:disabled{opacity:.65}
+.config-fields legend{padding:0;margin-bottom:20px;font-size:16px;font-weight:650;color:var(--text)}
+.config-fields>button{margin-top:20px}
+[aria-invalid="true"]{border:2px solid #f2b58c;outline-color:#f2b58c}
+.form-status.error{font-weight:600}
+input,select,button.btn,a.btn{min-height:44px}
+.copy{min-width:44px;min-height:40px;font-size:11px;top:8px;right:8px}
+.code pre{padding-right:76px}
+.doc .code pre{border:0;margin:0;padding-right:76px}
+.doc .code{margin:18px 0}
+.guide-toc{padding:22px 25px;border:1px solid var(--line);border-radius:12px;background:var(--panel);margin:26px 0}
+.guide-toc strong{display:block;font-size:15px;margin-bottom:12px}
+.guide-toc ul{list-style:none;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:8px 24px;margin:0}
+.guide-toc a{display:inline-block;padding:5px 0;line-height:1.6}
+.review-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px;margin:25px 0}
+.review-grid .card h2{margin-top:0;font-size:22px}.review-grid .card p{margin-bottom:0}
+.nav [aria-current="page"]{text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:7px;color:var(--mint)}
+.form-status{scroll-margin-top:24px}
+.doc h2[id],.doc h3[id]{scroll-margin-top:24px}
+.feedback-template-link{display:inline-flex;align-items:center;min-height:44px}
+.footer-right a{display:inline-block;padding:3px 0}
+@media(max-width:680px){.guide-toc ul,.review-grid{grid-template-columns:1fr}.guide-toc{padding:20px}.code pre{padding:52px 14px 17px!important}.copy{top:7px;right:8px}.field input,.field select{font-size:16px}}
+@media(forced-colors:active){.btn,.notice,.card,.table-scroll{border:1px solid CanvasText}:focus-visible{outline:2px solid Highlight}}
+@media print{body{background:white;color:black}.nav,.footer,.copy,.hero:before,.hero:after{display:none!important}.doc,.wrap{width:100%;max-width:none}.doc p,.doc li,.table-sub{color:black!important}.code,.notice,.card{background:white!important;color:black!important;border-color:#777!important}pre{white-space:pre-wrap;overflow-wrap:break-word}a{color:black!important}details{break-inside:avoid}}
+
+/* Match :root specificity so reduced-motion wins over the base stylesheet. */
+@media(prefers-reduced-motion:reduce){:root{scroll-behavior:auto}}

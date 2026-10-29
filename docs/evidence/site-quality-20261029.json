@@ -1,0 +1,75 @@
+{
+  "schema": 1,
+  "reviewed_utc": "2026-10-29T04:36:56.332264+00:00",
+  "status": "review_completed",
+  "prior_site_commit": "4058608ecaaecc6949d9aa4653b3024ea025f6eb",
+  "website_only": true,
+  "miner_source_changed": false,
+  "miner_download_changed": false,
+  "comparison_measurements_changed": false,
+  "changes": [
+    "Published archive and checksum links work without JavaScript or if a script fails.",
+    "Feedback template and GitHub links are ordinary HTML links.",
+    "Configuration fields remain disabled until the local handler is installed; errors identify and focus the affected field.",
+    "Guide includes section navigation, copy controls and command chains that stop on verification failure.",
+    "Nested 404 navigation and assets use project-root paths.",
+    "Reduced-motion CSS precedence corrected; keyboard navigation and mobile table accessibility-tree structure checked.",
+    "Added release/testing status page, unique page descriptions and sitemap."
+  ],
+  "local_validation": {
+    "static_assertions_passed": 360,
+    "static_assertions_failed": 0,
+    "browser_assertions_passed": 283,
+    "browser_assertions_failed": 0,
+    "page_count": 6,
+    "viewport_widths": [
+      320,
+      390,
+      680,
+      768,
+      980,
+      1280,
+      1630
+    ],
+    "browser_scope": "Headless Chromium with exact local site responses served through request interception at the project origin. No web-security policy disabled. Live HTTP bytes and downloads are checked separately. Not an all-browser or screen-reader certification.",
+    "configuration_checks": {
+      "valid_cases": 7,
+      "invalid_cases": 27,
+      "actual_browser_config_and_feedback_downloads": true,
+      "generated_configs_checked_with_released_python_validator": true,
+      "hashing_or_pool_connection_started": false
+    }
+  },
+  "public_download_check": {
+    "checked_utc": "2026-10-29T04:23:45.160486+00:00",
+    "sign_in_used": false,
+    "github_and_site_http_status": 200,
+    "identical_bytes": true,
+    "archive_bytes": 283733,
+    "archive_sha256": "b92400ee5bb675c9dacd927d87a28964dc1230d8e59b08ace5aecc7b49322e55",
+    "checksum_files_match": true,
+    "archive_members": 52
+  },
+  "external_links": {
+    "checked_utc": "2026-10-29T04:32:18.965215+00:00",
+    "destinations_checked": 15,
+    "http_200_including_redirects": 14,
+    "exceptions": [
+      {
+        "url": "https://www.bzminer.com/guides/xelis.php",
+        "http_status": 429,
+        "final_url": "https://www.bzminer.com/guides/xelis.php",
+        "classification": "restricted_or_rate_limited"
+      }
+    ],
+    "github_issue_forms_require_sign_in": true
+  },
+  "remaining_limits": [
+    "The external BzMiner guide rate-limited this audit (HTTP 429); it was not classified as a broken link.",
+    "Tests are not a complete security, cross-browser or screen-reader certification.",
+    "Exact public-package live-pool operation, full real developer-fee cycle and prolonged miner stability remain separate validation items.",
+    "Website tests do not establish matched performance or earnings gains.",
+    "Third-party websites and live availability can change after this review.",
+    "The deployed version is verified separately after publication; this record documents prepublication tests and actual download checks."
+  ]
+}
