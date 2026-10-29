@@ -1,0 +1,452 @@
+{
+  "schema": 1,
+  "updated_utc": "2026-10-29T04:12:15.751247+00:00",
+  "scope": "Arithmetic differences between local-rate observations, not matched speed improvements or earnings gains.",
+  "formula": "(oxm_reference_khs / comparison_rate_khs - 1) * 100",
+  "oxm_reference_khs": 110.61494925929337,
+  "tnn_snapshot": {
+    "version": "0.8.0",
+    "captured_utc": "2026-10-29T04:05:19.753377+00:00",
+    "state_at_capture": "running",
+    "started_utc": "2026-10-29T03:51:12.262548+00:00",
+    "stopped_utc": null,
+    "observed_elapsed_seconds": 847.490829,
+    "threads_requested": 192,
+    "samples": 40,
+    "mean_displayed_khs": 101.97,
+    "min_displayed_khs": 99.8,
+    "max_displayed_khs": 104.0,
+    "last_five_mean_khs": 101.56,
+    "user_accepted_events": 83,
+    "developer_accepted_events": 86,
+    "user_rejected_events": 0,
+    "developer_rejected_events": 1,
+    "source_sha256": "c73b3665b6d6ca51482398d31394075305596da71d522d549c32d62002157e9d",
+    "source_bytes": 50403,
+    "display_rows": [
+      {
+        "line": 103,
+        "local_time": "22:52:14 CDT",
+        "version": "0.8.0",
+        "khs": 104.0,
+        "accepted": 4,
+        "rejected": 0,
+        "uptime_seconds": 21
+      },
+      {
+        "line": 130,
+        "local_time": "22:52:36 CDT",
+        "version": "0.8.0",
+        "khs": 104.0,
+        "accepted": 6,
+        "rejected": 0,
+        "uptime_seconds": 41
+      },
+      {
+        "line": 151,
+        "local_time": "22:52:57 CDT",
+        "version": "0.8.0",
+        "khs": 104.0,
+        "accepted": 8,
+        "rejected": 0,
+        "uptime_seconds": 61
+      },
+      {
+        "line": 174,
+        "local_time": "22:53:14 CDT",
+        "version": "0.8.0",
+        "khs": 102.0,
+        "accepted": 12,
+        "rejected": 0,
+        "uptime_seconds": 81
+      },
+      {
+        "line": 195,
+        "local_time": "22:53:38 CDT",
+        "version": "0.8.0",
+        "khs": 103.0,
+        "accepted": 13,
+        "rejected": 0,
+        "uptime_seconds": 101
+      },
+      {
+        "line": 210,
+        "local_time": "22:53:55 CDT",
+        "version": "0.8.0",
+        "khs": 102.0,
+        "accepted": 15,
+        "rejected": 0,
+        "uptime_seconds": 121
+      },
+      {
+        "line": 249,
+        "local_time": "22:54:16 CDT",
+        "version": "0.8.0",
+        "khs": 103.0,
+        "accepted": 17,
+        "rejected": 0,
+        "uptime_seconds": 141
+      },
+      {
+        "line": 274,
+        "local_time": "22:54:35 CDT",
+        "version": "0.8.0",
+        "khs": 103.0,
+        "accepted": 18,
+        "rejected": 0,
+        "uptime_seconds": 161
+      },
+      {
+        "line": 291,
+        "local_time": "22:55:04 CDT",
+        "version": "0.8.0",
+        "khs": 103.0,
+        "accepted": 20,
+        "rejected": 0,
+        "uptime_seconds": 181
+      },
+      {
+        "line": 302,
+        "local_time": "22:55:14 CDT",
+        "version": "0.8.0",
+        "khs": 102.0,
+        "accepted": 20,
+        "rejected": 0,
+        "uptime_seconds": 201
+      },
+      {
+        "line": 341,
+        "local_time": "22:55:41 CDT",
+        "version": "0.8.0",
+        "khs": 102.0,
+        "accepted": 26,
+        "rejected": 0,
+        "uptime_seconds": 221
+      },
+      {
+        "line": 372,
+        "local_time": "22:55:56 CDT",
+        "version": "0.8.0",
+        "khs": 102.0,
+        "accepted": 28,
+        "rejected": 0,
+        "uptime_seconds": 241
+      },
+      {
+        "line": 405,
+        "local_time": "22:56:16 CDT",
+        "version": "0.8.0",
+        "khs": 101.0,
+        "accepted": 30,
+        "rejected": 0,
+        "uptime_seconds": 261
+      },
+      {
+        "line": 430,
+        "local_time": "22:56:43 CDT",
+        "version": "0.8.0",
+        "khs": 102.0,
+        "accepted": 31,
+        "rejected": 0,
+        "uptime_seconds": 281
+      },
+      {
+        "line": 445,
+        "local_time": "22:56:54 CDT",
+        "version": "0.8.0",
+        "khs": 102.0,
+        "accepted": 33,
+        "rejected": 0,
+        "uptime_seconds": 301
+      },
+      {
+        "line": 480,
+        "local_time": "22:57:22 CDT",
+        "version": "0.8.0",
+        "khs": 102.0,
+        "accepted": 37,
+        "rejected": 0,
+        "uptime_seconds": 321
+      },
+      {
+        "line": 503,
+        "local_time": "22:57:34 CDT",
+        "version": "0.8.0",
+        "khs": 103.0,
+        "accepted": 39,
+        "rejected": 0,
+        "uptime_seconds": 341
+      },
+      {
+        "line": 538,
+        "local_time": "22:57:56 CDT",
+        "version": "0.8.0",
+        "khs": 101.0,
+        "accepted": 41,
+        "rejected": 0,
+        "uptime_seconds": 361
+      },
+      {
+        "line": 553,
+        "local_time": "22:58:22 CDT",
+        "version": "0.8.0",
+        "khs": 100.0,
+        "accepted": 42,
+        "rejected": 0,
+        "uptime_seconds": 381
+      },
+      {
+        "line": 570,
+        "local_time": "22:58:35 CDT",
+        "version": "0.8.0",
+        "khs": 103.0,
+        "accepted": 42,
+        "rejected": 0,
+        "uptime_seconds": 401
+      },
+      {
+        "line": 587,
+        "local_time": "22:58:56 CDT",
+        "version": "0.8.0",
+        "khs": 101.0,
+        "accepted": 43,
+        "rejected": 0,
+        "uptime_seconds": 421
+      },
+      {
+        "line": 620,
+        "local_time": "22:59:19 CDT",
+        "version": "0.8.0",
+        "khs": 100.0,
+        "accepted": 45,
+        "rejected": 0,
+        "uptime_seconds": 441
+      },
+      {
+        "line": 643,
+        "local_time": "22:59:39 CDT",
+        "version": "0.8.0",
+        "khs": 101.0,
+        "accepted": 47,
+        "rejected": 0,
+        "uptime_seconds": 461
+      },
+      {
+        "line": 660,
+        "local_time": "22:59:57 CDT",
+        "version": "0.8.0",
+        "khs": 104.0,
+        "accepted": 48,
+        "rejected": 0,
+        "uptime_seconds": 481
+      },
+      {
+        "line": 667,
+        "local_time": "23:00:15 CDT",
+        "version": "0.8.0",
+        "khs": 102.0,
+        "accepted": 48,
+        "rejected": 0,
+        "uptime_seconds": 501
+      },
+      {
+        "line": 698,
+        "local_time": "23:00:34 CDT",
+        "version": "0.8.0",
+        "khs": 102.0,
+        "accepted": 50,
+        "rejected": 0,
+        "uptime_seconds": 521
+      },
+      {
+        "line": 735,
+        "local_time": "23:00:56 CDT",
+        "version": "0.8.0",
+        "khs": 100.0,
+        "accepted": 54,
+        "rejected": 0,
+        "uptime_seconds": 541
+      },
+      {
+        "line": 756,
+        "local_time": "23:01:16 CDT",
+        "version": "0.8.0",
+        "khs": 102.0,
+        "accepted": 55,
+        "rejected": 0,
+        "uptime_seconds": 561
+      },
+      {
+        "line": 789,
+        "local_time": "23:01:34 CDT",
+        "version": "0.8.0",
+        "khs": 101.0,
+        "accepted": 59,
+        "rejected": 0,
+        "uptime_seconds": 581
+      },
+      {
+        "line": 816,
+        "local_time": "23:01:56 CDT",
+        "version": "0.8.0",
+        "khs": 102.0,
+        "accepted": 62,
+        "rejected": 0,
+        "uptime_seconds": 601
+      },
+      {
+        "line": 857,
+        "local_time": "23:02:14 CDT",
+        "version": "0.8.0",
+        "khs": 102.0,
+        "accepted": 66,
+        "rejected": 0,
+        "uptime_seconds": 621
+      },
+      {
+        "line": 884,
+        "local_time": "23:02:35 CDT",
+        "version": "0.8.0",
+        "khs": 101.0,
+        "accepted": 69,
+        "rejected": 0,
+        "uptime_seconds": 641
+      },
+      {
+        "line": 909,
+        "local_time": "23:03:02 CDT",
+        "version": "0.8.0",
+        "khs": 101.0,
+        "accepted": 69,
+        "rejected": 0,
+        "uptime_seconds": 661
+      },
+      {
+        "line": 932,
+        "local_time": "23:03:14 CDT",
+        "version": "0.8.0",
+        "khs": 102.0,
+        "accepted": 71,
+        "rejected": 0,
+        "uptime_seconds": 681
+      },
+      {
+        "line": 963,
+        "local_time": "23:03:35 CDT",
+        "version": "0.8.0",
+        "khs": 102.0,
+        "accepted": 75,
+        "rejected": 0,
+        "uptime_seconds": 701
+      },
+      {
+        "line": 994,
+        "local_time": "23:03:54 CDT",
+        "version": "0.8.0",
+        "khs": 102.0,
+        "accepted": 76,
+        "rejected": 0,
+        "uptime_seconds": 721
+      },
+      {
+        "line": 1039,
+        "local_time": "23:04:17 CDT",
+        "version": "0.8.0",
+        "khs": 104.0,
+        "accepted": 79,
+        "rejected": 0,
+        "uptime_seconds": 741
+      },
+      {
+        "line": 1070,
+        "local_time": "23:04:35 CDT",
+        "version": "0.8.0",
+        "khs": 99.8,
+        "accepted": 80,
+        "rejected": 0,
+        "uptime_seconds": 761
+      },
+      {
+        "line": 1095,
+        "local_time": "23:04:54 CDT",
+        "version": "0.8.0",
+        "khs": 102.0,
+        "accepted": 82,
+        "rejected": 0,
+        "uptime_seconds": 781
+      },
+      {
+        "line": 1122,
+        "local_time": "23:05:17 CDT",
+        "version": "0.8.0",
+        "khs": 100.0,
+        "accepted": 83,
+        "rejected": 0,
+        "uptime_seconds": 801
+      }
+    ],
+    "limits": [
+      "Live HASHRATE displays only; automatic tuning excluded.",
+      "Coarsely rounded, correlated local displays; arithmetic mean, not independent hash counters.",
+      "Requested 192 threads; huge pages reported available, actual allocations not independently verified.",
+      "MSR optimization disabled.",
+      "Short single v0.8.0 session, not a matched comparison or a full fee-efficiency test.",
+      "User and developer share difficulties can differ; share counts are not fee percentages."
+    ]
+  },
+  "comparisons": [
+    {
+      "name": "BzMiner",
+      "version": "v100.46",
+      "rate": 106.35967237903226,
+      "note": "Historical mean: 1,984 reports after warmup in a roughly 34.6-hour run. Different dates and measurement method.",
+      "key": "bzminer",
+      "difference_percent": 4.000836769312954
+    },
+    {
+      "name": "SRBMiner-MULTI",
+      "version": "v3.7.5",
+      "rate": 105.867,
+      "note": "Five short historical trials; ten later displays and 55 accepted-share events. Startup exclusions are disclosed below.",
+      "key": "srbminer",
+      "difference_percent": 4.4848246000107395
+    },
+    {
+      "name": "TNN-Miner",
+      "version": "v0.8.0",
+      "rate": 101.97,
+      "note": "40 live displays; 83 user shares accepted, zero user rejected. Snapshot at 04:05 UTC; tuning excluded.",
+      "key": "tnn",
+      "difference_percent": 8.47793396027594
+    },
+    {
+      "name": "cpuminer-opt-supr",
+      "version": "AVX2; banner v1.40 / folder v1.47",
+      "rate": 95.78625,
+      "note": "Eight displays and three accepted shares in a 48-second startup record. Version discrepancy remains unresolved.",
+      "key": "supr",
+      "difference_percent": 15.481031211988538
+    },
+    {
+      "name": "hoo_cpu / HTN",
+      "version": "v1.4.3",
+      "rate": 97.018,
+      "note": "Five later rolling displays in a short trial; 19 accepted USER shares. Not the newer v1.4.24.",
+      "key": "hoo",
+      "difference_percent": 14.014872765150145
+    },
+    {
+      "name": "HydraX Miner",
+      "version": "v3.4.5",
+      "rate": 19.241666666666667,
+      "note": "10 min 19 sec; 30 displays and 11 accepted shares. 4 KB pages vs OXM\u2019s 2 MiB huge pages: settings differ.",
+      "key": "hydrax",
+      "difference_percent": 474.87197536228683
+    }
+  ],
+  "prior_evidence_files": [
+    "local-observations-20261029.json",
+    "followup-observations-20261029.json"
+  ],
+  "miner_code_changed": false
+}

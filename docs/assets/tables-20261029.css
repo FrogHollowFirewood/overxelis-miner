@@ -1,0 +1,55 @@
+/* Comparison layout v2: explicit columns; no broken rates; readable mobile cards. */
+.comparison-page.doc{max-width:1200px;overflow-wrap:normal;word-break:normal}
+.comparison-page p{max-width:90ch;font-size:15px;line-height:1.8}
+.comparison-page .lead{font-size:17px;max-width:75ch}
+.comparison-page h1{font-size:clamp(38px,4.5vw,64px);line-height:1.1}
+.table-scroll:has(.oxm-responsive){margin:26px 0;border-color:#2e4c3e;border-radius:16px;overflow:hidden}
+.table-scroll .oxm-responsive{width:100%;min-width:0;table-layout:fixed;border-collapse:collapse;overflow-wrap:normal;word-break:normal}
+.table-scroll .oxm-responsive caption{text-align:left;padding:18px 22px;background:#08140f;color:#acc2b7;font-size:13px;line-height:1.65;border-bottom:1px solid #2e4c3e}
+.table-scroll .oxm-responsive th,.table-scroll .oxm-responsive td,.doc .table-scroll .oxm-responsive th,.doc .table-scroll .oxm-responsive td{padding:23px 22px;border:0;border-bottom:1px solid #294334;min-width:0;max-width:none;text-align:left;vertical-align:top;font-size:14px;line-height:1.7;overflow-wrap:normal;word-break:normal}
+.table-scroll .oxm-responsive thead th{padding:18px 22px;background:#11271d;color:#bcd9c9;font-size:12px;font-weight:650;letter-spacing:.025em;line-height:1.5}
+.table-scroll .oxm-responsive tbody th{color:#f3faf5;font-size:15px;font-weight:650}
+.oxm-responsive tbody tr:nth-child(even){background:#0e2018}
+.oxm-responsive tbody tr:hover{background:#142b20}
+.oxm-responsive tbody tr:last-child>*{border-bottom:0!important}
+.oxm-responsive tbody tr.reference-row{background:#143526}
+.oxm-responsive .table-sub{display:block;font-size:12px;line-height:1.7;font-weight:400;color:#acc2b7;margin-top:6px}
+.oxm-responsive .table-status{display:block;color:#e1f0e6;font-size:13px;font-weight:600;margin-bottom:4px}
+.oxm-responsive .rate-value,.oxm-responsive .delta-value{display:inline-block;white-space:nowrap;overflow-wrap:normal;word-break:normal;font-size:17px;font-weight:650;font-variant-numeric:tabular-nums;letter-spacing:-.2px;line-height:1.5;color:#f4faf7}
+.oxm-responsive .rate-value small{font-size:11px;font-weight:500;color:#acc2b7;letter-spacing:0}
+.oxm-responsive .delta-value{color:#66f9c7}.oxm-responsive .delta-value.caution{color:#f0ca84}
+.oxm-responsive .cell-label{display:none}
+.oxm-responsive code{white-space:normal;overflow-wrap:break-word;font-size:12px}
+.oxm-responsive a{line-height:1.8;text-underline-offset:4px}
+.current-rates .col-miner{width:23%}.current-rates .col-rate{width:17%}.current-rates .col-gap{width:17%}.current-rates .col-note{width:43%}
+.history-rates .col-miner{width:26%}.history-rates .col-rate{width:20%}.history-rates .col-note{width:54%}
+.miner-table .col-miner{width:23%}.miner-table .col-support{width:30%}.miner-table .col-fee{width:17%}.miner-table .col-note{width:30%}
+.reference-banner{padding:25px 28px;margin:26px 0;border:1px solid #375b46;border-radius:14px;background:#10291d;display:grid;grid-template-columns:1fr auto;gap:4px 25px;align-items:center}
+.reference-banner>span{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#abcbb7}
+.reference-banner strong{grid-row:1/3;grid-column:2;color:#66f9c7;font-size:34px;font-weight:650;white-space:nowrap;letter-spacing:-1px;font-variant-numeric:tabular-nums}
+.reference-banner small{font-size:15px;letter-spacing:0}.reference-banner p{font-size:13px;color:#b4cfbd;margin:5px 0;max-width:60ch}
+.archive-note{border:1px solid #2d493a;border-radius:12px;padding:20px 24px;margin:28px 0;background:#0c1c14}
+.archive-note summary{font-size:15px;font-weight:600;cursor:pointer;color:#e5f5eb}
+.evidence-download{border:1px solid #2d493a;border-radius:10px;padding:16px 20px;margin:25px 0}
+#recorded-results,#tnn-followup,#historical-recovery{scroll-margin-top:20px}
+@media(max-width:980px){
+ .table-scroll:has(.oxm-responsive){overflow:visible;border:0;background:transparent}
+ .table-scroll .oxm-responsive{display:block;width:100%;min-width:0}
+ .oxm-responsive colgroup{display:none}
+ .oxm-responsive caption{display:block;margin-bottom:14px;border:1px solid #2e4c3e;border-radius:12px;padding:16px 18px}
+ .oxm-responsive thead{position:absolute!important;width:1px!important;height:1px!important;margin:-1px!important;padding:0!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;clip-path:inset(50%)!important;white-space:nowrap!important;border:0!important}
+ .oxm-responsive tbody{display:grid;gap:16px}
+ .oxm-responsive tbody tr{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);border:1px solid #2e4c3e;border-radius:12px;overflow:hidden;background:#0d1e16}
+ .table-scroll .oxm-responsive tbody td,.table-scroll .oxm-responsive tbody th,.doc .table-scroll .oxm-responsive tbody td,.doc .table-scroll .oxm-responsive tbody th{display:block;padding:17px 18px;border:0!important;min-width:0}
+ .oxm-responsive tbody th{grid-column:1/-1;background:#11281d}
+ .oxm-responsive .cell-label{display:block;font-size:11px;font-weight:650;letter-spacing:.04em;text-transform:uppercase;color:#a9c5b4;margin-bottom:7px;line-height:1.5}
+ .oxm-responsive tbody td:last-child{grid-column:1/-1;padding-top:8px!important}
+ .history-rates tbody td{grid-column:1/-1}
+ .miner-table tbody td:nth-child(2){grid-column:1/-1}
+ .miner-table tbody td:last-child{grid-column:auto}
+ .oxm-responsive .rate-value,.oxm-responsive .delta-value{font-size:19px}
+ .reference-banner{grid-template-columns:1fr;padding:24px}
+ .reference-banner strong{grid-column:1;grid-row:auto;font-size:32px;margin-top:8px}
+ .reference-banner p{grid-column:1}
+}
+@media(max-width:380px){.table-scroll .oxm-responsive tbody td,.table-scroll .oxm-responsive tbody th,.doc .table-scroll .oxm-responsive tbody td,.doc .table-scroll .oxm-responsive tbody th{padding:15px 14px}.oxm-responsive .rate-value,.oxm-responsive .delta-value{font-size:17px}}
