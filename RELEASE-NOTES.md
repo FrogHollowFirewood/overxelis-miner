@@ -27,7 +27,23 @@ https://froghollowfirewood.github.io/overxelis-miner/guide.html
 
 SHA-256: `2f0e922007fc6a2fe2c36ad7d1c1cb3f69438ae08f1435d26ae93417ac29b847`
 
-## Validation, without overclaiming
+## Post-release validation checkpoint — 29 October 2026 UTC
+
+The exact published Preview 2 archive subsequently passed a normal-user native
+build, the 1,031-input/four-implementation qualification and the public CLI
+self-test. Its 180-second ordinary-memory run ended cleanly with 23 accepted
+user shares and no rejected or unresolved submissions. A later normal-user
+192/192 huge-page session authorized and produced accepted user work.
+
+At this checkpoint a bounded 24-hour observation is running; it is NOT a
+completed 24-hour or full real fee-cycle result. The real 5,940-active-user-
+second fee schedule is unchanged. All observed performance is descriptive,
+not a matched benchmark. Both test roles use the maintainer wallet with distinct
+worker labels. Existing source archives and their packaging-time VALIDATION.json
+are unchanged. Detailed dated record:
+https://froghollowfirewood.github.io/overxelis-miner/evidence/preview2-runtime-validation-20261029.json
+
+## Validation at release preparation (historical)
 
 62 offline tests passed from the exact new archive: 21 public-package tests,
 33 fee/transport tests, and eight release-inventory checks. These tests use
@@ -35,7 +51,8 @@ mocks where stated and do not establish a native build or live-pool performance.
 The native build safety gate refused while another CPU miner was active; no
 existing miner was stopped and no guard was bypassed. Public native build,
 1,031-vector native qualification, live-pool operation, a complete real fee
-cycle, and prolonged reliability remain open for this edition.
+cycle, and prolonged reliability were open at packaging time. Subsequent
+evidence is separated in the dated post-release checkpoint above.
 
 ## Disclosed developer fee
 

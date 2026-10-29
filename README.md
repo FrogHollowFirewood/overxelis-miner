@@ -6,10 +6,12 @@ This is an experimental Linux x86-64 source preview for volunteer testers. It ha
 a configurable public payout address, pool, worker, threads, and memory mode,
 and a clearly disclosed 1% scheduled developer mining-time allocation.
 
-The new public packaging has offline checks, not a completed live qualification.
-Private beta builds have produced pool-accepted work on 192-, 32-, and 24-thread
-systems. That is not proof of this exact public launcher, every CPU, long-term
-stability, or a matched 5% advantage over another miner.
+The exact public Preview 2 archive now has a normal-user native build,
+1,031-input correctness qualification and initial pool-accepted work on one
+192-thread Linux desktop. A completed real fee cycle and extended stability
+remain pending. See [the dated post-release checkpoint](docs/evidence/preview2-runtime-validation-20261029.json).
+Private 32/24-thread observations do not automatically establish this public
+package on those systems. None of these checks proves a matched speed advantage.
 
 Read [the complete guide](miner/README.md), [validation status](miner/VALIDATION.json),
 [packaging notes](miner/PUBLIC-PREVIEW-NOTES.md), and [security information](miner/SECURITY.md).
@@ -28,6 +30,7 @@ MIT licensed; third-party components retain their included notices and licenses.
 This edition corrects shipped-file attribution and adds release-inventory checks.
 It does not change hashing code, pool handling, or the 1% mining-time policy.
 Preview 1 is retained unchanged; use the separately named Preview 2 archive and
-checksum from the new prerelease. Native build/qualification and live-pool/fee-
-cycle validation of the public package remain pending. Offline tests are not
-proof of those results. See [the correction notes](miner/PUBLIC-PREVIEW-NOTES.md).
+checksum from the new prerelease. The archive’s VALIDATION.json is the
+packaging-time snapshot; the linked post-release checkpoint adds subsequent
+native and initial live evidence. Full fee-cycle and extended stability
+validation remain pending. See [the correction notes](miner/PUBLIC-PREVIEW-NOTES.md).
