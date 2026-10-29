@@ -1,0 +1,567 @@
+{
+  "schema": 1,
+  "reviewed_utc": "2026-10-29T03:46:03.459211+00:00",
+  "scope": "Local log observations only; not a matched performance ranking. No test or miner was launched or stopped.",
+  "cpu": "AMD Ryzen Threadripper PRO 7995WX",
+  "oxm_reference_khs": 110.61494925929337,
+  "hydrax_followup": {
+    "version": "3.4.5",
+    "started_utc": "2026-10-29T03:34:03.957630+00:00",
+    "stopped_utc": "2026-10-29T03:44:22.469332+00:00",
+    "elapsed_seconds": 618.511702,
+    "state": "completed_manual_session",
+    "requested_threads": 192,
+    "page_mode": "4 KB fallback",
+    "cpu_temperature_c_at_end": 69.875,
+    "source_sha256": "4cb74d76418c569ae3254b582ed8d69afcdc88ea79af89d0d66c2a8fa2997a8d",
+    "source_bytes": 22778,
+    "display_rows": [
+      {
+        "source_line": 46,
+        "time_local_cdt": "22:34:24",
+        "khs": 19.42,
+        "accepted": 0,
+        "rejected": 0
+      },
+      {
+        "source_line": 54,
+        "time_local_cdt": "22:34:44",
+        "khs": 19.37,
+        "accepted": 1,
+        "rejected": 0
+      },
+      {
+        "source_line": 59,
+        "time_local_cdt": "22:35:04",
+        "khs": 19.34,
+        "accepted": 1,
+        "rejected": 0
+      },
+      {
+        "source_line": 64,
+        "time_local_cdt": "22:35:24",
+        "khs": 19.32,
+        "accepted": 1,
+        "rejected": 0
+      },
+      {
+        "source_line": 72,
+        "time_local_cdt": "22:35:44",
+        "khs": 19.3,
+        "accepted": 2,
+        "rejected": 0
+      },
+      {
+        "source_line": 77,
+        "time_local_cdt": "22:36:04",
+        "khs": 19.28,
+        "accepted": 2,
+        "rejected": 0
+      },
+      {
+        "source_line": 82,
+        "time_local_cdt": "22:36:24",
+        "khs": 19.28,
+        "accepted": 2,
+        "rejected": 0
+      },
+      {
+        "source_line": 87,
+        "time_local_cdt": "22:36:44",
+        "khs": 19.27,
+        "accepted": 2,
+        "rejected": 0
+      },
+      {
+        "source_line": 92,
+        "time_local_cdt": "22:37:04",
+        "khs": 19.25,
+        "accepted": 2,
+        "rejected": 0
+      },
+      {
+        "source_line": 97,
+        "time_local_cdt": "22:37:24",
+        "khs": 19.24,
+        "accepted": 2,
+        "rejected": 0
+      },
+      {
+        "source_line": 105,
+        "time_local_cdt": "22:37:44",
+        "khs": 19.24,
+        "accepted": 3,
+        "rejected": 0
+      },
+      {
+        "source_line": 110,
+        "time_local_cdt": "22:38:04",
+        "khs": 19.24,
+        "accepted": 3,
+        "rejected": 0
+      },
+      {
+        "source_line": 118,
+        "time_local_cdt": "22:38:24",
+        "khs": 19.23,
+        "accepted": 4,
+        "rejected": 0
+      },
+      {
+        "source_line": 123,
+        "time_local_cdt": "22:38:44",
+        "khs": 19.23,
+        "accepted": 4,
+        "rejected": 0
+      },
+      {
+        "source_line": 128,
+        "time_local_cdt": "22:39:04",
+        "khs": 19.23,
+        "accepted": 4,
+        "rejected": 0
+      },
+      {
+        "source_line": 133,
+        "time_local_cdt": "22:39:24",
+        "khs": 19.22,
+        "accepted": 4,
+        "rejected": 0
+      },
+      {
+        "source_line": 138,
+        "time_local_cdt": "22:39:44",
+        "khs": 19.22,
+        "accepted": 4,
+        "rejected": 0
+      },
+      {
+        "source_line": 143,
+        "time_local_cdt": "22:40:04",
+        "khs": 19.22,
+        "accepted": 4,
+        "rejected": 0
+      },
+      {
+        "source_line": 148,
+        "time_local_cdt": "22:40:24",
+        "khs": 19.21,
+        "accepted": 4,
+        "rejected": 0
+      },
+      {
+        "source_line": 153,
+        "time_local_cdt": "22:40:44",
+        "khs": 19.21,
+        "accepted": 4,
+        "rejected": 0
+      },
+      {
+        "source_line": 158,
+        "time_local_cdt": "22:41:04",
+        "khs": 19.21,
+        "accepted": 4,
+        "rejected": 0
+      },
+      {
+        "source_line": 163,
+        "time_local_cdt": "22:41:24",
+        "khs": 19.2,
+        "accepted": 4,
+        "rejected": 0
+      },
+      {
+        "source_line": 168,
+        "time_local_cdt": "22:41:44",
+        "khs": 19.2,
+        "accepted": 4,
+        "rejected": 0
+      },
+      {
+        "source_line": 173,
+        "time_local_cdt": "22:42:04",
+        "khs": 19.2,
+        "accepted": 4,
+        "rejected": 0
+      },
+      {
+        "source_line": 178,
+        "time_local_cdt": "22:42:24",
+        "khs": 19.19,
+        "accepted": 4,
+        "rejected": 0
+      },
+      {
+        "source_line": 186,
+        "time_local_cdt": "22:42:44",
+        "khs": 19.19,
+        "accepted": 5,
+        "rejected": 0
+      },
+      {
+        "source_line": 200,
+        "time_local_cdt": "22:43:04",
+        "khs": 19.19,
+        "accepted": 8,
+        "rejected": 0
+      },
+      {
+        "source_line": 205,
+        "time_local_cdt": "22:43:24",
+        "khs": 19.19,
+        "accepted": 8,
+        "rejected": 0
+      },
+      {
+        "source_line": 210,
+        "time_local_cdt": "22:43:44",
+        "khs": 19.18,
+        "accepted": 8,
+        "rejected": 0
+      },
+      {
+        "source_line": 224,
+        "time_local_cdt": "22:44:04",
+        "khs": 19.18,
+        "accepted": 11,
+        "rejected": 0
+      }
+    ],
+    "all_display_rows": {
+      "n": 30,
+      "mean_khs": 19.241666666666667,
+      "min_khs": 19.18,
+      "max_khs": 19.42
+    },
+    "latest_five_displays": {
+      "n": 5,
+      "mean_khs": 19.186,
+      "min_khs": 19.18,
+      "max_khs": 19.19
+    },
+    "accepted_events": 11,
+    "rejected_events": 0,
+    "share_difficulties": [
+      1048576
+    ],
+    "limitations": [
+      "Ten-minute accepted-share observation, not a repeated matched comparison.",
+      "4 KB pages differ from OXM 2 MiB huge pages.",
+      "Displayed hashrates are not independently checked completed-hash counters.",
+      "Full fee-cycle and long-run payout efficiency not established."
+    ]
+  },
+  "oxm_live_session": {
+    "version": "1.0.0-beta.2",
+    "source_sha256": "c85eb2d6d0f893a991c5f6f1f6aceaadd02a4c40dc15081e6531db0eef309ae4",
+    "source_bytes": 75944,
+    "threads": 192,
+    "hugetlb_workers": 192,
+    "started_log_local": "2026-10-28 21:18:38 CDT",
+    "stopped_log_local": "2026-10-28 22:30:13 CDT",
+    "first_uninterrupted_interval": {
+      "elapsed_seconds_approx": 2692,
+      "reports": 268,
+      "last_report": {
+        "line": 541,
+        "local_time": "22:03:31",
+        "seconds": 79411,
+        "local_khs": 111.222,
+        "session_khs": 110.707,
+        "accepted": 259,
+        "rejected": 0,
+        "unresolved": 12,
+        "state": "hashing"
+      },
+      "all_reported_local_rates": {
+        "n": 268,
+        "mean_khs": 110.70729104477611,
+        "min_khs": 103.7,
+        "max_khs": 113.312
+      },
+      "description": "No paused status before the first connection interruption; 12 unresolved submissions already recorded at the last report."
+    },
+    "completed_wall_seconds_approx": 4294,
+    "user_active_seconds": 3162.588,
+    "non_active_seconds_approx": 1131.4119999999998,
+    "final_wall_clock_session_average_khs": 81.73,
+    "estimated_active_only_khs_from_rounded_display": 110.96880782447792,
+    "active_only_estimate_limit": "Computed from second-resolution timestamps and a rounded session display; not exact raw-counter evidence.",
+    "last_recovery_interval_local_displays": {
+      "n": 27,
+      "mean_khs": 111.8512962962963,
+      "min_khs": 111.005,
+      "max_khs": 113.595
+    },
+    "last_report": {
+      "line": 726,
+      "local_time": "22:30:13",
+      "seconds": 81013,
+      "local_khs": 122.567,
+      "session_khs": 81.73,
+      "accepted": 293,
+      "rejected": 0,
+      "unresolved": 30,
+      "state": "paused"
+    },
+    "fee_windows": 0,
+    "long_paused_report_range_local": [
+      "22:11:40",
+      "22:25:23"
+    ],
+    "desktop_idle_reconnect_safeguard_present": false,
+    "limits": [
+      "Session average includes all elapsed time, including pauses.",
+      "Short rates after recovery and shutdown are not sustained benchmarks.",
+      "Unresolved shares have unknown pool outcomes; they are not confirmed rejections.",
+      "No current matched BzMiner comparison."
+    ]
+  },
+  "srbminer_recovered": {
+    "version": "3.7.5",
+    "runs": [
+      {
+        "id": "desktop-batch-session-20261014T171440Z/A1-srb.srb.log",
+        "source_sha256": "37f228dc3f7a2883c1ccb31f147e831e83fbfa27a5dea4a18448c97e6afe2abb",
+        "local_start": "2026-10-14 12:14:41",
+        "local_end": "2026-10-14 12:16:21",
+        "total_displays_khs": [
+          97.93,
+          105.91,
+          105.72
+        ],
+        "accepted_events": 9,
+        "rejected_events": 0,
+        "threads": 192,
+        "page_mode_miner_report": "192 x 2 MB huge pages",
+        "reported_power_watts": [
+          296.7,
+          349.4
+        ]
+      },
+      {
+        "id": "desktop-batch-session-20261014T171440Z/A2-srb.srb.log",
+        "source_sha256": "c55f6acf167890c52c002ec1459c443e1e50b2dc0cb6169e1f667f80264be417",
+        "local_start": "2026-10-14 12:21:24",
+        "local_end": "2026-10-14 12:23:03",
+        "total_displays_khs": [
+          100.96,
+          105.43,
+          105.47
+        ],
+        "accepted_events": 9,
+        "rejected_events": 0,
+        "threads": 192,
+        "page_mode_miner_report": "192 x 2 MB huge pages",
+        "reported_power_watts": [
+          292.3,
+          349.4
+        ]
+      },
+      {
+        "id": "desktop-session-20261014T133452Z/A1-srb.srb.log",
+        "source_sha256": "315acd76cb700fb470bb19d06426de63ca4076f83c23c73d61f9d4774336728d",
+        "local_start": "2026-10-14 08:34:54",
+        "local_end": "2026-10-14 08:36:54",
+        "total_displays_khs": [
+          99.22,
+          106.04,
+          106.0
+        ],
+        "accepted_events": 12,
+        "rejected_events": 0,
+        "threads": 192,
+        "page_mode_miner_report": "192 x 2 MB huge pages",
+        "reported_power_watts": [
+          305.5,
+          349.4
+        ]
+      },
+      {
+        "id": "desktop-session-20261014T154058Z/A1-srb.srb.log",
+        "source_sha256": "b1dc052fbf4855793f70b4f70440b1b61e70a5a5c3c154f91d215bf680442ef9",
+        "local_start": "2026-10-14 10:41:00",
+        "local_end": "2026-10-14 10:43:00",
+        "total_displays_khs": [
+          97.91,
+          106.17,
+          105.88
+        ],
+        "accepted_events": 11,
+        "rejected_events": 0,
+        "threads": 192,
+        "page_mode_miner_report": "192 x 2 MB huge pages",
+        "reported_power_watts": [
+          301.0,
+          349.5
+        ]
+      },
+      {
+        "id": "desktop-session-20261014T154058Z/A2-srb.srb.log",
+        "source_sha256": "77189d658e434d32fbe289dbcb764eff796aeb47221fc707f5c8746fc9e84f2a",
+        "local_start": "2026-10-14 10:47:02",
+        "local_end": "2026-10-14 10:49:01",
+        "total_displays_khs": [
+          97.99,
+          106.04,
+          106.01
+        ],
+        "accepted_events": 14,
+        "rejected_events": 0,
+        "threads": 192,
+        "page_mode_miner_report": "192 x 2 MB huge pages",
+        "reported_power_watts": [
+          302.3,
+          349.4
+        ]
+      }
+    ],
+    "all_15_displays": {
+      "n": 15,
+      "mean_khs": 103.512,
+      "min_khs": 97.91,
+      "max_khs": 106.17
+    },
+    "later_10_displays": {
+      "n": 10,
+      "mean_khs": 105.867,
+      "min_khs": 105.43,
+      "max_khs": 106.17
+    },
+    "arithmetic_difference_percent": 4.4848246000107395,
+    "exclusion_rule": "For the descriptive later-reading mean, exclude the first of three displays from each run. This is post-hoc, not preregistered. All 15 values retained.",
+    "matched_comparison": false,
+    "note": "Recovered faster October 14 records must not be omitted in favor of slower earlier SRB sessions."
+  },
+  "cpuminer_opt_supr_recovered": {
+    "source_sha256": "411e4083e070b281dd21d813277de5af9d642c17f00f3de4dedb10040a897aed",
+    "version_directory_label": "1.47",
+    "version_startup_banner": "1.40",
+    "version_identity_discrepancy": true,
+    "local_start": "2026-10-15 18:02:47",
+    "local_end": "2026-10-15 18:03:35",
+    "record_span_seconds": 48,
+    "threads": 192,
+    "binary_isa": "AVX2",
+    "page_mode_miner_report": "huge pages YES",
+    "displayed_ttf_khs": [
+      98.55,
+      96.11,
+      95.7,
+      95.36,
+      95.42,
+      94.95,
+      94.99,
+      95.21
+    ],
+    "all_displays": {
+      "n": 8,
+      "mean_khs": 95.78625,
+      "min_khs": 94.95,
+      "max_khs": 98.55
+    },
+    "accepted_final": 3,
+    "rejected_final": 0,
+    "arithmetic_difference_percent": 15.481031211988538,
+    "matched_comparison": false,
+    "limit": "Very short startup sample; arithmetic mean of miner TTF speed displays, not a sustained hash-counter benchmark."
+  },
+  "tnn_recovered": {
+    "source_sha256": "b83f431b39b705e65e57149f7775064f98e55e5269a4ad285637bb0e1c31fb1e",
+    "version": "0.9.0",
+    "requested_threads": 192,
+    "algorithm": "XELIS v3",
+    "hashrate_result": null,
+    "failure": "free(): invalid pointer during tuning",
+    "accepted_shares_observed": 0,
+    "limit": "No usable speed result in this retained log; failure is not a 0 kH/s measurement. A new longer trial is pending.",
+    "collection_text_search": {
+      "unique_text_files_scanned": 2191,
+      "matching_files": 1,
+      "interpretation": "Search results retained privately; primary retained TNN runtime log ended during tuning."
+    },
+    "new_trial_status": "At 2026-10-29T03:45Z the newer tnn-miner directory contained downloads only; no new runtime log was present there."
+  },
+  "scope_note": "The named historical logs were verified against the saved collection index. The new HydraX log is a byte snapshot taken while running.",
+  "srbminer_other_history": {
+    "july_v3_4_6_runs": [
+      {
+        "source_basename": "srbminer-desktop-20260714-130950.log",
+        "source_sha256": "dc113442f324a5105a68d49a22115a0dd24ce0bb26352a79061a3b31842e1961",
+        "version": "3.4.6",
+        "threads": 192,
+        "n": 8,
+        "mean_all_displays_khs": 51.295,
+        "min_khs": 46.82,
+        "max_khs": 57.41,
+        "accepted_events": 23,
+        "all_startup_readings_included": true
+      },
+      {
+        "source_basename": "srbminer-desktop-20260716-103258.log",
+        "source_sha256": "a5bad87e1d7f66fc300557698a2e993675e555939b62fa540aba794d693baa01",
+        "version": "3.4.6",
+        "threads": 192,
+        "n": 87,
+        "mean_all_displays_khs": 99.96080459770116,
+        "min_khs": 95.73,
+        "max_khs": 104.43,
+        "accepted_events": 727,
+        "all_startup_readings_included": true
+      },
+      {
+        "source_basename": "srbminer-desktop-20260716-124954.log",
+        "source_sha256": "e087644baf0173959ec4cfd2eba5e56f0f7a53b299452c05b8e5c918916948bc",
+        "version": "3.4.6",
+        "threads": 192,
+        "n": 85,
+        "mean_all_displays_khs": 102.18164705882353,
+        "min_khs": 94.12,
+        "max_khs": 103.29,
+        "accepted_events": 737,
+        "all_startup_readings_included": true
+      },
+      {
+        "source_basename": "srbminer-desktop-20260716-150713.log",
+        "source_sha256": "692fbaaa04965d764539d0d7032f7b46c875c457fec25885210d414d3620da2e",
+        "version": "3.4.6",
+        "threads": 192,
+        "n": 199,
+        "mean_all_displays_khs": 100.52266331658292,
+        "min_khs": 91.66,
+        "max_khs": 107.69,
+        "accepted_events": 1662,
+        "all_startup_readings_included": true
+      },
+      {
+        "source_basename": "srbminer-desktop-20260716-202356.log",
+        "source_sha256": "3d3f62c7f1460f0b5cae7a3b91d6373290f18a9a87cb15a141c3d3d70def2f14",
+        "version": "3.4.6",
+        "threads": 192,
+        "n": 298,
+        "mean_all_displays_khs": 100.62043624161073,
+        "min_khs": 97.26,
+        "max_khs": 104.34,
+        "accepted_events": 2459,
+        "all_startup_readings_included": true
+      }
+    ],
+    "oct13_v3_7_5_excerpt": {
+      "source_sha256": "7c987aeef15e5b4aa81c01de9430205e659f08c3ef52d911870288aa9236791a",
+      "display_khs": [
+        72.56,
+        78.2,
+        78.19,
+        78.03,
+        77.89,
+        77.85,
+        78.48,
+        78.24
+      ],
+      "mean_all_displays_khs": 77.43,
+      "accepted_events_in_excerpt": 20,
+      "truncated_excerpt": true
+    },
+    "note": "Different historical sessions and settings. Kept as context rather than selecting the slowest result for a promotional comparison."
+  }
+}
