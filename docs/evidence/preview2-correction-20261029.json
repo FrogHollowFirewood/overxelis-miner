@@ -1,0 +1,65 @@
+{
+  "edition": "public-source-preview.2",
+  "archive_name": "OverXelis-Miner-1.0.0-beta.2-public-source-preview.2.tar.gz",
+  "archive_sha256": "2f0e922007fc6a2fe2c36ad7d1c1cb3f69438ae08f1435d26ae93417ac29b847",
+  "archive_bytes": 282044,
+  "archive_members": 54,
+  "checksum_name": "SHA256SUMS-public-source-preview.2.txt",
+  "utc": "2026-10-29T12:12:01.398857+00:00",
+  "exact_archive_tests": [
+    {
+      "name": "test_public_preview",
+      "count": 21,
+      "passed": true,
+      "log_sha256": "ef9ed8417884684f098ec223ef29355173b393c67f47ded2e3f991aabdd63d4e"
+    },
+    {
+      "name": "test_overxelis_fee",
+      "count": 33,
+      "passed": true,
+      "log_sha256": "3be756af94e0657502ad7328c49407bb56a0312c1907149a3bdafe1cb3740d2e"
+    },
+    {
+      "name": "test_release_metadata",
+      "count": 8,
+      "passed": true,
+      "log_sha256": "6d24be90d7a983e7b7666598b77d8225fc28b09031eede6a24e1b634106a10ea"
+    }
+  ],
+  "total_tests_passed": 62,
+  "native_build_started": false,
+  "native_build_blocked_by_existing_cpu_miner": true,
+  "native_qualification_run": false,
+  "live_pool_tested": false,
+  "full_live_fee_cycle_verified": false,
+  "preview1_archive_unchanged": true,
+  "revision_scope": "Attribution, documentation, edition metadata and release-inventory tests. No native/hash/runtime/protocol/fee changes.",
+  "published_status": "This record documents exact-archive offline checks and prepublication review; live publication is verified separately.",
+  "website_checks": {
+    "utc": "2026-10-29T12:11:06.304448+00:00",
+    "static_assertions_passed": 409,
+    "static_assertions_failed": 0,
+    "browser_assertions_passed": 283,
+    "browser_assertions_failed": 0,
+    "browser_scope": "Headless Chromium with exact local site responses served through request interception at the project origin. No web-security policy disabled. Live HTTP bytes and downloads are checked separately. Not an all-browser or screen-reader certification.",
+    "viewports": [
+      320,
+      390,
+      680,
+      768,
+      980,
+      1280,
+      1630
+    ],
+    "page_count": 6,
+    "scope_limit": "Website and package tests are not a security certification, live-miner validation or matched performance benchmark."
+  },
+  "remaining_validation": [
+    "Exact-public-package native build",
+    "Native qualification against retained 1031-vector corpus",
+    "Live-pool operation",
+    "Full real USER-to-FEE-to-USER cycle",
+    "Long-run stability and broader platform testing"
+  ],
+  "package_commands_stop_on_verification_failure": true
+}

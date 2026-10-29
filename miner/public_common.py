@@ -3,7 +3,7 @@ from pathlib import Path
 import datetime, fcntl, hashlib, json, os, platform, stat, tempfile
 
 VERSION = '1.0.0-beta.2'
-EDITION = 'public-source-preview.1'
+EDITION = 'public-source-preview.2'
 ROOT = Path(__file__).resolve().parent
 
 def need(ok, message):

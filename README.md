@@ -1,6 +1,6 @@
 # OverXelis Miner
 
-Independent XELIS CPU-mining software. **1.0.0-beta.2 / public-source-preview.1**
+Independent XELIS CPU-mining software. **1.0.0-beta.2 / public-source-preview.2**
 
 This is an experimental Linux x86-64 source preview for volunteer testers. It has
 a configurable public payout address, pool, worker, threads, and memory mode,
@@ -22,3 +22,12 @@ is supplied. Run only on computers you own or are authorized to use.
 
 OverXelis is not affiliated with or endorsed by XELIS or Kryptex. Project code is
 MIT licensed; third-party components retain their included notices and licenses.
+
+## Preview 2 correction
+
+This edition corrects shipped-file attribution and adds release-inventory checks.
+It does not change hashing code, pool handling, or the 1% mining-time policy.
+Preview 1 is retained unchanged; use the separately named Preview 2 archive and
+checksum from the new prerelease. Native build/qualification and live-pool/fee-
+cycle validation of the public package remain pending. Offline tests are not
+proof of those results. See [the correction notes](miner/PUBLIC-PREVIEW-NOTES.md).

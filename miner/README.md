@@ -1,5 +1,5 @@
 # OverXelis Miner 1.0.0-beta.2
-## Public source preview 1 · Linux CPU mining for XELIS
+## Public source preview 2 · Linux CPU mining for XELIS
 
 **Experimental software for volunteer testers.** This is a build-from-source
 preview, not a Windows executable, universal Linux binary, or stable release.
@@ -63,14 +63,14 @@ normally before building, qualifying, or running this preview.
 
 ## Download and verify
 
-Obtain the archive and matching `SHA256SUMS.txt` from the same release page.
+Obtain the archive and matching `SHA256SUMS-public-source-preview.2.txt` from the same release page.
 Compare against the release's independently displayed SHA-256 when available.
 A checksum detects unexpected file changes; it is **not a publisher signature**.
 
 ```bash
-sha256sum --check SHA256SUMS.txt
-tar -xzf OverXelis-Miner-1.0.0-beta.2-public-source.tar.gz
-cd OverXelis-Miner-1.0.0-beta.2-public-source
+sha256sum --check SHA256SUMS-public-source-preview.2.txt &&
+tar -xzf OverXelis-Miner-1.0.0-beta.2-public-source-preview.2.tar.gz &&
+cd OverXelis-Miner-1.0.0-beta.2-public-source-preview.2
 ```
 
 Do not proceed on a checksum failure. The tarball contains source and retained
@@ -79,8 +79,8 @@ public test vectors, not a precompiled binary or anyone's user configuration.
 ## Build and check the hash engine
 
 ```bash
-python3 -I -B build_public.py
-python3 -I -B qualify_public.py
+python3 -I -B build_public.py &&
+python3 -I -B qualify_public.py &&
 bash run.sh --self-test
 ```
 

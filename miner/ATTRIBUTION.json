@@ -1,0 +1,96 @@
+{
+  "schema": 1,
+  "edition": "public-source-preview.2",
+  "path_base": "package root",
+  "components": [
+    {
+      "name": "XELIS C reference",
+      "files": [
+        "vendor/xelis_hash_ref.c"
+      ],
+      "license_files": [
+        "vendor/XELIS-LICENSE"
+      ],
+      "role": "reference/control in four-implementation qualification"
+    },
+    {
+      "name": "Selected XELIS-derived kernel",
+      "files": [
+        "experiments/dispatch_round_specialized.c"
+      ],
+      "license_files": [
+        "LICENSE",
+        "vendor/XELIS-LICENSE",
+        "vendor/TNN-LICENSE"
+      ],
+      "role": "selected hash; conditional TNN-derived AVX-512 stage"
+    },
+    {
+      "name": "Alternate XELIS-derived kernels",
+      "files": [
+        "kernels/experimental.c",
+        "kernels/experimental_sqrt.c",
+        "kernels/experimental_arithmetic.h"
+      ],
+      "license_files": [
+        "LICENSE",
+        "vendor/XELIS-LICENSE",
+        "vendor/TNN-LICENSE"
+      ],
+      "role": "alternate qualification implementations"
+    },
+    {
+      "name": "TNN-derived ChaCha",
+      "files": [
+        "vendor/tnn_chacha8_fourstream_wide.h"
+      ],
+      "license_files": [
+        "vendor/TNN-LICENSE"
+      ],
+      "role": "called by selected and alternate kernels on supported CPUs",
+      "retained_upstream_revision": "b567a87b9fef84e20ebc4b7747ad871361b31974"
+    },
+    {
+      "name": "ChaCha20-SIMD",
+      "directories": [
+        "vendor/ChaCha20-SIMD"
+      ],
+      "license_files": [
+        "vendor/ChaCha20-SIMD/LICENSE"
+      ]
+    },
+    {
+      "name": "BLAKE3",
+      "directories": [
+        "vendor/BLAKE3/c"
+      ],
+      "license_files": [
+        "vendor/BLAKE3/LICENSE_A2",
+        "vendor/BLAKE3/LICENSE_CC0"
+      ]
+    },
+    {
+      "name": "Integration and qualification",
+      "files": [
+        "experiments/runtime-topology-colored-huge.c",
+        "include/runtime.h",
+        "miner.py",
+        "topology.py",
+        "overxelis.py",
+        "overxelis_fee.py",
+        "public_common.py",
+        "build_public.py",
+        "qualify_public.py",
+        "tools/kernel_lab.py",
+        "reference/CORPUS-PROVENANCE.json"
+      ],
+      "license_files": [
+        "LICENSE"
+      ]
+    }
+  ],
+  "historical_not_shipped": [
+    "kernels/rc1.c"
+  ],
+  "limits": "Inventory and retained provenance, not an independent originality or license-compliance certification."
+}

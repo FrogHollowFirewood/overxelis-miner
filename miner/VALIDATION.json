@@ -1,7 +1,7 @@
 {
   "version": "1.0.0-beta.2",
-  "edition": "public-source-preview.1",
-  "prepared_utc": "2026-10-29T01:59:07Z",
+  "edition": "public-source-preview.2",
+  "prepared_utc": "2026-10-29T12:06:07.650467+00:00",
   "public_native_build_run": false,
   "public_native_qualification_run": false,
   "public_live_pool_tested": false,
@@ -19,6 +19,14 @@
       "name": "test_overxelis_fee",
       "passed": true,
       "count": 33
+    },
+    {
+      "name": "test_release_metadata",
+      "passed": true,
+      "count": 8
     }
-  ]
+  ],
+  "revision_scope": "Attribution, documentation, inventory tests and edition metadata only; mining algorithms and fee behavior unchanged.",
+  "publication_gate": "Release only after exact-archive offline checks pass.",
+  "native_validation_blocker": "Existing CPU miner active; public conflict guard refused. No guard bypass or miner interruption."
 }

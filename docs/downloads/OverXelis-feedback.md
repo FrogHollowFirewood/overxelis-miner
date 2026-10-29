@@ -3,7 +3,7 @@
 Do not include secrets, full payout addresses, private IPs, tokens, or unredacted configurations.
 
 Version: 1.0.0-beta.2
-Edition: public-source-preview.1
+Edition: public-source-preview.2
 CPU model:
 Linux distribution/version:
 Python and GCC versions:
