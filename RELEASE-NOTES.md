@@ -1,3 +1,74 @@
+# OverXelis Miner 1.0.0-beta.3 · Public source preview 1
+
+Experimental Linux x86-64 CPU miner for XELIS. This is a **source-only prerelease**: build and qualify it on the computer that will mine. No precompiled miner or private user configuration is included.
+
+## Download
+
+Download these two release assets:
+
+- [Latest beta.3 source archive](https://github.com/FrogHollowFirewood/overxelis-miner/releases/download/v1.0.0-beta.3-public-preview.1/OverXelis-Miner-1.0.0-beta.3-public-source-preview.1.tar.gz)
+- [Matching SHA-256 checksum](https://github.com/FrogHollowFirewood/overxelis-miner/releases/download/v1.0.0-beta.3-public-preview.1/SHA256SUMS-beta.3-public-source-preview.1.txt)
+- [Release page](https://github.com/FrogHollowFirewood/overxelis-miner/releases/tag/v1.0.0-beta.3-public-preview.1)
+
+Archive SHA-256:
+
+```text
+a53075dd73977796281780767ff4387c8c788a951630a468b5591fd6731cee12
+```
+
+A checksum checks file integrity; it is not a publisher signature.
+
+## What changed
+
+- Optimized two native arithmetic cases, retaining the original fallback and hash behavior.
+- Replaced the production native engine's growing duplicate-input cache with bounded lifetime nonce tracking. Reference verification still precedes submission, and tracking persists across jobs, reconnects and USER/FEE transitions.
+- Added optional ordered CPU selection with validation before native loading or networking, plus an explicit 7995WX example requesting 192 threads and hugetlb memory. Automatic CPU selection and the generic ordinary-memory configuration remain available.
+- Added isolated-process benchmark and actual-worker qualification tools, including a regression fix for interruption during benchmark child launch.
+
+The disclosed developer mining-time allocation remains unchanged: 99 active USER minutes, followed by a fee window of up to 60 seconds. Mining requires `--accept-dev-fee`.
+
+## Recorded validation
+
+On one AMD Threadripper PRO 7995WX desktop, using 192 threads, hugetlb memory and GCC 14.3.0 with a normal non-PGO build:
+
+| Test | Recorded result | Scope |
+| --- | --- | --- |
+| Matched beta.2 benchmark | 110.234 kH/s | Four separate 60-second samples |
+| Matched beta.3 benchmark | 111.168 kH/s | Four separate 60-second samples; **+0.85%** time-weighted throughput |
+| Exact public beta.3 pool run | 110.870 kH/s local session average | 300-second run, including startup and job waits; 38 accepted shares, zero rejected |
+
+The benchmark alternated run order and used a fresh process for each sample, with a 15-second warmup. Beta.3's four sample rates ranged from 110.877 to 111.611 kH/s. The public package reproduced the measured candidate's native library byte for byte. These are local completed-hash rates, not a measurement of pool-side hashrate or payouts.
+
+The exact public package passed **124 production tests**, **15 tuning-tool tests**, native self-test, 1,031 saved-Rust-answer cases through four C implementations, and 1,031 entire-scratchpad comparisons. Saved answers were replayed; fresh Rust was not executed. Each of 192 actual hugetlb workers also returned a reference-verified terminal hash with zero queue drops.
+
+The pool run recorded zero rejected, unresolved, locally stale, duplicate or invalid shares, zero reconnects and zero queue drops; normal worker cleanup completed.
+
+[Detailed validation status](https://froghollowfirewood.github.io/overxelis-miner/site-status.html#beta3-validation) · [Sanitized evidence](https://froghollowfirewood.github.io/overxelis-miner/evidence/beta3-validation-20261101.json)
+
+## Build and use
+
+Arrange Python 3.10+, GCC 14 and GNU binutils first. Use the actual absolute GCC14 executable path:
+
+```bash
+python3 -I -B build_public.py --compiler /absolute/path/to/gcc14
+python3 -I -B qualify_public.py
+bash run.sh --self-test
+bash run.sh --configure
+bash run.sh --check
+bash run.sh --accept-dev-fee
+```
+
+Stop an existing CPU miner normally before building or mining. The 192-thread hugetlb example requires huge pages and permissions already configured. Enter your own public payout address; the distributed placeholder cannot start mining. Read the included README for requirements, fee policy and memory settings.
+
+## Limits
+
+These finite observations do not establish a universal fastest profile or guaranteed hashrate. No matched 5% advantage over BzMiner is claimed. A full live fee cycle, deliberate live reconnect recovery and a long soak test remain unverified for beta.3. Historical beta.2 results are separate evidence.
+
+
+---
+
+# Historical release notes
+
 # 1.0.0-beta.2 / public-source-preview.2
 
 Experimental Linux x86-64 CPU source preview. This is an attribution and

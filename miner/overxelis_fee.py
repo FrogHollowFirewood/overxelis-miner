@@ -256,7 +256,8 @@ def run_pool(engine, config, duration, display, *, policy=None, clock=time.monot
     overall_deadline = started + duration
     gate = MeteredEngine(engine, clock)
     display.gate = gate
-    seen, next_epoch, nonce_start = set(), 1, secrets.randbits(63)
+    next_epoch, nonce_start = 1, secrets.randbits(63)
+    seen = miner.duplicate_tracker(engine, nonce_start)
     attempts, skipped = 0, 0
     try:
         while clock() < overall_deadline:

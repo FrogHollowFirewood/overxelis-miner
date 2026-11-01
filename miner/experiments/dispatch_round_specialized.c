@@ -709,7 +709,13 @@ static __attribute__((noinline, noclone)) uint64_t stage3_round0_threaded(uint64
 		jx_case_11: {
 				t1 = combine_uint64_threaded(b, c);
 				t2 = combine_uint64_threaded(ROTL_threaded(result, r), a | 2);
-				v = (t2 > t1) ? c : remainder128by128_threaded(t1, t2);
+				if ((uint64_t)(t2 >> 64) > ((uint64_t)(t1 >> 64) >> 1)) {
+                    /* This sufficient guard proves t1 < 2*t2 without doubling. */
+                    const uint64_t mask = UINT64_C(0) - (uint64_t)(t1 >= t2);
+                    v = c - ((a | 2) & mask);
+                } else {
+                    v = (t2 > t1) ? c : remainder128by128_threaded(t1, t2);
+                }
 
 			uint64_t idx_seed = v ^ result;
 			result = ROTL_threaded(idx_seed, r);
@@ -777,7 +783,13 @@ static __attribute__((noinline, noclone)) uint64_t stage3_round0_threaded(uint64
 		jx_case_13: {
 				t1 = combine_uint64_threaded(ROTL_threaded(result, r), b);
 				t2 = combine_uint64_threaded(a, c | 8);
-				v = (t1 > t2) ? quotient128_threaded(t1, t2) : a ^ b;
+				if ((uint64_t)(t2 >> 64) > ((uint64_t)(t1 >> 64) >> 1)) {
+                    /* Equality retains the original strict-comparison fallback. */
+                    const uint64_t mask = UINT64_C(0) - (uint64_t)(t1 > t2);
+                    v = (UINT64_C(1) & mask) | ((a ^ b) & ~mask);
+                } else {
+                    v = (t1 > t2) ? quotient128_threaded(t1, t2) : a ^ b;
+                }
 
 			uint64_t idx_seed = v ^ result;
 			result = ROTL_threaded(idx_seed, r);
@@ -1275,7 +1287,13 @@ static __attribute__((noinline, noclone)) uint64_t stage3_round1_threaded(uint64
 		jx_case_11: {
 				t1 = combine_uint64_threaded(b, c);
 				t2 = combine_uint64_threaded(ROTL_threaded(result, r), a | 2);
-				v = (t2 > t1) ? c : remainder128by128_threaded(t1, t2);
+				if ((uint64_t)(t2 >> 64) > ((uint64_t)(t1 >> 64) >> 1)) {
+                    /* This sufficient guard proves t1 < 2*t2 without doubling. */
+                    const uint64_t mask = UINT64_C(0) - (uint64_t)(t1 >= t2);
+                    v = c - ((a | 2) & mask);
+                } else {
+                    v = (t2 > t1) ? c : remainder128by128_threaded(t1, t2);
+                }
 
 			uint64_t idx_seed = v ^ result;
 			result = ROTL_threaded(idx_seed, r);
@@ -1343,7 +1361,13 @@ static __attribute__((noinline, noclone)) uint64_t stage3_round1_threaded(uint64
 		jx_case_13: {
 				t1 = combine_uint64_threaded(ROTL_threaded(result, r), b);
 				t2 = combine_uint64_threaded(a, c | 8);
-				v = (t1 > t2) ? quotient128_threaded(t1, t2) : a ^ b;
+				if ((uint64_t)(t2 >> 64) > ((uint64_t)(t1 >> 64) >> 1)) {
+                    /* Equality retains the original strict-comparison fallback. */
+                    const uint64_t mask = UINT64_C(0) - (uint64_t)(t1 > t2);
+                    v = (UINT64_C(1) & mask) | ((a ^ b) & ~mask);
+                } else {
+                    v = (t1 > t2) ? quotient128_threaded(t1, t2) : a ^ b;
+                }
 
 			uint64_t idx_seed = v ^ result;
 			result = ROTL_threaded(idx_seed, r);

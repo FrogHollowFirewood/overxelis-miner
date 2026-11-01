@@ -22,6 +22,8 @@ def validate_settings(value):
     n = checked.get('threads')
     need(type(n) is int and 1 <= n <= 1024, 'threads must be an integer from 1 to 1024')
     need(checked.get('page_mode') in ('ordinary', 'hugetlb'), 'page_mode must be ordinary or hugetlb')
+    if 'cpus' in checked:
+        checked['cpus'] = topology.validate_cpu_order(n, checked['cpus'])
     return checked
 
 def configure(path):
@@ -76,9 +78,9 @@ def main(argv=None):
         if a.configure:
             platform_check(); configure(a.config); return 0
         cfg = None if a.self_test else validate_settings(json.loads(a.config.read_text()))
+        cpus = None if a.self_test else topology.select_ordered(cfg['threads'], cfg.get('cpus'))
         if a.check:
-            cpus = topology.select(cfg['threads'])
-            print(json.dumps({'version': VERSION, 'edition': EDITION, 'config_valid': True, 'threads': len(cpus),
+            print(json.dumps({'version': VERSION, 'edition': EDITION, 'config_valid': True, 'threads': len(cpus), 'cpus': cpus,
                               'page_mode': cfg['page_mode'], 'wallet_suffix': cfg['wallet'][-8:],
                               'hashing_started': False, 'network_started': False}))
             return 0
@@ -104,7 +106,6 @@ def main(argv=None):
         log('User pool: ' + cfg['pool'] + ' | Worker: ' + cfg['worker'] + ' | Payout suffix: ' + cfg['wallet'][-8:])
         def stopped(*_): raise KeyboardInterrupt
         for sig in (signal.SIGINT, signal.SIGTERM, signal.SIGHUP): signal.signal(sig, stopped)
-        cpus = topology.select(cfg['threads'])
         engine = miner.NativeEngine(cpus, 1, miner.PAGES[cfg['page_mode']], library)
         need(engine.pages() == (len(cpus) if cfg['page_mode'] == 'hugetlb' else 0), 'Requested memory mode unavailable; no silent fallback')
         log('Workers ready: %d | Huge-page workers: %d/%d | Ctrl+C stops mining' % (len(cpus), engine.pages(), len(cpus)))

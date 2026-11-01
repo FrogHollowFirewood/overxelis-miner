@@ -109,6 +109,38 @@ def select(threads: int | None = None, cpu_list: str | None = None, records: lis
     return physical_first(records)[:threads]
 
 
+
+def validate_cpu_order(threads: int, cpu_order) -> list[int] | None:
+    """Validate optional JSON CPU order without reading topology or changing it.
+
+    JSON arrays preserve worker order. A string cpulist would be sorted by the
+    legacy parser, so the public config accepts arrays or null only.
+    """
+    if cpu_order is None:
+        return None
+    if type(threads) is not int or not 1 <= threads <= 1024:
+        raise ValueError("thread count must be an integer from 1 through 1024")
+    if not isinstance(cpu_order, list) or len(cpu_order) != threads:
+        raise ValueError("cpus must be an ordered array whose length equals threads")
+    if any(type(cpu) is not int or not 0 <= cpu < 1024 for cpu in cpu_order):
+        raise ValueError("cpus must contain integer CPU identifiers from 0 through 1023")
+    if len(set(cpu_order)) != len(cpu_order):
+        raise ValueError("cpus must not contain duplicates")
+    return list(cpu_order)
+
+
+def select_ordered(threads: int, cpu_order=None, records: list[CPU] | None = None) -> list[int]:
+    """Apply explicit worker order, or retain the automatic physical-first policy."""
+    selected = validate_cpu_order(threads, cpu_order)
+    if selected is None:
+        return select(threads) if records is None else select(threads, records=records)
+    records = inspect() if records is None else records
+    allowed = {record.cpu for record in records}
+    if set(selected) - allowed:
+        raise ValueError("requested CPUs are outside the process affinity")
+    return selected
+
+
 def report(records: list[CPU] | None = None) -> dict:
     records = inspect() if records is None else records
     return {"allowed_cpus": [c.cpu for c in records], "physical_first": physical_first(records),

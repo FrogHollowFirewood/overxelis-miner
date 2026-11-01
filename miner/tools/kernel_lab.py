@@ -64,7 +64,7 @@ def profile(lib,cases):
 
 def main():
     p=argparse.ArgumentParser(description=__doc__)
-    p.add_argument('--library',type=Path,default=ROOT/'build/libjayxelis_next.so')
+    p.add_argument('--library',type=Path,default=ROOT/'build/liboverxelis.so')
     p.add_argument('--cases',type=int,default=256)
     p.add_argument('--profile',action='store_true')
     p.add_argument('--output',type=Path,default=ROOT/'evidence/kernel-correctness.json')

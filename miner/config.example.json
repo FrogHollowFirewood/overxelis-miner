@@ -4,5 +4,6 @@
   "worker": "overxelis-cpu",
   "password": "x",
   "threads": 8,
-  "page_mode": "ordinary"
+  "page_mode": "ordinary",
+  "cpus": null
 }

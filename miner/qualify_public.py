@@ -15,6 +15,28 @@ import miner
 import topology
 import kernel_lab
 
+def check_corpus(libpath, names=('xelis_hash_v3','xelis_hash_v3_opt','xelis_hash_v3_experimental','xelis_hash_v3_exp_sqrt'), max_seconds=120):
+    """Single-thread saved-answer and full-scratchpad check, also used for PGO training."""
+    inputs=(ROOT/'reference/rig-golden-inputs.txt').read_text().splitlines()
+    expected=(ROOT/'reference/rig-rust-hashes.txt').read_text().splitlines()
+    need(len(inputs)==len(expected)==1031,'Incomplete retained Rust corpus')
+    lib=kernel_lab.bindings(libpath)
+    pads=[(C.c_uint64*kernel_lab.WORDS)() for _ in names]
+    outs=[(kernel_lab.U8*32)() for _ in names]
+    deadline=time.monotonic()+max_seconds
+    for i,(inp,gold) in enumerate(zip(inputs,expected)):
+        need(time.monotonic()<deadline,'Corpus validation wall limit exceeded')
+        data=bytes.fromhex(inp); need(len(data)==112 and len(bytes.fromhex(gold))==32,'Invalid retained vector')
+        for name,pad,out in zip(names,pads,outs):
+            blob=(kernel_lab.U8*112).from_buffer_copy(data)
+            getattr(lib,name)(blob,out,pad)
+        need(all(bytes(o).hex()==gold for o in outs),'Hash differs from saved Rust output at input '+str(i))
+        need(all(bytes(p)==bytes(pads[0]) for p in pads[1:]),'Full scratchpad mismatch at '+str(i))
+    return {'cases':1031, 'c_implementations':len(names), 'full_scratchpad_comparisons':1031,
+            'retained_rust_output_replay':True, 'rust_executed_on_rig':False,
+            'inputs_sha256':sha(ROOT/'reference/rig-golden-inputs.txt'),
+            'expected_sha256':sha(ROOT/'reference/rig-rust-hashes.txt')}
+
 def kernel_check():
     platform_check()
     lock_fd = take_lock()  # Process-lifetime lock.
@@ -25,23 +47,8 @@ def kernel_check():
     libpath=ROOT/'build/liboverxelis.so'
     need(sha(libpath)==build['library_sha256'],'Unrecognized compiled library')
     need(miner.load_native(libpath).nx_selftest()==0,'Official-vector native self-test failed')
-    inputs=(ROOT/'reference/rig-golden-inputs.txt').read_text().splitlines()
-    expected=(ROOT/'reference/rig-rust-hashes.txt').read_text().splitlines()
-    need(len(inputs)==len(expected)==1031,'Incomplete retained Rust corpus')
-    lib=kernel_lab.bindings(libpath)
-    names=['xelis_hash_v3','xelis_hash_v3_opt','xelis_hash_v3_experimental','xelis_hash_v3_exp_sqrt']
-    pads=[(C.c_uint64*kernel_lab.WORDS)() for _ in names]
-    outs=[(kernel_lab.U8*32)() for _ in names]
-    for i,(inp,gold) in enumerate(zip(inputs,expected)):
-        data=bytes.fromhex(inp); need(len(data)==112 and len(bytes.fromhex(gold))==32,'Invalid retained vector')
-        for name,pad,out in zip(names,pads,outs):
-            blob=(kernel_lab.U8*112).from_buffer_copy(data)
-            getattr(lib,name)(blob,out,pad)
-        need(all(bytes(o).hex()==gold for o in outs),'Hash differs from saved Rust output at input '+str(i))
-        need(all(bytes(p)==bytes(pads[0]) for p in pads[1:]),'Full scratchpad mismatch at '+str(i))
-    report={'utc':utc(),'passed':True,'library_sha256':sha(libpath),'cases':1031,'c_implementations':4,
-            'full_scratchpad_comparisons':1031,'retained_rust_output_replay':True,'rust_executed_on_rig':False,
-            'inputs_sha256':sha(ROOT/'reference/rig-golden-inputs.txt'),'expected_sha256':sha(ROOT/'reference/rig-rust-hashes.txt')}
+    corpus=check_corpus(libpath)
+    report={'utc':utc(),'passed':True,'library_sha256':sha(libpath),**corpus}
     atomic_json(ROOT/'evidence/kernel-qualification.json',report)
     print('PASS: 1,031 inputs, four C implementations, full scratchpad comparisons, saved Rust hash answers.',flush=True)
 

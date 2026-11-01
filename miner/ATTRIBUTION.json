@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "edition": "public-source-preview.2",
+  "edition": "public-source-preview.1",
   "path_base": "package root",
   "components": [
     {
@@ -82,7 +82,14 @@
         "build_public.py",
         "qualify_public.py",
         "tools/kernel_lab.py",
-        "reference/CORPUS-PROVENANCE.json"
+        "reference/CORPUS-PROVENANCE.json",
+        "tools/benchmark_native.py",
+        "tools/benchmark_independent.py",
+        "tools/qualify_worker_layout.py",
+        "tools/balanced_threads.py",
+        "tools/test_balanced_threads.py",
+        "config.7995wx.example.json",
+        "tests/test_public_profile.py"
       ],
       "license_files": [
         "LICENSE"

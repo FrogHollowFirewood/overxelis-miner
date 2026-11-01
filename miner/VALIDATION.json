@@ -1,32 +1,45 @@
 {
-  "version": "1.0.0-beta.2",
-  "edition": "public-source-preview.2",
-  "prepared_utc": "2026-10-29T12:06:07.650467+00:00",
-  "public_native_build_run": false,
-  "public_native_qualification_run": false,
-  "public_live_pool_tested": false,
-  "full_live_fee_cycle_verified": false,
-  "prior_private_rig_live_acceptance": true,
-  "new_public_packaging_not_equivalent_to_private_live_validation": true,
+  "version": "1.0.0-beta.3",
+  "edition": "public-source-preview.1",
+  "starting_archive_sha256": "2f0e922007fc6a2fe2c36ad7d1c1cb3f69438ae08f1435d26ae93417ac29b847",
   "source_binary_included": false,
-  "tests": [
-    {
-      "name": "test_public_preview",
-      "passed": true,
-      "count": 21
-    },
-    {
-      "name": "test_overxelis_fee",
-      "passed": true,
-      "count": 33
-    },
-    {
-      "name": "test_release_metadata",
-      "passed": true,
-      "count": 8
-    }
-  ],
-  "revision_scope": "Attribution, documentation, inventory tests and edition metadata only; mining algorithms and fee behavior unchanged.",
-  "publication_gate": "Release only after exact-archive offline checks pass.",
-  "native_validation_blocker": "Existing CPU miner active; public conflict guard refused. No guard bypass or miner interruption."
+  "qualification_required_on_each_build": true,
+  "performance_guaranteed": false,
+  "completed_checks_location": "Development kit validation-evidence/ and each local build/evidence directory; this static file is not a test result.",
+  "required_desktop_cpu": "AMD Threadripper PRO 7995WX",
+  "historical_reference_khs": 110.615,
+  "long_term_bzminer_target": "At least +5% under matched current conditions; historical arithmetic is insufficient.",
+  "release_status": "Public source preview prepared for validation and acceptance",
+  "desktop_logical_threads": 192,
+  "benchmark_threads_explicit_required": true,
+  "owner_reported_beta2_fastest_threads": 160,
+  "worker_layout_qualification_threads": 192,
+  "layout_constants": {
+    "stride_bytes": 4160,
+    "window_bytes": 524288
+  },
+  "selected_kernel_sha256": "13b1ba601cda3c4d5c7ca90cfee15f128efcd36e15b73d92d4e3436a0ab6c80e",
+  "actual_hugetlb_worker_qualification_required": true,
+  "worker_runtime_sha256": "78bab73ae83e08c0f83490eebf26ec8d1065f86913eb72866e11b23e5902ccf8",
+  "selected_kernel_byte_identical_to_supplied_beta2": false,
+  "worker_runtime_byte_identical_to_supplied_beta2": true,
+  "pgo_enabled_by_default": false,
+  "initial_memory_mode": "ordinary",
+  "ordered_cpu_config_optional": true,
+  "absent_or_null_cpus_keeps_automatic_selection": true,
+  "target_fastest_thread_count_and_placement_established": false,
+  "owner_reported_160_advantage_reproduced_under_current_settings": false,
+  "arithmetic_helpers_byte_identical_to_supplied_beta2": true,
+  "guard_hoist_case11_case13_enabled": true,
+  "preparation_only": true,
+  "release_acceptance_established": false,
+  "selected_starting_edition": "development-preview.22",
+  "selected_starting_source_manifest_sha256": "485e03193411ba6ca10c762c9647ee7f25b196afa937fabf090b8d1c84549ba6",
+  "required_build_compiler_family": "GCC 14",
+  "recommended_build_mode": "ordinary non-PGO",
+  "production_python_test_count": 124,
+  "optional_proposal_test_count": 15,
+  "target_performance_claimed": false,
+  "live_pool_success_claimed": false,
+  "full_real_fee_cycle_claimed": false
 }

@@ -7,8 +7,9 @@ labels: ''
 Version and edition:
 CPU model / physical cores / logical threads:
 Linux distribution:
-GCC version:
-Threads used:
+GCC version and normal/PGO build mode:
+Source-manifest and native-library SHA-256:
+Threads used / CPU order (automatic or explicit):
 Memory mode / realized huge-page workers:
 Power/clock settings, temperature and competing workload:
 

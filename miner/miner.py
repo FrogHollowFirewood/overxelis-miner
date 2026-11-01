@@ -22,7 +22,7 @@ from urllib.parse import urlsplit
 
 import topology
 
-VERSION = "JayXelisNext/0.3.0-research"
+VERSION = "OverXelisMiner/1.0.0-beta.3"
 MAX_FRAME = 65536
 MAX_TARGET = (1 << 256) - 1
 KERNELS = {"reference": 0, "rc1": 1, "experimental": 2, "experimental-sqrt": 3}
@@ -126,6 +126,7 @@ def guard_cpu_miners(proc: Path = Path("/proc")) -> None:
 
 class NativeEngine:
     def __init__(self, cpus: list[int], kernel: int, page_mode: int, library: Path | None = None):
+        self.threads = len(cpus)
         self.lib = load_native(library)
         self.handle = self.lib.nx_create(len(cpus), (ctypes.c_int * len(cpus))(*cpus), kernel, page_mode)
         if not self.handle:
@@ -171,7 +172,7 @@ class NativeEngine:
 
 
 def load_native(library: Path | None = None):
-    lib = ctypes.CDLL(str(library or Path(__file__).resolve().parent / "build/libjayxelis_next.so"))
+    lib = ctypes.CDLL(str(library or Path(__file__).resolve().parent / "build/liboverxelis.so"))
     pointer, u64 = ctypes.c_void_p, ctypes.c_uint64
     lib.nx_create.argtypes = [ctypes.c_int, ctypes.POINTER(ctypes.c_int), ctypes.c_int, ctypes.c_int]
     lib.nx_create.restype = pointer
@@ -221,6 +222,42 @@ class Pending:
     sent: float
     difficulty: int = 0
     epoch: int = 0
+
+
+class NonceTracker:
+    """Bounded replay protection for one native engine's lifetime.
+
+    runtime.h guarantees fixed-stride nonce streams that never reset on job or
+    connection changes. nx_pop preserves FIFO order within each worker queue.
+    Track the greatest submitted nonce in each stream, rather than retaining
+    an ever-growing set of 112-byte inputs. A repeated/lower nonce is suppressed
+    even if its header or job label changed. This object must be shared by all
+    USER/FEE connections that use the same native engine.
+    """
+    def __init__(self, threads: int, nonce_start: int):
+        if type(threads) is not int or not 1 <= threads <= 1024:
+            raise ValueError("invalid nonce stream count")
+        if type(nonce_start) is not int or not 0 <= nonce_start < (1 << 64):
+            raise ValueError("invalid nonce stream start")
+        self.threads, self.nonce_start = threads, nonce_start
+        self.high_water = [None] * threads
+
+    def claim(self, nonce: int) -> bool:
+        if type(nonce) is not int or not self.nonce_start <= nonce < (1 << 64):
+            raise VerificationError("native nonce outside its search session")
+        stream = (nonce - self.nonce_start) % self.threads
+        previous = self.high_water[stream]
+        if previous is not None and nonce <= previous:
+            return False
+        self.high_water[stream] = nonce
+        return True
+
+
+def duplicate_tracker(engine, nonce_start):
+    # Injected/non-native test engines may not implement lifetime-monotonic
+    # streams; retain the legacy exact-input set and its fail-closed limit.
+    threads = getattr(engine, "threads", None)
+    return NonceTracker(threads, nonce_start) if threads is not None else set()
 
 
 class Session:
@@ -411,13 +448,24 @@ class Session:
                 self.stats.invalid_local += 1
                 self.pause()
                 raise VerificationError("share failed reference hash verification")
-            if work in self.seen:
-                self.stats.duplicates_local += 1
-                continue
-            if len(self.seen) >= self.max_seen:
-                self.pause()
-                raise CacheFull("duplicate cache full; restart with a fresh search session")
-            self.seen.add(work)
+            if isinstance(self.seen, NonceTracker):
+                try:
+                    fresh = self.seen.claim(nonce)
+                except VerificationError:
+                    self.stats.invalid_local += 1
+                    self.pause()
+                    raise
+                if not fresh:
+                    self.stats.duplicates_local += 1
+                    continue
+            else:
+                if work in self.seen:
+                    self.stats.duplicates_local += 1
+                    continue
+                if len(self.seen) >= self.max_seen:
+                    self.pause()
+                    raise CacheFull("duplicate cache full; restart with a fresh search session")
+                self.seen.add(work)
             self.stats.submitted += 1
             self.request("mining.submit", [self.config["worker"], job.label, nonce_bytes.hex()], "submit", job.difficulty, job.epoch)
 
@@ -479,9 +527,10 @@ class Frames:
 
 def run_pool(engine, config: dict, duration: float) -> dict:
     host, port, tls = parse_endpoint(config["pool"])
-    started, stats, seen = time.monotonic(), Stats(), set()
+    started, stats = time.monotonic(), Stats()
     deadline, backoff = started + duration, 1.0
     nonce_start = secrets.randbits(63)
+    seen = duplicate_tracker(engine, nonce_start)
     next_epoch = 1
     while time.monotonic() < deadline:
         session = connection = None
@@ -559,7 +608,7 @@ def main(argv=None) -> int:
     modes.add_argument("--check", action="store_true", help="validate topology/config only; no hashing or network")
     modes.add_argument("--self-test", action="store_true", help="run native correctness checks; no pool")
     parser.add_argument("--config", type=Path)
-    parser.add_argument("--library", type=Path, help="native library to load; default: build/libjayxelis_next.so")
+    parser.add_argument("--library", type=Path, help="native library to load; default: build/liboverxelis.so")
     parser.add_argument("--duration", type=float, default=30, help="finite run duration in seconds; default 30")
     parser.add_argument("--threads", type=int)
     parser.add_argument("--cpu-list")

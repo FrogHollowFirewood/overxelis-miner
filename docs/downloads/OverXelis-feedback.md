@@ -2,12 +2,15 @@
 
 Do not include secrets, full payout addresses, private IPs, tokens, or unredacted configurations.
 
-Version: 1.0.0-beta.2
-Edition: public-source-preview.2
+Version: 1.0.0-beta.3
+Edition: public-source-preview.1
 CPU model:
 Linux distribution/version:
 Python and GCC versions:
+Build mode (normal non-PGO or experimental PGO):
+Source-manifest and native-library SHA-256 (from build records):
 Threads requested / active workers:
+CPU order (automatic or explicit list):
 Memory mode requested / confirmed (ordinary or hugetlb):
 Warmup and measurement duration:
 Local session average (including pauses):
