@@ -35,6 +35,23 @@ replay are still needed to distinguish an undefined reference input, optimizatio
 discrepancy or transient computation fault. This is protection of the recorded
 failure path, not a claim that all possible crashes are fixed.
 
+## Added 6 November 2026: development-hotfix logged hour
+
+After warmup, a completed 192-huge-page-worker Kryptex run recorded **60 minutes
+27.49 seconds**, **119.739756 kH/s mean of 361 rounded local displays**, and a
+sampled minimum of **119.517 kH/s**. The interval accepted **444 USER shares**;
+the session accepted 450, with zero rejected or unresolved displayed, and native
+workers closed normally after a requested stop.
+
+The development native library matches the qualified preview-2 library byte for
+byte; its launcher retained the earlier preview-1 banner. This is logged
+continuity evidence, **not an exact raw-counter hour or an exact-edition launcher
+run**. GPU activity, cooling, temperatures and native drop/undefined-skip counters
+were not recorded. See the [dated report](docs/reports/beta4-hotfix-hour-20261106.md)
+and [sanitized interval data](docs/evidence/beta4-hotfix-hour-continuity-20261106.json)
+for build provenance, calculation and limits. The original source archive,
+checksums and preparation-time validation remain unchanged.
+
 ## Qualification and real-pool observations
 
 The qualified development hotfix passed 1,031 retained Rust-answer inputs through
@@ -55,7 +72,7 @@ with GPU mining running, recorded:
 Each measured interval follows at least 60 seconds of settling. Both reported
 zero rejected, unresolved or queue-dropped work. These are two separate short
 counter-based observations, not an hour, a long soak, a pool-side rate or earnings.
-A new hotfix hour, full live fee cycle, deliberate reconnect exercise, broad
+An exact-counter hotfix hour, full live fee cycle, deliberate reconnect exercise, broad
 compiler/hardware qualification and matched BzMiner comparison remain open.
 
 The earlier **121.157224 kH/s GPU-paused hour belongs to unpatched preview 1**.

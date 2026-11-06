@@ -41,6 +41,23 @@ logs are included.
 SHA-256: 4ede37b957b5024611f63714f4593bd60a849c0dd9c14594490353c56bdb53da
 ```
 
+## Added 6 November 2026: development-hotfix logged hour
+
+After warmup, a completed 192-huge-page-worker Kryptex run recorded **60 minutes
+27.49 seconds**, **119.739756 kH/s mean of 361 rounded local displays**, and a
+sampled minimum of **119.517 kH/s**. The interval accepted **444 USER shares**;
+the session accepted 450, with zero rejected or unresolved displayed, and native
+workers closed normally after a requested stop.
+
+The development native library matches the qualified preview-2 library byte for
+byte; its launcher retained the earlier preview-1 banner. This is logged
+continuity evidence, **not an exact raw-counter hour or an exact-edition launcher
+run**. GPU activity, cooling, temperatures and native drop/undefined-skip counters
+were not recorded. See the [dated report](docs/reports/beta4-hotfix-hour-20261106.md)
+and [sanitized interval data](docs/evidence/beta4-hotfix-hour-continuity-20261106.json)
+for build provenance, calculation and limits. The original source archive,
+checksums and preparation-time validation remain unchanged.
+
 ## Measured hotfix results: short GPU-on tests
 
 On one AMD Threadripper PRO 7995WX, **192 hugetlb workers, GCC 15.2, ordinary
