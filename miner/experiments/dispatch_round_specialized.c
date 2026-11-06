@@ -1,23 +1,23 @@
-/* Unselected round-specialization experiment from exact compound source.
- * Two generated constant-i inner loops; original memory order and arithmetic.
- * Only sequential c addressing is written with the equivalent A/B half base.
- * Inter-round AES/address updates, original rotates, helpers, and runtime are
- * unchanged. Local stage3 checks do not qualify desktop full hashes or speed.
+/* OverXelis Miner 1.0.0-beta.4 - selected XelisHashV3 CPU kernel.
+ *
+ * Project integration: MIT license; see LICENSE and THIRD_PARTY_NOTICES.md.
+ * Derived from the XELIS C XelisHashV3 reference (Copyright (c) 2024 XELIS,
+ * MIT; see vendor/XELIS-LICENSE).
+ * TNN-derived ChaCha/division work: Copyright (c) 2023 Tritonn204, MIT;
+ * see vendor/TNN-LICENSE and vendor/tnn_chacha8_fourstream_wide.h.
+ * BLAKE3 and ChaCha20-SIMD retain their included notices and licenses.
+ *
+ * The selected implementation specializes the two rounds, shares cheap-case
+ * tails, reuses index folds and uses exact corrected scalar/packed roots.
+ * Two C2 products use an immutable memory operand with exact low64 IMUL.
+ * Root probability annotations preserve every guard and correction path.
+ * Unsigned arithmetic and square-wrap behavior are consensus-visible.
+ * No standalone benchmark/main or shared mutable state is introduced here.
+ * Requires x86-64 AES support; native builds are specific to the build CPU.
+ * Do not compile with -ffast-math. Qualify the exact compiled artifact before
+ * mining; this source comment makes no performance or acceptance claim.
  */
-/* Unselected compound experiment from exact independently reviewed sources.
- * Register BT/CMOV half selection; bounded B-index xor folding;
- * quotient residual comparison; consensus-wrapping isqrt square reuse.
- * All scratch memory operations retain their order. No runtime change.
- * Preserve the small-input isqrt guard and all original round rotations.
- * Target full-hash qualification and measured selection remain required.
- */
-/* GENERATED experiment: threaded. See generate_dispatch_candidates.py.
- * No target-machine speed claim; correctness qualification required. */
-/* Experimental, consensus-compatible optimization candidate. Derived from the
- * Xelis project's MIT-licensed C XelisHash V3 reference implementation.
- * No standalone benchmark/main and no shared mutable state.
- * Requires x86-64 AES support; do not compile with -ffast-math.
- */
+
 #define _GNU_SOURCE
 #include <stdio.h>
 #include <malloc.h>
@@ -28,9 +28,22 @@
 #include <sched.h>
 #include <unistd.h>
 #include <wmmintrin.h>
+#include <immintrin.h>
 #include "blake3.h"
 #include "chacha20.h"
 #include <math.h>
+#include <float.h>
+_Static_assert(sizeof(double) == 8, "Guard requires eight-byte double");
+_Static_assert(FLT_RADIX == 2 && DBL_MANT_DIG == 53,
+               "Guard requires binary64 precision");
+_Static_assert(DBL_MIN_EXP == -1021 && DBL_MAX_EXP == 1024,
+               "Guard requires binary64 exponent encoding/range");
+_Static_assert(FLT_EVAL_METHOD == 0,
+               "Guard requires evaluation in the nominal binary64 format");
+#if defined(__FAST_MATH__)
+#error "Guarded sqrt correction must not be built with fast-math"
+#endif
+
 #include "tnn_chacha8_fourstream_wide.h"
 
 #define INPUT_LEN (112)
@@ -138,24 +151,17 @@ static inline uint64_t Divide128Div64To64_threaded(uint64_t high, uint64_t low, 
 }
 
 static inline uint64_t udiv_threaded(uint64_t high, uint64_t low, uint64_t divisor) {
-	uint64_t remainder;
-
-	if (high < divisor) {
-		return Divide128Div64To64_threaded(high, low, divisor, &remainder);
-	}
-	else {
-		(void)Divide128Div64To64_threaded(0, high, divisor, &high);
-		return Divide128Div64To64_threaded(high, low, divisor, &remainder);
-	}
+    uint64_t normalized_high, remainder;
+    (void)Divide128Div64To64_threaded(0, high, divisor, &normalized_high);
+    return Divide128Div64To64_threaded(normalized_high, low, divisor, &remainder);
 }
 
 
 /* Reduced high word prevents the x86-64 DIV quotient overflow trap. */
 static inline uint64_t remainder128_threaded(uint64_t high, uint64_t low, uint64_t divisor) {
-    uint64_t remainder;
-    if (high >= divisor)
-        high %= divisor;
-    (void)Divide128Div64To64_threaded(high, low, divisor, &remainder);
+    uint64_t normalized_high, remainder;
+    (void)Divide128Div64To64_threaded(0, high, divisor, &normalized_high);
+    (void)Divide128Div64To64_threaded(normalized_high, low, divisor, &remainder);
     return remainder;
 }
 
@@ -212,11 +218,22 @@ static inline __uint128_t combine_uint64_threaded(uint64_t high, uint64_t low) {
 	return ((__uint128_t)high << 64) | low;
 }
 
+/* Exact low64 product, with one immutable explicit memory input.
+ * IMUL's signed and unsigned low halves coincide modulo2^64. */
+static const uint64_t oxm_murmur_c2_readonly = UINT64_C(0xc4ceb9fe1a85ec53);
+static inline uint64_t murmur_c2_memory_product(uint64_t value) {
+    __asm__("imulq %[factor], %[value]"
+            : [value] "+r" (value)
+            : [factor] "m" (oxm_murmur_c2_readonly)
+            : "cc");
+    return value;
+}
+
 static inline uint64_t murmurhash3_threaded(uint64_t seed) {
     seed ^= seed >> 55;
     seed *= 0xff51afd7ed558ccdULL;
     seed ^= seed >> 32;
-    seed *= 0xc4ceb9fe1a85ec53ULL;
+    seed = murmur_c2_memory_product(seed);
     seed ^= seed >> 15;
     return seed;
 }
@@ -240,12 +257,36 @@ static inline uint64_t map_index_bounded_xor_threaded(uint64_t idx_a,
     return (uint64_t)(((__uint128_t)base * BUFSIZE) >> 64);
 }
 
+
+/* XOR folding is linear. Multiplication/scaling are unchanged afterfold. */
+static inline uint64_t map_index_from_fold_threaded(uint64_t folded) {
+    folded *= UINT64_C(0xff51afd7ed558ccd);
+    return (uint64_t)(((__uint128_t)folded * BUFSIZE) >> 64);
+}
+/* Fold the fixed A salt first, keeping the two input-dependent arms
+ * independent: fold(x ^ C) = (x ^ fold(C)) ^ (x >> 33). */
+#define FOLDED_A_CONSTANT UINT64_C(0x9e3779b93051c0c9)
+_Static_assert(FOLDED_A_CONSTANT ==
+               (UINT64_C(0x9e3779b97f4a7c15) ^
+                (UINT64_C(0x9e3779b97f4a7c15) >> 33)),
+               "A salt fold must retain the original constant");
+static inline uint64_t map_index_a_salted_threaded(uint64_t x) {
+    uint64_t salted = x ^ FOLDED_A_CONSTANT;
+    uint64_t shifted = x >> 33;
+    /* Preserve the two computed arms across compiler reassociation.
+     * This template emits no instructions and accesses no memory. */
+    __asm__("" : "+r"(salted), "+r"(shifted));
+    return map_index_from_fold_threaded(salted ^ shifted);
+}
+/* fold(~result ^ 0xd2b74407b1ce6e93) = fold(result) ^ thisconstant. */
+#define FOLDED_B_CONSTANT UINT64_C(0x2d48bbf85895cc90)
+
 static inline uint64_t *pick_half_threaded(uint64_t seed,
                                             uint64_t *half_a, uint64_t *half_b) {
     seed ^= seed >> 55;
     seed *= 0xff51afd7ed558ccdULL;
     seed ^= seed >> 32;
-    seed *= 0xc4ceb9fe1a85ec53ULL;
+    seed = murmur_c2_memory_product(seed);
     /* BT copies exactly bit 58 to CF; CMOVC chooses B when that bit is 1.
      * Register-only, no memory clobber or speculative second scratch load.
      * The final full-width murmur XOR remains irrelevant to bit 58. */
@@ -262,7 +303,17 @@ static inline uint64_t isqrt_threaded(uint64_t n) {
         return n;
 
     // Compute the floating-point square root
-    uint64_t approx = (uint64_t)sqrt((double)n);
+    double root = sqrt((double)n);
+    uint64_t approx = (uint64_t)root;
+    uint64_t root_bits;
+    memcpy(&root_bits, &root, sizeof(root_bits));
+    /* Conservative IEEE64 root-fraction guard; proof is in PROOF.md.
+     * Integers have low20 fraction bits zero throughout this root range.
+     * Keep the original UINT32_MAX next-square wrap on the fast path. */
+    uint32_t residue = (uint32_t)root_bits & UINT32_C(0xfffff);
+    if (__builtin_expect_with_probability((uint32_t)(residue - UINT32_C(16)) < UINT32_C(1048544), 1, 1.0 - 32.0 / 1048576.0))
+        return approx + (uint64_t)((uint32_t)approx == UINT32_MAX);
+
 
     // Preserve the consensus unsigned-square wrap in both comparisons.
     uint64_t square = approx * approx;
@@ -274,6 +325,40 @@ static inline uint64_t isqrt_threaded(uint64_t n) {
         return approx;
     }
 }
+
+/* Two independent roots use one packed instruction. This path is target ISA
+ * guarded; the fallback retains scalar behavior on non-AVX512VL/DQ hosts.
+ * Corrections intentionally preserve the original modulo-2^64 squares.
+ */
+static inline uint64_t isqrt_correct_pair_lane(uint64_t n, uint64_t approx, uint64_t root_bits) {
+    if (n < 2) return n;
+    /* Conservative IEEE64 root-fraction guard; proof is in PROOF.md.
+     * Integers have low20 fraction bits zero throughout this root range.
+     * Keep the original UINT32_MAX next-square wrap on the fast path. */
+    uint32_t residue = (uint32_t)root_bits & UINT32_C(0xfffff);
+    if (__builtin_expect_with_probability((uint32_t)(residue - UINT32_C(16)) < UINT32_C(1048544), 1, 1.0 - 32.0 / 1048576.0))
+        return approx + (uint64_t)((uint32_t)approx == UINT32_MAX);
+    uint64_t square = approx * approx;
+    if (square > n) return approx - 1;
+    if (square + (approx << 1) + 1 <= n) return approx + 1;
+    return approx;
+}
+static inline void isqrt_pair_threaded(uint64_t n0, uint64_t n1,
+                                      uint64_t *r0, uint64_t *r1) {
+#if defined(__AVX512DQ__) && defined(__AVX512VL__)
+    __m128i integers = _mm_set_epi64x((int64_t)n1, (int64_t)n0);
+    __m128d fp = _mm_cvtepu64_pd(integers);
+    __m128d roots = _mm_sqrt_pd(fp);
+    __m128i approx = _mm_cvttpd_epi64(roots);
+    __m128i root_bits = _mm_castpd_si128(roots);
+    *r0 = isqrt_correct_pair_lane(n0, (uint64_t)_mm_cvtsi128_si64(approx), (uint64_t)_mm_cvtsi128_si64(root_bits));
+    *r1 = isqrt_correct_pair_lane(n1, (uint64_t)_mm_extract_epi64(approx, 1), (uint64_t)_mm_extract_epi64(root_bits, 1));
+#else
+    *r0 = isqrt_threaded(n0);
+    *r1 = isqrt_threaded(n1);
+#endif
+}
+
 
 static inline uint64_t modular_power_threaded(uint64_t base, uint64_t exp, uint64_t mod) {
     uint64_t result = 1;
@@ -347,15 +432,21 @@ static __attribute__((noinline, noclone)) uint64_t stage3_round0_threaded(uint64
 
 			uint64_t idx_seed = v ^ result;
 			result = ROTL_threaded(idx_seed, r);
-            next_a_idx = map_index_threaded(result);
+            uint64_t result_fold = result ^ (result >> 33);
+            next_a_idx = map_index_from_fold_threaded(result_fold);
             __builtin_prefetch(mem_buffer_a + next_a_idx, 0, 3);
 
 			uint64_t *t_half = pick_half_threaded(v, mem_buffer_a, mem_buffer_b);
-			uint64_t idx_t = map_index_threaded(idx_seed);
+            uint64_t t_seed_fold = idx_seed ^ (idx_seed >> 33);
+            uint64_t idx_t = map_index_from_fold_threaded(t_seed_fold);
+            /* fold(~0) = 0xffffffff80000000. Reuse the T-map fold after
+             * the two original stores when deriving the next B address. */
+            uint64_t next_b_fold_base = t_seed_fold ^ UINT64_C(0xffffffff80000000);
+            __asm__("" : "+r" (next_b_fold_base));
 			uint64_t t = t_half[idx_t] ^ result;
 
-			uint64_t idx_a = map_index_threaded(t ^ result ^ 0x9e3779b97f4a7c15);
-			uint64_t idx_b = map_index_bounded_xor_threaded(idx_a, ~result ^ 0xd2b74407b1ce6e93);
+			uint64_t idx_a = map_index_a_salted_threaded(t ^ result);
+			uint64_t idx_b = map_index_from_fold_threaded(idx_a ^ result_fold ^ FOLDED_B_CONSTANT);
 
 			uint64_t mem_a = mem_buffer_a[idx_a];
 			mem_buffer_a[idx_a] = t;
@@ -364,7 +455,8 @@ static __attribute__((noinline, noclone)) uint64_t stage3_round0_threaded(uint64
 			if (++j == BUFSIZE) goto jx_loop_done;
 
 			a = mem_buffer_a[next_a_idx];
-			b = mem_buffer_b[map_index_threaded(a ^ ~ROTR_threaded(result, r))];
+            /* ROTR(ROTL(idx_seed,r),r) == idx_seed for every count. */
+			b = mem_buffer_b[map_index_from_fold_threaded((a ^ (a >> 33)) ^ next_b_fold_base)];
 			/* The two rounds cover scratch sequentially. Only rotates observe r
              * inside this loop, so the final MEMSIZE value is equivalent to
              * zero because MEMSIZE is a multiple of 64. Normalize before
@@ -376,19 +468,27 @@ static __attribute__((noinline, noclone)) uint64_t stage3_round0_threaded(uint64
 			goto *targets[ROTL_threaded(result, (uint32_t)c) & 0xf];
 		}
 		jx_case_1: {
-				v = ROTL_threaded((c + i) % isqrt_threaded(b | 2), i + j) * isqrt_threaded(a + j);
+				uint64_t root_b, root_a;
+                isqrt_pair_threaded(b | 2, a + j, &root_b, &root_a);
+                v = ROTL_threaded((c + i) % root_b, i + j) * root_a;
 
 			uint64_t idx_seed = v ^ result;
 			result = ROTL_threaded(idx_seed, r);
-            next_a_idx = map_index_threaded(result);
+            uint64_t result_fold = result ^ (result >> 33);
+            next_a_idx = map_index_from_fold_threaded(result_fold);
             __builtin_prefetch(mem_buffer_a + next_a_idx, 0, 3);
 
 			uint64_t *t_half = pick_half_threaded(v, mem_buffer_a, mem_buffer_b);
-			uint64_t idx_t = map_index_threaded(idx_seed);
+            uint64_t t_seed_fold = idx_seed ^ (idx_seed >> 33);
+            uint64_t idx_t = map_index_from_fold_threaded(t_seed_fold);
+            /* fold(~0) = 0xffffffff80000000. Reuse the T-map fold after
+             * the two original stores when deriving the next B address. */
+            uint64_t next_b_fold_base = t_seed_fold ^ UINT64_C(0xffffffff80000000);
+            __asm__("" : "+r" (next_b_fold_base));
 			uint64_t t = t_half[idx_t] ^ result;
 
-			uint64_t idx_a = map_index_threaded(t ^ result ^ 0x9e3779b97f4a7c15);
-			uint64_t idx_b = map_index_bounded_xor_threaded(idx_a, ~result ^ 0xd2b74407b1ce6e93);
+			uint64_t idx_a = map_index_a_salted_threaded(t ^ result);
+			uint64_t idx_b = map_index_from_fold_threaded(idx_a ^ result_fold ^ FOLDED_B_CONSTANT);
 
 			uint64_t mem_a = mem_buffer_a[idx_a];
 			mem_buffer_a[idx_a] = t;
@@ -397,7 +497,8 @@ static __attribute__((noinline, noclone)) uint64_t stage3_round0_threaded(uint64
 			if (++j == BUFSIZE) goto jx_loop_done;
 
 			a = mem_buffer_a[next_a_idx];
-			b = mem_buffer_b[map_index_threaded(a ^ ~ROTR_threaded(result, r))];
+            /* ROTR(ROTL(idx_seed,r),r) == idx_seed for every count. */
+			b = mem_buffer_b[map_index_from_fold_threaded((a ^ (a >> 33)) ^ next_b_fold_base)];
 			/* The two rounds cover scratch sequentially. Only rotates observe r
              * inside this loop, so the final MEMSIZE value is equivalent to
              * zero because MEMSIZE is a multiple of 64. Normalize before
@@ -409,19 +510,27 @@ static __attribute__((noinline, noclone)) uint64_t stage3_round0_threaded(uint64
 			goto *targets[ROTL_threaded(result, (uint32_t)c) & 0xf];
 		}
 		jx_case_2: {
-				v = (isqrt_threaded(a + i) * isqrt_threaded(c + j)) ^ (b + i + j);
+				uint64_t root_a, root_c;
+                isqrt_pair_threaded(a + i, c + j, &root_a, &root_c);
+                v = (root_a * root_c) ^ (b + i + j);
 
 			uint64_t idx_seed = v ^ result;
 			result = ROTL_threaded(idx_seed, r);
-            next_a_idx = map_index_threaded(result);
+            uint64_t result_fold = result ^ (result >> 33);
+            next_a_idx = map_index_from_fold_threaded(result_fold);
             __builtin_prefetch(mem_buffer_a + next_a_idx, 0, 3);
 
 			uint64_t *t_half = pick_half_threaded(v, mem_buffer_a, mem_buffer_b);
-			uint64_t idx_t = map_index_threaded(idx_seed);
+            uint64_t t_seed_fold = idx_seed ^ (idx_seed >> 33);
+            uint64_t idx_t = map_index_from_fold_threaded(t_seed_fold);
+            /* fold(~0) = 0xffffffff80000000. Reuse the T-map fold after
+             * the two original stores when deriving the next B address. */
+            uint64_t next_b_fold_base = t_seed_fold ^ UINT64_C(0xffffffff80000000);
+            __asm__("" : "+r" (next_b_fold_base));
 			uint64_t t = t_half[idx_t] ^ result;
 
-			uint64_t idx_a = map_index_threaded(t ^ result ^ 0x9e3779b97f4a7c15);
-			uint64_t idx_b = map_index_bounded_xor_threaded(idx_a, ~result ^ 0xd2b74407b1ce6e93);
+			uint64_t idx_a = map_index_a_salted_threaded(t ^ result);
+			uint64_t idx_b = map_index_from_fold_threaded(idx_a ^ result_fold ^ FOLDED_B_CONSTANT);
 
 			uint64_t mem_a = mem_buffer_a[idx_a];
 			mem_buffer_a[idx_a] = t;
@@ -430,7 +539,8 @@ static __attribute__((noinline, noclone)) uint64_t stage3_round0_threaded(uint64
 			if (++j == BUFSIZE) goto jx_loop_done;
 
 			a = mem_buffer_a[next_a_idx];
-			b = mem_buffer_b[map_index_threaded(a ^ ~ROTR_threaded(result, r))];
+            /* ROTR(ROTL(idx_seed,r),r) == idx_seed for every count. */
+			b = mem_buffer_b[map_index_from_fold_threaded((a ^ (a >> 33)) ^ next_b_fold_base)];
 			/* The two rounds cover scratch sequentially. Only rotates observe r
              * inside this loop, so the final MEMSIZE value is equivalent to
              * zero because MEMSIZE is a multiple of 64. Normalize before
@@ -444,249 +554,59 @@ static __attribute__((noinline, noclone)) uint64_t stage3_round0_threaded(uint64
 		jx_case_3: {
 				v = ((a + b) * c);
 
-			uint64_t idx_seed = v ^ result;
-			result = ROTL_threaded(idx_seed, r);
-            next_a_idx = map_index_threaded(result);
-            __builtin_prefetch(mem_buffer_a + next_a_idx, 0, 3);
-
-			uint64_t *t_half = pick_half_threaded(v, mem_buffer_a, mem_buffer_b);
-			uint64_t idx_t = map_index_threaded(idx_seed);
-			uint64_t t = t_half[idx_t] ^ result;
-
-			uint64_t idx_a = map_index_threaded(t ^ result ^ 0x9e3779b97f4a7c15);
-			uint64_t idx_b = map_index_bounded_xor_threaded(idx_a, ~result ^ 0xd2b74407b1ce6e93);
-
-			uint64_t mem_a = mem_buffer_a[idx_a];
-			mem_buffer_a[idx_a] = t;
-			mem_buffer_b[idx_b] ^= mem_a ^ ROTR_threaded(t, i + j);
-		
-			if (++j == BUFSIZE) goto jx_loop_done;
-
-			a = mem_buffer_a[next_a_idx];
-			b = mem_buffer_b[map_index_threaded(a ^ ~ROTR_threaded(result, r))];
-			/* The two rounds cover scratch sequentially. Only rotates observe r
-             * inside this loop, so the final MEMSIZE value is equivalent to
-             * zero because MEMSIZE is a multiple of 64. Normalize before
-             * the round's modular-power/address update below. */
-            c = mem_buffer_a[j];
-            r = i * BUFSIZE + j + 1;
-
-			__asm__ volatile("# jayxelis_dispatch_edge_3");
-			goto *targets[ROTL_threaded(result, (uint32_t)c) & 0xf];
-		}
+            goto jx_merged_tail_0;
+        }
 		jx_case_4: {
 				v = ((b - c) * a);
 
-			uint64_t idx_seed = v ^ result;
-			result = ROTL_threaded(idx_seed, r);
-            next_a_idx = map_index_threaded(result);
-            __builtin_prefetch(mem_buffer_a + next_a_idx, 0, 3);
-
-			uint64_t *t_half = pick_half_threaded(v, mem_buffer_a, mem_buffer_b);
-			uint64_t idx_t = map_index_threaded(idx_seed);
-			uint64_t t = t_half[idx_t] ^ result;
-
-			uint64_t idx_a = map_index_threaded(t ^ result ^ 0x9e3779b97f4a7c15);
-			uint64_t idx_b = map_index_bounded_xor_threaded(idx_a, ~result ^ 0xd2b74407b1ce6e93);
-
-			uint64_t mem_a = mem_buffer_a[idx_a];
-			mem_buffer_a[idx_a] = t;
-			mem_buffer_b[idx_b] ^= mem_a ^ ROTR_threaded(t, i + j);
-		
-			if (++j == BUFSIZE) goto jx_loop_done;
-
-			a = mem_buffer_a[next_a_idx];
-			b = mem_buffer_b[map_index_threaded(a ^ ~ROTR_threaded(result, r))];
-			/* The two rounds cover scratch sequentially. Only rotates observe r
-             * inside this loop, so the final MEMSIZE value is equivalent to
-             * zero because MEMSIZE is a multiple of 64. Normalize before
-             * the round's modular-power/address update below. */
-            c = mem_buffer_a[j];
-            r = i * BUFSIZE + j + 1;
-
-			__asm__ volatile("# jayxelis_dispatch_edge_4");
-			goto *targets[ROTL_threaded(result, (uint32_t)c) & 0xf];
-		}
+            goto jx_merged_tail_0;
+        }
 		jx_case_5: {
 				v = (c - a + b);
 
-			uint64_t idx_seed = v ^ result;
-			result = ROTL_threaded(idx_seed, r);
-            next_a_idx = map_index_threaded(result);
-            __builtin_prefetch(mem_buffer_a + next_a_idx, 0, 3);
-
-			uint64_t *t_half = pick_half_threaded(v, mem_buffer_a, mem_buffer_b);
-			uint64_t idx_t = map_index_threaded(idx_seed);
-			uint64_t t = t_half[idx_t] ^ result;
-
-			uint64_t idx_a = map_index_threaded(t ^ result ^ 0x9e3779b97f4a7c15);
-			uint64_t idx_b = map_index_bounded_xor_threaded(idx_a, ~result ^ 0xd2b74407b1ce6e93);
-
-			uint64_t mem_a = mem_buffer_a[idx_a];
-			mem_buffer_a[idx_a] = t;
-			mem_buffer_b[idx_b] ^= mem_a ^ ROTR_threaded(t, i + j);
-		
-			if (++j == BUFSIZE) goto jx_loop_done;
-
-			a = mem_buffer_a[next_a_idx];
-			b = mem_buffer_b[map_index_threaded(a ^ ~ROTR_threaded(result, r))];
-			/* The two rounds cover scratch sequentially. Only rotates observe r
-             * inside this loop, so the final MEMSIZE value is equivalent to
-             * zero because MEMSIZE is a multiple of 64. Normalize before
-             * the round's modular-power/address update below. */
-            c = mem_buffer_a[j];
-            r = i * BUFSIZE + j + 1;
-
-			__asm__ volatile("# jayxelis_dispatch_edge_5");
-			goto *targets[ROTL_threaded(result, (uint32_t)c) & 0xf];
-		}
+            goto jx_merged_tail_0;
+        }
 		jx_case_6: {
 				v = (a - b + c);
 
-			uint64_t idx_seed = v ^ result;
-			result = ROTL_threaded(idx_seed, r);
-            next_a_idx = map_index_threaded(result);
-            __builtin_prefetch(mem_buffer_a + next_a_idx, 0, 3);
-
-			uint64_t *t_half = pick_half_threaded(v, mem_buffer_a, mem_buffer_b);
-			uint64_t idx_t = map_index_threaded(idx_seed);
-			uint64_t t = t_half[idx_t] ^ result;
-
-			uint64_t idx_a = map_index_threaded(t ^ result ^ 0x9e3779b97f4a7c15);
-			uint64_t idx_b = map_index_bounded_xor_threaded(idx_a, ~result ^ 0xd2b74407b1ce6e93);
-
-			uint64_t mem_a = mem_buffer_a[idx_a];
-			mem_buffer_a[idx_a] = t;
-			mem_buffer_b[idx_b] ^= mem_a ^ ROTR_threaded(t, i + j);
-		
-			if (++j == BUFSIZE) goto jx_loop_done;
-
-			a = mem_buffer_a[next_a_idx];
-			b = mem_buffer_b[map_index_threaded(a ^ ~ROTR_threaded(result, r))];
-			/* The two rounds cover scratch sequentially. Only rotates observe r
-             * inside this loop, so the final MEMSIZE value is equivalent to
-             * zero because MEMSIZE is a multiple of 64. Normalize before
-             * the round's modular-power/address update below. */
-            c = mem_buffer_a[j];
-            r = i * BUFSIZE + j + 1;
-
-			__asm__ volatile("# jayxelis_dispatch_edge_6");
-			goto *targets[ROTL_threaded(result, (uint32_t)c) & 0xf];
-		}
+            goto jx_merged_tail_0;
+        }
 		jx_case_7: {
 				v = (b * c + a);
 
-			uint64_t idx_seed = v ^ result;
-			result = ROTL_threaded(idx_seed, r);
-            next_a_idx = map_index_threaded(result);
-            __builtin_prefetch(mem_buffer_a + next_a_idx, 0, 3);
-
-			uint64_t *t_half = pick_half_threaded(v, mem_buffer_a, mem_buffer_b);
-			uint64_t idx_t = map_index_threaded(idx_seed);
-			uint64_t t = t_half[idx_t] ^ result;
-
-			uint64_t idx_a = map_index_threaded(t ^ result ^ 0x9e3779b97f4a7c15);
-			uint64_t idx_b = map_index_bounded_xor_threaded(idx_a, ~result ^ 0xd2b74407b1ce6e93);
-
-			uint64_t mem_a = mem_buffer_a[idx_a];
-			mem_buffer_a[idx_a] = t;
-			mem_buffer_b[idx_b] ^= mem_a ^ ROTR_threaded(t, i + j);
-		
-			if (++j == BUFSIZE) goto jx_loop_done;
-
-			a = mem_buffer_a[next_a_idx];
-			b = mem_buffer_b[map_index_threaded(a ^ ~ROTR_threaded(result, r))];
-			/* The two rounds cover scratch sequentially. Only rotates observe r
-             * inside this loop, so the final MEMSIZE value is equivalent to
-             * zero because MEMSIZE is a multiple of 64. Normalize before
-             * the round's modular-power/address update below. */
-            c = mem_buffer_a[j];
-            r = i * BUFSIZE + j + 1;
-
-			__asm__ volatile("# jayxelis_dispatch_edge_7");
-			goto *targets[ROTL_threaded(result, (uint32_t)c) & 0xf];
-		}
+            goto jx_merged_tail_0;
+        }
 		jx_case_8: {
 				v = (c * a + b);
 
-			uint64_t idx_seed = v ^ result;
-			result = ROTL_threaded(idx_seed, r);
-            next_a_idx = map_index_threaded(result);
-            __builtin_prefetch(mem_buffer_a + next_a_idx, 0, 3);
-
-			uint64_t *t_half = pick_half_threaded(v, mem_buffer_a, mem_buffer_b);
-			uint64_t idx_t = map_index_threaded(idx_seed);
-			uint64_t t = t_half[idx_t] ^ result;
-
-			uint64_t idx_a = map_index_threaded(t ^ result ^ 0x9e3779b97f4a7c15);
-			uint64_t idx_b = map_index_bounded_xor_threaded(idx_a, ~result ^ 0xd2b74407b1ce6e93);
-
-			uint64_t mem_a = mem_buffer_a[idx_a];
-			mem_buffer_a[idx_a] = t;
-			mem_buffer_b[idx_b] ^= mem_a ^ ROTR_threaded(t, i + j);
-		
-			if (++j == BUFSIZE) goto jx_loop_done;
-
-			a = mem_buffer_a[next_a_idx];
-			b = mem_buffer_b[map_index_threaded(a ^ ~ROTR_threaded(result, r))];
-			/* The two rounds cover scratch sequentially. Only rotates observe r
-             * inside this loop, so the final MEMSIZE value is equivalent to
-             * zero because MEMSIZE is a multiple of 64. Normalize before
-             * the round's modular-power/address update below. */
-            c = mem_buffer_a[j];
-            r = i * BUFSIZE + j + 1;
-
-			__asm__ volatile("# jayxelis_dispatch_edge_8");
-			goto *targets[ROTL_threaded(result, (uint32_t)c) & 0xf];
-		}
+            goto jx_merged_tail_0;
+        }
 		jx_case_9: {
 				v = (a * b * c);
 
-			uint64_t idx_seed = v ^ result;
-			result = ROTL_threaded(idx_seed, r);
-            next_a_idx = map_index_threaded(result);
-            __builtin_prefetch(mem_buffer_a + next_a_idx, 0, 3);
-
-			uint64_t *t_half = pick_half_threaded(v, mem_buffer_a, mem_buffer_b);
-			uint64_t idx_t = map_index_threaded(idx_seed);
-			uint64_t t = t_half[idx_t] ^ result;
-
-			uint64_t idx_a = map_index_threaded(t ^ result ^ 0x9e3779b97f4a7c15);
-			uint64_t idx_b = map_index_bounded_xor_threaded(idx_a, ~result ^ 0xd2b74407b1ce6e93);
-
-			uint64_t mem_a = mem_buffer_a[idx_a];
-			mem_buffer_a[idx_a] = t;
-			mem_buffer_b[idx_b] ^= mem_a ^ ROTR_threaded(t, i + j);
-		
-			if (++j == BUFSIZE) goto jx_loop_done;
-
-			a = mem_buffer_a[next_a_idx];
-			b = mem_buffer_b[map_index_threaded(a ^ ~ROTR_threaded(result, r))];
-			/* The two rounds cover scratch sequentially. Only rotates observe r
-             * inside this loop, so the final MEMSIZE value is equivalent to
-             * zero because MEMSIZE is a multiple of 64. Normalize before
-             * the round's modular-power/address update below. */
-            c = mem_buffer_a[j];
-            r = i * BUFSIZE + j + 1;
-
-			__asm__ volatile("# jayxelis_dispatch_edge_9");
-			goto *targets[ROTL_threaded(result, (uint32_t)c) & 0xf];
-		}
+            goto jx_merged_tail_0;
+        }
 		jx_case_10: {
 				t1 = combine_uint64_threaded(a, b);
 				v = remainder128_threaded(a, b, c | 1);
 
 			uint64_t idx_seed = v ^ result;
 			result = ROTL_threaded(idx_seed, r);
-            next_a_idx = map_index_threaded(result);
+            uint64_t result_fold = result ^ (result >> 33);
+            next_a_idx = map_index_from_fold_threaded(result_fold);
             __builtin_prefetch(mem_buffer_a + next_a_idx, 0, 3);
 
 			uint64_t *t_half = pick_half_threaded(v, mem_buffer_a, mem_buffer_b);
-			uint64_t idx_t = map_index_threaded(idx_seed);
+            uint64_t t_seed_fold = idx_seed ^ (idx_seed >> 33);
+            uint64_t idx_t = map_index_from_fold_threaded(t_seed_fold);
+            /* fold(~0) = 0xffffffff80000000. Reuse the T-map fold after
+             * the two original stores when deriving the next B address. */
+            uint64_t next_b_fold_base = t_seed_fold ^ UINT64_C(0xffffffff80000000);
+            __asm__("" : "+r" (next_b_fold_base));
 			uint64_t t = t_half[idx_t] ^ result;
 
-			uint64_t idx_a = map_index_threaded(t ^ result ^ 0x9e3779b97f4a7c15);
-			uint64_t idx_b = map_index_bounded_xor_threaded(idx_a, ~result ^ 0xd2b74407b1ce6e93);
+			uint64_t idx_a = map_index_a_salted_threaded(t ^ result);
+			uint64_t idx_b = map_index_from_fold_threaded(idx_a ^ result_fold ^ FOLDED_B_CONSTANT);
 
 			uint64_t mem_a = mem_buffer_a[idx_a];
 			mem_buffer_a[idx_a] = t;
@@ -695,7 +615,8 @@ static __attribute__((noinline, noclone)) uint64_t stage3_round0_threaded(uint64
 			if (++j == BUFSIZE) goto jx_loop_done;
 
 			a = mem_buffer_a[next_a_idx];
-			b = mem_buffer_b[map_index_threaded(a ^ ~ROTR_threaded(result, r))];
+            /* ROTR(ROTL(idx_seed,r),r) == idx_seed for every count. */
+			b = mem_buffer_b[map_index_from_fold_threaded((a ^ (a >> 33)) ^ next_b_fold_base)];
 			/* The two rounds cover scratch sequentially. Only rotates observe r
              * inside this loop, so the final MEMSIZE value is equivalent to
              * zero because MEMSIZE is a multiple of 64. Normalize before
@@ -719,15 +640,21 @@ static __attribute__((noinline, noclone)) uint64_t stage3_round0_threaded(uint64
 
 			uint64_t idx_seed = v ^ result;
 			result = ROTL_threaded(idx_seed, r);
-            next_a_idx = map_index_threaded(result);
+            uint64_t result_fold = result ^ (result >> 33);
+            next_a_idx = map_index_from_fold_threaded(result_fold);
             __builtin_prefetch(mem_buffer_a + next_a_idx, 0, 3);
 
 			uint64_t *t_half = pick_half_threaded(v, mem_buffer_a, mem_buffer_b);
-			uint64_t idx_t = map_index_threaded(idx_seed);
+            uint64_t t_seed_fold = idx_seed ^ (idx_seed >> 33);
+            uint64_t idx_t = map_index_from_fold_threaded(t_seed_fold);
+            /* fold(~0) = 0xffffffff80000000. Reuse the T-map fold after
+             * the two original stores when deriving the next B address. */
+            uint64_t next_b_fold_base = t_seed_fold ^ UINT64_C(0xffffffff80000000);
+            __asm__("" : "+r" (next_b_fold_base));
 			uint64_t t = t_half[idx_t] ^ result;
 
-			uint64_t idx_a = map_index_threaded(t ^ result ^ 0x9e3779b97f4a7c15);
-			uint64_t idx_b = map_index_bounded_xor_threaded(idx_a, ~result ^ 0xd2b74407b1ce6e93);
+			uint64_t idx_a = map_index_a_salted_threaded(t ^ result);
+			uint64_t idx_b = map_index_from_fold_threaded(idx_a ^ result_fold ^ FOLDED_B_CONSTANT);
 
 			uint64_t mem_a = mem_buffer_a[idx_a];
 			mem_buffer_a[idx_a] = t;
@@ -736,7 +663,8 @@ static __attribute__((noinline, noclone)) uint64_t stage3_round0_threaded(uint64
 			if (++j == BUFSIZE) goto jx_loop_done;
 
 			a = mem_buffer_a[next_a_idx];
-			b = mem_buffer_b[map_index_threaded(a ^ ~ROTR_threaded(result, r))];
+            /* ROTR(ROTL(idx_seed,r),r) == idx_seed for every count. */
+			b = mem_buffer_b[map_index_from_fold_threaded((a ^ (a >> 33)) ^ next_b_fold_base)];
 			/* The two rounds cover scratch sequentially. Only rotates observe r
              * inside this loop, so the final MEMSIZE value is equivalent to
              * zero because MEMSIZE is a multiple of 64. Normalize before
@@ -752,15 +680,21 @@ static __attribute__((noinline, noclone)) uint64_t stage3_round0_threaded(uint64
 
 			uint64_t idx_seed = v ^ result;
 			result = ROTL_threaded(idx_seed, r);
-            next_a_idx = map_index_threaded(result);
+            uint64_t result_fold = result ^ (result >> 33);
+            next_a_idx = map_index_from_fold_threaded(result_fold);
             __builtin_prefetch(mem_buffer_a + next_a_idx, 0, 3);
 
 			uint64_t *t_half = pick_half_threaded(v, mem_buffer_a, mem_buffer_b);
-			uint64_t idx_t = map_index_threaded(idx_seed);
+            uint64_t t_seed_fold = idx_seed ^ (idx_seed >> 33);
+            uint64_t idx_t = map_index_from_fold_threaded(t_seed_fold);
+            /* fold(~0) = 0xffffffff80000000. Reuse the T-map fold after
+             * the two original stores when deriving the next B address. */
+            uint64_t next_b_fold_base = t_seed_fold ^ UINT64_C(0xffffffff80000000);
+            __asm__("" : "+r" (next_b_fold_base));
 			uint64_t t = t_half[idx_t] ^ result;
 
-			uint64_t idx_a = map_index_threaded(t ^ result ^ 0x9e3779b97f4a7c15);
-			uint64_t idx_b = map_index_bounded_xor_threaded(idx_a, ~result ^ 0xd2b74407b1ce6e93);
+			uint64_t idx_a = map_index_a_salted_threaded(t ^ result);
+			uint64_t idx_b = map_index_from_fold_threaded(idx_a ^ result_fold ^ FOLDED_B_CONSTANT);
 
 			uint64_t mem_a = mem_buffer_a[idx_a];
 			mem_buffer_a[idx_a] = t;
@@ -769,7 +703,8 @@ static __attribute__((noinline, noclone)) uint64_t stage3_round0_threaded(uint64
 			if (++j == BUFSIZE) goto jx_loop_done;
 
 			a = mem_buffer_a[next_a_idx];
-			b = mem_buffer_b[map_index_threaded(a ^ ~ROTR_threaded(result, r))];
+            /* ROTR(ROTL(idx_seed,r),r) == idx_seed for every count. */
+			b = mem_buffer_b[map_index_from_fold_threaded((a ^ (a >> 33)) ^ next_b_fold_base)];
 			/* The two rounds cover scratch sequentially. Only rotates observe r
              * inside this loop, so the final MEMSIZE value is equivalent to
              * zero because MEMSIZE is a multiple of 64. Normalize before
@@ -793,15 +728,21 @@ static __attribute__((noinline, noclone)) uint64_t stage3_round0_threaded(uint64
 
 			uint64_t idx_seed = v ^ result;
 			result = ROTL_threaded(idx_seed, r);
-            next_a_idx = map_index_threaded(result);
+            uint64_t result_fold = result ^ (result >> 33);
+            next_a_idx = map_index_from_fold_threaded(result_fold);
             __builtin_prefetch(mem_buffer_a + next_a_idx, 0, 3);
 
 			uint64_t *t_half = pick_half_threaded(v, mem_buffer_a, mem_buffer_b);
-			uint64_t idx_t = map_index_threaded(idx_seed);
+            uint64_t t_seed_fold = idx_seed ^ (idx_seed >> 33);
+            uint64_t idx_t = map_index_from_fold_threaded(t_seed_fold);
+            /* fold(~0) = 0xffffffff80000000. Reuse the T-map fold after
+             * the two original stores when deriving the next B address. */
+            uint64_t next_b_fold_base = t_seed_fold ^ UINT64_C(0xffffffff80000000);
+            __asm__("" : "+r" (next_b_fold_base));
 			uint64_t t = t_half[idx_t] ^ result;
 
-			uint64_t idx_a = map_index_threaded(t ^ result ^ 0x9e3779b97f4a7c15);
-			uint64_t idx_b = map_index_bounded_xor_threaded(idx_a, ~result ^ 0xd2b74407b1ce6e93);
+			uint64_t idx_a = map_index_a_salted_threaded(t ^ result);
+			uint64_t idx_b = map_index_from_fold_threaded(idx_a ^ result_fold ^ FOLDED_B_CONSTANT);
 
 			uint64_t mem_a = mem_buffer_a[idx_a];
 			mem_buffer_a[idx_a] = t;
@@ -810,7 +751,8 @@ static __attribute__((noinline, noclone)) uint64_t stage3_round0_threaded(uint64
 			if (++j == BUFSIZE) goto jx_loop_done;
 
 			a = mem_buffer_a[next_a_idx];
-			b = mem_buffer_b[map_index_threaded(a ^ ~ROTR_threaded(result, r))];
+            /* ROTR(ROTL(idx_seed,r),r) == idx_seed for every count. */
+			b = mem_buffer_b[map_index_from_fold_threaded((a ^ (a >> 33)) ^ next_b_fold_base)];
 			/* The two rounds cover scratch sequentially. Only rotates observe r
              * inside this loop, so the final MEMSIZE value is equivalent to
              * zero because MEMSIZE is a multiple of 64. Normalize before
@@ -827,15 +769,21 @@ static __attribute__((noinline, noclone)) uint64_t stage3_round0_threaded(uint64
 
 			uint64_t idx_seed = v ^ result;
 			result = ROTL_threaded(idx_seed, r);
-            next_a_idx = map_index_threaded(result);
+            uint64_t result_fold = result ^ (result >> 33);
+            next_a_idx = map_index_from_fold_threaded(result_fold);
             __builtin_prefetch(mem_buffer_a + next_a_idx, 0, 3);
 
 			uint64_t *t_half = pick_half_threaded(v, mem_buffer_a, mem_buffer_b);
-			uint64_t idx_t = map_index_threaded(idx_seed);
+            uint64_t t_seed_fold = idx_seed ^ (idx_seed >> 33);
+            uint64_t idx_t = map_index_from_fold_threaded(t_seed_fold);
+            /* fold(~0) = 0xffffffff80000000. Reuse the T-map fold after
+             * the two original stores when deriving the next B address. */
+            uint64_t next_b_fold_base = t_seed_fold ^ UINT64_C(0xffffffff80000000);
+            __asm__("" : "+r" (next_b_fold_base));
 			uint64_t t = t_half[idx_t] ^ result;
 
-			uint64_t idx_a = map_index_threaded(t ^ result ^ 0x9e3779b97f4a7c15);
-			uint64_t idx_b = map_index_bounded_xor_threaded(idx_a, ~result ^ 0xd2b74407b1ce6e93);
+			uint64_t idx_a = map_index_a_salted_threaded(t ^ result);
+			uint64_t idx_b = map_index_from_fold_threaded(idx_a ^ result_fold ^ FOLDED_B_CONSTANT);
 
 			uint64_t mem_a = mem_buffer_a[idx_a];
 			mem_buffer_a[idx_a] = t;
@@ -844,7 +792,8 @@ static __attribute__((noinline, noclone)) uint64_t stage3_round0_threaded(uint64
 			if (++j == BUFSIZE) goto jx_loop_done;
 
 			a = mem_buffer_a[next_a_idx];
-			b = mem_buffer_b[map_index_threaded(a ^ ~ROTR_threaded(result, r))];
+            /* ROTR(ROTL(idx_seed,r),r) == idx_seed for every count. */
+			b = mem_buffer_b[map_index_from_fold_threaded((a ^ (a >> 33)) ^ next_b_fold_base)];
 			/* The two rounds cover scratch sequentially. Only rotates observe r
              * inside this loop, so the final MEMSIZE value is equivalent to
              * zero because MEMSIZE is a multiple of 64. Normalize before
@@ -862,15 +811,21 @@ static __attribute__((noinline, noclone)) uint64_t stage3_round0_threaded(uint64
 
 			uint64_t idx_seed = v ^ result;
 			result = ROTL_threaded(idx_seed, r);
-            next_a_idx = map_index_threaded(result);
+            uint64_t result_fold = result ^ (result >> 33);
+            next_a_idx = map_index_from_fold_threaded(result_fold);
             __builtin_prefetch(mem_buffer_a + next_a_idx, 0, 3);
 
 			uint64_t *t_half = pick_half_threaded(v, mem_buffer_a, mem_buffer_b);
-			uint64_t idx_t = map_index_threaded(idx_seed);
+            uint64_t t_seed_fold = idx_seed ^ (idx_seed >> 33);
+            uint64_t idx_t = map_index_from_fold_threaded(t_seed_fold);
+            /* fold(~0) = 0xffffffff80000000. Reuse the T-map fold after
+             * the two original stores when deriving the next B address. */
+            uint64_t next_b_fold_base = t_seed_fold ^ UINT64_C(0xffffffff80000000);
+            __asm__("" : "+r" (next_b_fold_base));
 			uint64_t t = t_half[idx_t] ^ result;
 
-			uint64_t idx_a = map_index_threaded(t ^ result ^ 0x9e3779b97f4a7c15);
-			uint64_t idx_b = map_index_bounded_xor_threaded(idx_a, ~result ^ 0xd2b74407b1ce6e93);
+			uint64_t idx_a = map_index_a_salted_threaded(t ^ result);
+			uint64_t idx_b = map_index_from_fold_threaded(idx_a ^ result_fold ^ FOLDED_B_CONSTANT);
 
 			uint64_t mem_a = mem_buffer_a[idx_a];
 			mem_buffer_a[idx_a] = t;
@@ -879,7 +834,8 @@ static __attribute__((noinline, noclone)) uint64_t stage3_round0_threaded(uint64
 			if (++j == BUFSIZE) goto jx_loop_done;
 
 			a = mem_buffer_a[next_a_idx];
-			b = mem_buffer_b[map_index_threaded(a ^ ~ROTR_threaded(result, r))];
+            /* ROTR(ROTL(idx_seed,r),r) == idx_seed for every count. */
+			b = mem_buffer_b[map_index_from_fold_threaded((a ^ (a >> 33)) ^ next_b_fold_base)];
 			/* The two rounds cover scratch sequentially. Only rotates observe r
              * inside this loop, so the final MEMSIZE value is equivalent to
              * zero because MEMSIZE is a multiple of 64. Normalize before
@@ -890,6 +846,45 @@ static __attribute__((noinline, noclone)) uint64_t stage3_round0_threaded(uint64
 			__asm__ volatile("# jayxelis_dispatch_edge_15");
 			goto *targets[ROTL_threaded(result, (uint32_t)c) & 0xf];
 		}
+
+        jx_merged_tail_0: {
+			uint64_t idx_seed = v ^ result;
+			result = ROTL_threaded(idx_seed, r);
+            uint64_t result_fold = result ^ (result >> 33);
+            next_a_idx = map_index_from_fold_threaded(result_fold);
+            __builtin_prefetch(mem_buffer_a + next_a_idx, 0, 3);
+
+			uint64_t *t_half = pick_half_threaded(v, mem_buffer_a, mem_buffer_b);
+            uint64_t t_seed_fold = idx_seed ^ (idx_seed >> 33);
+            uint64_t idx_t = map_index_from_fold_threaded(t_seed_fold);
+            /* fold(~0) = 0xffffffff80000000. Reuse the T-map fold after
+             * the two original stores when deriving the next B address. */
+            uint64_t next_b_fold_base = t_seed_fold ^ UINT64_C(0xffffffff80000000);
+            __asm__("" : "+r" (next_b_fold_base));
+			uint64_t t = t_half[idx_t] ^ result;
+
+			uint64_t idx_a = map_index_a_salted_threaded(t ^ result);
+			uint64_t idx_b = map_index_from_fold_threaded(idx_a ^ result_fold ^ FOLDED_B_CONSTANT);
+
+			uint64_t mem_a = mem_buffer_a[idx_a];
+			mem_buffer_a[idx_a] = t;
+			mem_buffer_b[idx_b] ^= mem_a ^ ROTR_threaded(t, i + j);
+		
+			if (++j == BUFSIZE) goto jx_loop_done;
+
+			a = mem_buffer_a[next_a_idx];
+            /* ROTR(ROTL(idx_seed,r),r) == idx_seed for every count. */
+			b = mem_buffer_b[map_index_from_fold_threaded((a ^ (a >> 33)) ^ next_b_fold_base)];
+			/* The two rounds cover scratch sequentially. Only rotates observe r
+             * inside this loop, so the final MEMSIZE value is equivalent to
+             * zero because MEMSIZE is a multiple of 64. Normalize before
+             * the round's modular-power/address update below. */
+            c = mem_buffer_a[j];
+            r = i * BUFSIZE + j + 1;
+
+			__asm__ volatile("# jayxelis_merged_tail_0");
+			goto *targets[ROTL_threaded(result, (uint32_t)c) & 0xf];
+        }
 		jx_loop_done: ;
 		}
     return result;
@@ -925,15 +920,21 @@ static __attribute__((noinline, noclone)) uint64_t stage3_round1_threaded(uint64
 
 			uint64_t idx_seed = v ^ result;
 			result = ROTL_threaded(idx_seed, r);
-            next_a_idx = map_index_threaded(result);
+            uint64_t result_fold = result ^ (result >> 33);
+            next_a_idx = map_index_from_fold_threaded(result_fold);
             __builtin_prefetch(mem_buffer_a + next_a_idx, 0, 3);
 
 			uint64_t *t_half = pick_half_threaded(v, mem_buffer_a, mem_buffer_b);
-			uint64_t idx_t = map_index_threaded(idx_seed);
+            uint64_t t_seed_fold = idx_seed ^ (idx_seed >> 33);
+            uint64_t idx_t = map_index_from_fold_threaded(t_seed_fold);
+            /* fold(~0) = 0xffffffff80000000. Reuse the T-map fold after
+             * the two original stores when deriving the next B address. */
+            uint64_t next_b_fold_base = t_seed_fold ^ UINT64_C(0xffffffff80000000);
+            __asm__("" : "+r" (next_b_fold_base));
 			uint64_t t = t_half[idx_t] ^ result;
 
-			uint64_t idx_a = map_index_threaded(t ^ result ^ 0x9e3779b97f4a7c15);
-			uint64_t idx_b = map_index_bounded_xor_threaded(idx_a, ~result ^ 0xd2b74407b1ce6e93);
+			uint64_t idx_a = map_index_a_salted_threaded(t ^ result);
+			uint64_t idx_b = map_index_from_fold_threaded(idx_a ^ result_fold ^ FOLDED_B_CONSTANT);
 
 			uint64_t mem_a = mem_buffer_a[idx_a];
 			mem_buffer_a[idx_a] = t;
@@ -942,7 +943,8 @@ static __attribute__((noinline, noclone)) uint64_t stage3_round1_threaded(uint64
 			if (++j == BUFSIZE) goto jx_loop_done;
 
 			a = mem_buffer_a[next_a_idx];
-			b = mem_buffer_b[map_index_threaded(a ^ ~ROTR_threaded(result, r))];
+            /* ROTR(ROTL(idx_seed,r),r) == idx_seed for every count. */
+			b = mem_buffer_b[map_index_from_fold_threaded((a ^ (a >> 33)) ^ next_b_fold_base)];
 			/* The two rounds cover scratch sequentially. Only rotates observe r
              * inside this loop, so the final MEMSIZE value is equivalent to
              * zero because MEMSIZE is a multiple of 64. Normalize before
@@ -954,19 +956,27 @@ static __attribute__((noinline, noclone)) uint64_t stage3_round1_threaded(uint64
 			goto *targets[ROTL_threaded(result, (uint32_t)c) & 0xf];
 		}
 		jx_case_1: {
-				v = ROTL_threaded((c + i) % isqrt_threaded(b | 2), i + j) * isqrt_threaded(a + j);
+				uint64_t root_b, root_a;
+                isqrt_pair_threaded(b | 2, a + j, &root_b, &root_a);
+                v = ROTL_threaded((c + i) % root_b, i + j) * root_a;
 
 			uint64_t idx_seed = v ^ result;
 			result = ROTL_threaded(idx_seed, r);
-            next_a_idx = map_index_threaded(result);
+            uint64_t result_fold = result ^ (result >> 33);
+            next_a_idx = map_index_from_fold_threaded(result_fold);
             __builtin_prefetch(mem_buffer_a + next_a_idx, 0, 3);
 
 			uint64_t *t_half = pick_half_threaded(v, mem_buffer_a, mem_buffer_b);
-			uint64_t idx_t = map_index_threaded(idx_seed);
+            uint64_t t_seed_fold = idx_seed ^ (idx_seed >> 33);
+            uint64_t idx_t = map_index_from_fold_threaded(t_seed_fold);
+            /* fold(~0) = 0xffffffff80000000. Reuse the T-map fold after
+             * the two original stores when deriving the next B address. */
+            uint64_t next_b_fold_base = t_seed_fold ^ UINT64_C(0xffffffff80000000);
+            __asm__("" : "+r" (next_b_fold_base));
 			uint64_t t = t_half[idx_t] ^ result;
 
-			uint64_t idx_a = map_index_threaded(t ^ result ^ 0x9e3779b97f4a7c15);
-			uint64_t idx_b = map_index_bounded_xor_threaded(idx_a, ~result ^ 0xd2b74407b1ce6e93);
+			uint64_t idx_a = map_index_a_salted_threaded(t ^ result);
+			uint64_t idx_b = map_index_from_fold_threaded(idx_a ^ result_fold ^ FOLDED_B_CONSTANT);
 
 			uint64_t mem_a = mem_buffer_a[idx_a];
 			mem_buffer_a[idx_a] = t;
@@ -975,7 +985,8 @@ static __attribute__((noinline, noclone)) uint64_t stage3_round1_threaded(uint64
 			if (++j == BUFSIZE) goto jx_loop_done;
 
 			a = mem_buffer_a[next_a_idx];
-			b = mem_buffer_b[map_index_threaded(a ^ ~ROTR_threaded(result, r))];
+            /* ROTR(ROTL(idx_seed,r),r) == idx_seed for every count. */
+			b = mem_buffer_b[map_index_from_fold_threaded((a ^ (a >> 33)) ^ next_b_fold_base)];
 			/* The two rounds cover scratch sequentially. Only rotates observe r
              * inside this loop, so the final MEMSIZE value is equivalent to
              * zero because MEMSIZE is a multiple of 64. Normalize before
@@ -987,19 +998,27 @@ static __attribute__((noinline, noclone)) uint64_t stage3_round1_threaded(uint64
 			goto *targets[ROTL_threaded(result, (uint32_t)c) & 0xf];
 		}
 		jx_case_2: {
-				v = (isqrt_threaded(a + i) * isqrt_threaded(c + j)) ^ (b + i + j);
+				uint64_t root_a, root_c;
+                isqrt_pair_threaded(a + i, c + j, &root_a, &root_c);
+                v = (root_a * root_c) ^ (b + i + j);
 
 			uint64_t idx_seed = v ^ result;
 			result = ROTL_threaded(idx_seed, r);
-            next_a_idx = map_index_threaded(result);
+            uint64_t result_fold = result ^ (result >> 33);
+            next_a_idx = map_index_from_fold_threaded(result_fold);
             __builtin_prefetch(mem_buffer_a + next_a_idx, 0, 3);
 
 			uint64_t *t_half = pick_half_threaded(v, mem_buffer_a, mem_buffer_b);
-			uint64_t idx_t = map_index_threaded(idx_seed);
+            uint64_t t_seed_fold = idx_seed ^ (idx_seed >> 33);
+            uint64_t idx_t = map_index_from_fold_threaded(t_seed_fold);
+            /* fold(~0) = 0xffffffff80000000. Reuse the T-map fold after
+             * the two original stores when deriving the next B address. */
+            uint64_t next_b_fold_base = t_seed_fold ^ UINT64_C(0xffffffff80000000);
+            __asm__("" : "+r" (next_b_fold_base));
 			uint64_t t = t_half[idx_t] ^ result;
 
-			uint64_t idx_a = map_index_threaded(t ^ result ^ 0x9e3779b97f4a7c15);
-			uint64_t idx_b = map_index_bounded_xor_threaded(idx_a, ~result ^ 0xd2b74407b1ce6e93);
+			uint64_t idx_a = map_index_a_salted_threaded(t ^ result);
+			uint64_t idx_b = map_index_from_fold_threaded(idx_a ^ result_fold ^ FOLDED_B_CONSTANT);
 
 			uint64_t mem_a = mem_buffer_a[idx_a];
 			mem_buffer_a[idx_a] = t;
@@ -1008,7 +1027,8 @@ static __attribute__((noinline, noclone)) uint64_t stage3_round1_threaded(uint64
 			if (++j == BUFSIZE) goto jx_loop_done;
 
 			a = mem_buffer_a[next_a_idx];
-			b = mem_buffer_b[map_index_threaded(a ^ ~ROTR_threaded(result, r))];
+            /* ROTR(ROTL(idx_seed,r),r) == idx_seed for every count. */
+			b = mem_buffer_b[map_index_from_fold_threaded((a ^ (a >> 33)) ^ next_b_fold_base)];
 			/* The two rounds cover scratch sequentially. Only rotates observe r
              * inside this loop, so the final MEMSIZE value is equivalent to
              * zero because MEMSIZE is a multiple of 64. Normalize before
@@ -1022,249 +1042,59 @@ static __attribute__((noinline, noclone)) uint64_t stage3_round1_threaded(uint64
 		jx_case_3: {
 				v = ((a + b) * c);
 
-			uint64_t idx_seed = v ^ result;
-			result = ROTL_threaded(idx_seed, r);
-            next_a_idx = map_index_threaded(result);
-            __builtin_prefetch(mem_buffer_a + next_a_idx, 0, 3);
-
-			uint64_t *t_half = pick_half_threaded(v, mem_buffer_a, mem_buffer_b);
-			uint64_t idx_t = map_index_threaded(idx_seed);
-			uint64_t t = t_half[idx_t] ^ result;
-
-			uint64_t idx_a = map_index_threaded(t ^ result ^ 0x9e3779b97f4a7c15);
-			uint64_t idx_b = map_index_bounded_xor_threaded(idx_a, ~result ^ 0xd2b74407b1ce6e93);
-
-			uint64_t mem_a = mem_buffer_a[idx_a];
-			mem_buffer_a[idx_a] = t;
-			mem_buffer_b[idx_b] ^= mem_a ^ ROTR_threaded(t, i + j);
-		
-			if (++j == BUFSIZE) goto jx_loop_done;
-
-			a = mem_buffer_a[next_a_idx];
-			b = mem_buffer_b[map_index_threaded(a ^ ~ROTR_threaded(result, r))];
-			/* The two rounds cover scratch sequentially. Only rotates observe r
-             * inside this loop, so the final MEMSIZE value is equivalent to
-             * zero because MEMSIZE is a multiple of 64. Normalize before
-             * the round's modular-power/address update below. */
-            c = mem_buffer_b[j];
-            r = i * BUFSIZE + j + 1;
-
-			__asm__ volatile("# jayxelis_dispatch_edge_3");
-			goto *targets[ROTL_threaded(result, (uint32_t)c) & 0xf];
-		}
+            goto jx_merged_tail_0;
+        }
 		jx_case_4: {
 				v = ((b - c) * a);
 
-			uint64_t idx_seed = v ^ result;
-			result = ROTL_threaded(idx_seed, r);
-            next_a_idx = map_index_threaded(result);
-            __builtin_prefetch(mem_buffer_a + next_a_idx, 0, 3);
-
-			uint64_t *t_half = pick_half_threaded(v, mem_buffer_a, mem_buffer_b);
-			uint64_t idx_t = map_index_threaded(idx_seed);
-			uint64_t t = t_half[idx_t] ^ result;
-
-			uint64_t idx_a = map_index_threaded(t ^ result ^ 0x9e3779b97f4a7c15);
-			uint64_t idx_b = map_index_bounded_xor_threaded(idx_a, ~result ^ 0xd2b74407b1ce6e93);
-
-			uint64_t mem_a = mem_buffer_a[idx_a];
-			mem_buffer_a[idx_a] = t;
-			mem_buffer_b[idx_b] ^= mem_a ^ ROTR_threaded(t, i + j);
-		
-			if (++j == BUFSIZE) goto jx_loop_done;
-
-			a = mem_buffer_a[next_a_idx];
-			b = mem_buffer_b[map_index_threaded(a ^ ~ROTR_threaded(result, r))];
-			/* The two rounds cover scratch sequentially. Only rotates observe r
-             * inside this loop, so the final MEMSIZE value is equivalent to
-             * zero because MEMSIZE is a multiple of 64. Normalize before
-             * the round's modular-power/address update below. */
-            c = mem_buffer_b[j];
-            r = i * BUFSIZE + j + 1;
-
-			__asm__ volatile("# jayxelis_dispatch_edge_4");
-			goto *targets[ROTL_threaded(result, (uint32_t)c) & 0xf];
-		}
+            goto jx_merged_tail_0;
+        }
 		jx_case_5: {
 				v = (c - a + b);
 
-			uint64_t idx_seed = v ^ result;
-			result = ROTL_threaded(idx_seed, r);
-            next_a_idx = map_index_threaded(result);
-            __builtin_prefetch(mem_buffer_a + next_a_idx, 0, 3);
-
-			uint64_t *t_half = pick_half_threaded(v, mem_buffer_a, mem_buffer_b);
-			uint64_t idx_t = map_index_threaded(idx_seed);
-			uint64_t t = t_half[idx_t] ^ result;
-
-			uint64_t idx_a = map_index_threaded(t ^ result ^ 0x9e3779b97f4a7c15);
-			uint64_t idx_b = map_index_bounded_xor_threaded(idx_a, ~result ^ 0xd2b74407b1ce6e93);
-
-			uint64_t mem_a = mem_buffer_a[idx_a];
-			mem_buffer_a[idx_a] = t;
-			mem_buffer_b[idx_b] ^= mem_a ^ ROTR_threaded(t, i + j);
-		
-			if (++j == BUFSIZE) goto jx_loop_done;
-
-			a = mem_buffer_a[next_a_idx];
-			b = mem_buffer_b[map_index_threaded(a ^ ~ROTR_threaded(result, r))];
-			/* The two rounds cover scratch sequentially. Only rotates observe r
-             * inside this loop, so the final MEMSIZE value is equivalent to
-             * zero because MEMSIZE is a multiple of 64. Normalize before
-             * the round's modular-power/address update below. */
-            c = mem_buffer_b[j];
-            r = i * BUFSIZE + j + 1;
-
-			__asm__ volatile("# jayxelis_dispatch_edge_5");
-			goto *targets[ROTL_threaded(result, (uint32_t)c) & 0xf];
-		}
+            goto jx_merged_tail_0;
+        }
 		jx_case_6: {
 				v = (a - b + c);
 
-			uint64_t idx_seed = v ^ result;
-			result = ROTL_threaded(idx_seed, r);
-            next_a_idx = map_index_threaded(result);
-            __builtin_prefetch(mem_buffer_a + next_a_idx, 0, 3);
-
-			uint64_t *t_half = pick_half_threaded(v, mem_buffer_a, mem_buffer_b);
-			uint64_t idx_t = map_index_threaded(idx_seed);
-			uint64_t t = t_half[idx_t] ^ result;
-
-			uint64_t idx_a = map_index_threaded(t ^ result ^ 0x9e3779b97f4a7c15);
-			uint64_t idx_b = map_index_bounded_xor_threaded(idx_a, ~result ^ 0xd2b74407b1ce6e93);
-
-			uint64_t mem_a = mem_buffer_a[idx_a];
-			mem_buffer_a[idx_a] = t;
-			mem_buffer_b[idx_b] ^= mem_a ^ ROTR_threaded(t, i + j);
-		
-			if (++j == BUFSIZE) goto jx_loop_done;
-
-			a = mem_buffer_a[next_a_idx];
-			b = mem_buffer_b[map_index_threaded(a ^ ~ROTR_threaded(result, r))];
-			/* The two rounds cover scratch sequentially. Only rotates observe r
-             * inside this loop, so the final MEMSIZE value is equivalent to
-             * zero because MEMSIZE is a multiple of 64. Normalize before
-             * the round's modular-power/address update below. */
-            c = mem_buffer_b[j];
-            r = i * BUFSIZE + j + 1;
-
-			__asm__ volatile("# jayxelis_dispatch_edge_6");
-			goto *targets[ROTL_threaded(result, (uint32_t)c) & 0xf];
-		}
+            goto jx_merged_tail_0;
+        }
 		jx_case_7: {
 				v = (b * c + a);
 
-			uint64_t idx_seed = v ^ result;
-			result = ROTL_threaded(idx_seed, r);
-            next_a_idx = map_index_threaded(result);
-            __builtin_prefetch(mem_buffer_a + next_a_idx, 0, 3);
-
-			uint64_t *t_half = pick_half_threaded(v, mem_buffer_a, mem_buffer_b);
-			uint64_t idx_t = map_index_threaded(idx_seed);
-			uint64_t t = t_half[idx_t] ^ result;
-
-			uint64_t idx_a = map_index_threaded(t ^ result ^ 0x9e3779b97f4a7c15);
-			uint64_t idx_b = map_index_bounded_xor_threaded(idx_a, ~result ^ 0xd2b74407b1ce6e93);
-
-			uint64_t mem_a = mem_buffer_a[idx_a];
-			mem_buffer_a[idx_a] = t;
-			mem_buffer_b[idx_b] ^= mem_a ^ ROTR_threaded(t, i + j);
-		
-			if (++j == BUFSIZE) goto jx_loop_done;
-
-			a = mem_buffer_a[next_a_idx];
-			b = mem_buffer_b[map_index_threaded(a ^ ~ROTR_threaded(result, r))];
-			/* The two rounds cover scratch sequentially. Only rotates observe r
-             * inside this loop, so the final MEMSIZE value is equivalent to
-             * zero because MEMSIZE is a multiple of 64. Normalize before
-             * the round's modular-power/address update below. */
-            c = mem_buffer_b[j];
-            r = i * BUFSIZE + j + 1;
-
-			__asm__ volatile("# jayxelis_dispatch_edge_7");
-			goto *targets[ROTL_threaded(result, (uint32_t)c) & 0xf];
-		}
+            goto jx_merged_tail_0;
+        }
 		jx_case_8: {
 				v = (c * a + b);
 
-			uint64_t idx_seed = v ^ result;
-			result = ROTL_threaded(idx_seed, r);
-            next_a_idx = map_index_threaded(result);
-            __builtin_prefetch(mem_buffer_a + next_a_idx, 0, 3);
-
-			uint64_t *t_half = pick_half_threaded(v, mem_buffer_a, mem_buffer_b);
-			uint64_t idx_t = map_index_threaded(idx_seed);
-			uint64_t t = t_half[idx_t] ^ result;
-
-			uint64_t idx_a = map_index_threaded(t ^ result ^ 0x9e3779b97f4a7c15);
-			uint64_t idx_b = map_index_bounded_xor_threaded(idx_a, ~result ^ 0xd2b74407b1ce6e93);
-
-			uint64_t mem_a = mem_buffer_a[idx_a];
-			mem_buffer_a[idx_a] = t;
-			mem_buffer_b[idx_b] ^= mem_a ^ ROTR_threaded(t, i + j);
-		
-			if (++j == BUFSIZE) goto jx_loop_done;
-
-			a = mem_buffer_a[next_a_idx];
-			b = mem_buffer_b[map_index_threaded(a ^ ~ROTR_threaded(result, r))];
-			/* The two rounds cover scratch sequentially. Only rotates observe r
-             * inside this loop, so the final MEMSIZE value is equivalent to
-             * zero because MEMSIZE is a multiple of 64. Normalize before
-             * the round's modular-power/address update below. */
-            c = mem_buffer_b[j];
-            r = i * BUFSIZE + j + 1;
-
-			__asm__ volatile("# jayxelis_dispatch_edge_8");
-			goto *targets[ROTL_threaded(result, (uint32_t)c) & 0xf];
-		}
+            goto jx_merged_tail_0;
+        }
 		jx_case_9: {
 				v = (a * b * c);
 
-			uint64_t idx_seed = v ^ result;
-			result = ROTL_threaded(idx_seed, r);
-            next_a_idx = map_index_threaded(result);
-            __builtin_prefetch(mem_buffer_a + next_a_idx, 0, 3);
-
-			uint64_t *t_half = pick_half_threaded(v, mem_buffer_a, mem_buffer_b);
-			uint64_t idx_t = map_index_threaded(idx_seed);
-			uint64_t t = t_half[idx_t] ^ result;
-
-			uint64_t idx_a = map_index_threaded(t ^ result ^ 0x9e3779b97f4a7c15);
-			uint64_t idx_b = map_index_bounded_xor_threaded(idx_a, ~result ^ 0xd2b74407b1ce6e93);
-
-			uint64_t mem_a = mem_buffer_a[idx_a];
-			mem_buffer_a[idx_a] = t;
-			mem_buffer_b[idx_b] ^= mem_a ^ ROTR_threaded(t, i + j);
-		
-			if (++j == BUFSIZE) goto jx_loop_done;
-
-			a = mem_buffer_a[next_a_idx];
-			b = mem_buffer_b[map_index_threaded(a ^ ~ROTR_threaded(result, r))];
-			/* The two rounds cover scratch sequentially. Only rotates observe r
-             * inside this loop, so the final MEMSIZE value is equivalent to
-             * zero because MEMSIZE is a multiple of 64. Normalize before
-             * the round's modular-power/address update below. */
-            c = mem_buffer_b[j];
-            r = i * BUFSIZE + j + 1;
-
-			__asm__ volatile("# jayxelis_dispatch_edge_9");
-			goto *targets[ROTL_threaded(result, (uint32_t)c) & 0xf];
-		}
+            goto jx_merged_tail_0;
+        }
 		jx_case_10: {
 				t1 = combine_uint64_threaded(a, b);
 				v = remainder128_threaded(a, b, c | 1);
 
 			uint64_t idx_seed = v ^ result;
 			result = ROTL_threaded(idx_seed, r);
-            next_a_idx = map_index_threaded(result);
+            uint64_t result_fold = result ^ (result >> 33);
+            next_a_idx = map_index_from_fold_threaded(result_fold);
             __builtin_prefetch(mem_buffer_a + next_a_idx, 0, 3);
 
 			uint64_t *t_half = pick_half_threaded(v, mem_buffer_a, mem_buffer_b);
-			uint64_t idx_t = map_index_threaded(idx_seed);
+            uint64_t t_seed_fold = idx_seed ^ (idx_seed >> 33);
+            uint64_t idx_t = map_index_from_fold_threaded(t_seed_fold);
+            /* fold(~0) = 0xffffffff80000000. Reuse the T-map fold after
+             * the two original stores when deriving the next B address. */
+            uint64_t next_b_fold_base = t_seed_fold ^ UINT64_C(0xffffffff80000000);
+            __asm__("" : "+r" (next_b_fold_base));
 			uint64_t t = t_half[idx_t] ^ result;
 
-			uint64_t idx_a = map_index_threaded(t ^ result ^ 0x9e3779b97f4a7c15);
-			uint64_t idx_b = map_index_bounded_xor_threaded(idx_a, ~result ^ 0xd2b74407b1ce6e93);
+			uint64_t idx_a = map_index_a_salted_threaded(t ^ result);
+			uint64_t idx_b = map_index_from_fold_threaded(idx_a ^ result_fold ^ FOLDED_B_CONSTANT);
 
 			uint64_t mem_a = mem_buffer_a[idx_a];
 			mem_buffer_a[idx_a] = t;
@@ -1273,7 +1103,8 @@ static __attribute__((noinline, noclone)) uint64_t stage3_round1_threaded(uint64
 			if (++j == BUFSIZE) goto jx_loop_done;
 
 			a = mem_buffer_a[next_a_idx];
-			b = mem_buffer_b[map_index_threaded(a ^ ~ROTR_threaded(result, r))];
+            /* ROTR(ROTL(idx_seed,r),r) == idx_seed for every count. */
+			b = mem_buffer_b[map_index_from_fold_threaded((a ^ (a >> 33)) ^ next_b_fold_base)];
 			/* The two rounds cover scratch sequentially. Only rotates observe r
              * inside this loop, so the final MEMSIZE value is equivalent to
              * zero because MEMSIZE is a multiple of 64. Normalize before
@@ -1297,15 +1128,21 @@ static __attribute__((noinline, noclone)) uint64_t stage3_round1_threaded(uint64
 
 			uint64_t idx_seed = v ^ result;
 			result = ROTL_threaded(idx_seed, r);
-            next_a_idx = map_index_threaded(result);
+            uint64_t result_fold = result ^ (result >> 33);
+            next_a_idx = map_index_from_fold_threaded(result_fold);
             __builtin_prefetch(mem_buffer_a + next_a_idx, 0, 3);
 
 			uint64_t *t_half = pick_half_threaded(v, mem_buffer_a, mem_buffer_b);
-			uint64_t idx_t = map_index_threaded(idx_seed);
+            uint64_t t_seed_fold = idx_seed ^ (idx_seed >> 33);
+            uint64_t idx_t = map_index_from_fold_threaded(t_seed_fold);
+            /* fold(~0) = 0xffffffff80000000. Reuse the T-map fold after
+             * the two original stores when deriving the next B address. */
+            uint64_t next_b_fold_base = t_seed_fold ^ UINT64_C(0xffffffff80000000);
+            __asm__("" : "+r" (next_b_fold_base));
 			uint64_t t = t_half[idx_t] ^ result;
 
-			uint64_t idx_a = map_index_threaded(t ^ result ^ 0x9e3779b97f4a7c15);
-			uint64_t idx_b = map_index_bounded_xor_threaded(idx_a, ~result ^ 0xd2b74407b1ce6e93);
+			uint64_t idx_a = map_index_a_salted_threaded(t ^ result);
+			uint64_t idx_b = map_index_from_fold_threaded(idx_a ^ result_fold ^ FOLDED_B_CONSTANT);
 
 			uint64_t mem_a = mem_buffer_a[idx_a];
 			mem_buffer_a[idx_a] = t;
@@ -1314,7 +1151,8 @@ static __attribute__((noinline, noclone)) uint64_t stage3_round1_threaded(uint64
 			if (++j == BUFSIZE) goto jx_loop_done;
 
 			a = mem_buffer_a[next_a_idx];
-			b = mem_buffer_b[map_index_threaded(a ^ ~ROTR_threaded(result, r))];
+            /* ROTR(ROTL(idx_seed,r),r) == idx_seed for every count. */
+			b = mem_buffer_b[map_index_from_fold_threaded((a ^ (a >> 33)) ^ next_b_fold_base)];
 			/* The two rounds cover scratch sequentially. Only rotates observe r
              * inside this loop, so the final MEMSIZE value is equivalent to
              * zero because MEMSIZE is a multiple of 64. Normalize before
@@ -1330,15 +1168,21 @@ static __attribute__((noinline, noclone)) uint64_t stage3_round1_threaded(uint64
 
 			uint64_t idx_seed = v ^ result;
 			result = ROTL_threaded(idx_seed, r);
-            next_a_idx = map_index_threaded(result);
+            uint64_t result_fold = result ^ (result >> 33);
+            next_a_idx = map_index_from_fold_threaded(result_fold);
             __builtin_prefetch(mem_buffer_a + next_a_idx, 0, 3);
 
 			uint64_t *t_half = pick_half_threaded(v, mem_buffer_a, mem_buffer_b);
-			uint64_t idx_t = map_index_threaded(idx_seed);
+            uint64_t t_seed_fold = idx_seed ^ (idx_seed >> 33);
+            uint64_t idx_t = map_index_from_fold_threaded(t_seed_fold);
+            /* fold(~0) = 0xffffffff80000000. Reuse the T-map fold after
+             * the two original stores when deriving the next B address. */
+            uint64_t next_b_fold_base = t_seed_fold ^ UINT64_C(0xffffffff80000000);
+            __asm__("" : "+r" (next_b_fold_base));
 			uint64_t t = t_half[idx_t] ^ result;
 
-			uint64_t idx_a = map_index_threaded(t ^ result ^ 0x9e3779b97f4a7c15);
-			uint64_t idx_b = map_index_bounded_xor_threaded(idx_a, ~result ^ 0xd2b74407b1ce6e93);
+			uint64_t idx_a = map_index_a_salted_threaded(t ^ result);
+			uint64_t idx_b = map_index_from_fold_threaded(idx_a ^ result_fold ^ FOLDED_B_CONSTANT);
 
 			uint64_t mem_a = mem_buffer_a[idx_a];
 			mem_buffer_a[idx_a] = t;
@@ -1347,7 +1191,8 @@ static __attribute__((noinline, noclone)) uint64_t stage3_round1_threaded(uint64
 			if (++j == BUFSIZE) goto jx_loop_done;
 
 			a = mem_buffer_a[next_a_idx];
-			b = mem_buffer_b[map_index_threaded(a ^ ~ROTR_threaded(result, r))];
+            /* ROTR(ROTL(idx_seed,r),r) == idx_seed for every count. */
+			b = mem_buffer_b[map_index_from_fold_threaded((a ^ (a >> 33)) ^ next_b_fold_base)];
 			/* The two rounds cover scratch sequentially. Only rotates observe r
              * inside this loop, so the final MEMSIZE value is equivalent to
              * zero because MEMSIZE is a multiple of 64. Normalize before
@@ -1371,15 +1216,21 @@ static __attribute__((noinline, noclone)) uint64_t stage3_round1_threaded(uint64
 
 			uint64_t idx_seed = v ^ result;
 			result = ROTL_threaded(idx_seed, r);
-            next_a_idx = map_index_threaded(result);
+            uint64_t result_fold = result ^ (result >> 33);
+            next_a_idx = map_index_from_fold_threaded(result_fold);
             __builtin_prefetch(mem_buffer_a + next_a_idx, 0, 3);
 
 			uint64_t *t_half = pick_half_threaded(v, mem_buffer_a, mem_buffer_b);
-			uint64_t idx_t = map_index_threaded(idx_seed);
+            uint64_t t_seed_fold = idx_seed ^ (idx_seed >> 33);
+            uint64_t idx_t = map_index_from_fold_threaded(t_seed_fold);
+            /* fold(~0) = 0xffffffff80000000. Reuse the T-map fold after
+             * the two original stores when deriving the next B address. */
+            uint64_t next_b_fold_base = t_seed_fold ^ UINT64_C(0xffffffff80000000);
+            __asm__("" : "+r" (next_b_fold_base));
 			uint64_t t = t_half[idx_t] ^ result;
 
-			uint64_t idx_a = map_index_threaded(t ^ result ^ 0x9e3779b97f4a7c15);
-			uint64_t idx_b = map_index_bounded_xor_threaded(idx_a, ~result ^ 0xd2b74407b1ce6e93);
+			uint64_t idx_a = map_index_a_salted_threaded(t ^ result);
+			uint64_t idx_b = map_index_from_fold_threaded(idx_a ^ result_fold ^ FOLDED_B_CONSTANT);
 
 			uint64_t mem_a = mem_buffer_a[idx_a];
 			mem_buffer_a[idx_a] = t;
@@ -1388,7 +1239,8 @@ static __attribute__((noinline, noclone)) uint64_t stage3_round1_threaded(uint64
 			if (++j == BUFSIZE) goto jx_loop_done;
 
 			a = mem_buffer_a[next_a_idx];
-			b = mem_buffer_b[map_index_threaded(a ^ ~ROTR_threaded(result, r))];
+            /* ROTR(ROTL(idx_seed,r),r) == idx_seed for every count. */
+			b = mem_buffer_b[map_index_from_fold_threaded((a ^ (a >> 33)) ^ next_b_fold_base)];
 			/* The two rounds cover scratch sequentially. Only rotates observe r
              * inside this loop, so the final MEMSIZE value is equivalent to
              * zero because MEMSIZE is a multiple of 64. Normalize before
@@ -1405,15 +1257,21 @@ static __attribute__((noinline, noclone)) uint64_t stage3_round1_threaded(uint64
 
 			uint64_t idx_seed = v ^ result;
 			result = ROTL_threaded(idx_seed, r);
-            next_a_idx = map_index_threaded(result);
+            uint64_t result_fold = result ^ (result >> 33);
+            next_a_idx = map_index_from_fold_threaded(result_fold);
             __builtin_prefetch(mem_buffer_a + next_a_idx, 0, 3);
 
 			uint64_t *t_half = pick_half_threaded(v, mem_buffer_a, mem_buffer_b);
-			uint64_t idx_t = map_index_threaded(idx_seed);
+            uint64_t t_seed_fold = idx_seed ^ (idx_seed >> 33);
+            uint64_t idx_t = map_index_from_fold_threaded(t_seed_fold);
+            /* fold(~0) = 0xffffffff80000000. Reuse the T-map fold after
+             * the two original stores when deriving the next B address. */
+            uint64_t next_b_fold_base = t_seed_fold ^ UINT64_C(0xffffffff80000000);
+            __asm__("" : "+r" (next_b_fold_base));
 			uint64_t t = t_half[idx_t] ^ result;
 
-			uint64_t idx_a = map_index_threaded(t ^ result ^ 0x9e3779b97f4a7c15);
-			uint64_t idx_b = map_index_bounded_xor_threaded(idx_a, ~result ^ 0xd2b74407b1ce6e93);
+			uint64_t idx_a = map_index_a_salted_threaded(t ^ result);
+			uint64_t idx_b = map_index_from_fold_threaded(idx_a ^ result_fold ^ FOLDED_B_CONSTANT);
 
 			uint64_t mem_a = mem_buffer_a[idx_a];
 			mem_buffer_a[idx_a] = t;
@@ -1422,7 +1280,8 @@ static __attribute__((noinline, noclone)) uint64_t stage3_round1_threaded(uint64
 			if (++j == BUFSIZE) goto jx_loop_done;
 
 			a = mem_buffer_a[next_a_idx];
-			b = mem_buffer_b[map_index_threaded(a ^ ~ROTR_threaded(result, r))];
+            /* ROTR(ROTL(idx_seed,r),r) == idx_seed for every count. */
+			b = mem_buffer_b[map_index_from_fold_threaded((a ^ (a >> 33)) ^ next_b_fold_base)];
 			/* The two rounds cover scratch sequentially. Only rotates observe r
              * inside this loop, so the final MEMSIZE value is equivalent to
              * zero because MEMSIZE is a multiple of 64. Normalize before
@@ -1440,15 +1299,21 @@ static __attribute__((noinline, noclone)) uint64_t stage3_round1_threaded(uint64
 
 			uint64_t idx_seed = v ^ result;
 			result = ROTL_threaded(idx_seed, r);
-            next_a_idx = map_index_threaded(result);
+            uint64_t result_fold = result ^ (result >> 33);
+            next_a_idx = map_index_from_fold_threaded(result_fold);
             __builtin_prefetch(mem_buffer_a + next_a_idx, 0, 3);
 
 			uint64_t *t_half = pick_half_threaded(v, mem_buffer_a, mem_buffer_b);
-			uint64_t idx_t = map_index_threaded(idx_seed);
+            uint64_t t_seed_fold = idx_seed ^ (idx_seed >> 33);
+            uint64_t idx_t = map_index_from_fold_threaded(t_seed_fold);
+            /* fold(~0) = 0xffffffff80000000. Reuse the T-map fold after
+             * the two original stores when deriving the next B address. */
+            uint64_t next_b_fold_base = t_seed_fold ^ UINT64_C(0xffffffff80000000);
+            __asm__("" : "+r" (next_b_fold_base));
 			uint64_t t = t_half[idx_t] ^ result;
 
-			uint64_t idx_a = map_index_threaded(t ^ result ^ 0x9e3779b97f4a7c15);
-			uint64_t idx_b = map_index_bounded_xor_threaded(idx_a, ~result ^ 0xd2b74407b1ce6e93);
+			uint64_t idx_a = map_index_a_salted_threaded(t ^ result);
+			uint64_t idx_b = map_index_from_fold_threaded(idx_a ^ result_fold ^ FOLDED_B_CONSTANT);
 
 			uint64_t mem_a = mem_buffer_a[idx_a];
 			mem_buffer_a[idx_a] = t;
@@ -1457,7 +1322,8 @@ static __attribute__((noinline, noclone)) uint64_t stage3_round1_threaded(uint64
 			if (++j == BUFSIZE) goto jx_loop_done;
 
 			a = mem_buffer_a[next_a_idx];
-			b = mem_buffer_b[map_index_threaded(a ^ ~ROTR_threaded(result, r))];
+            /* ROTR(ROTL(idx_seed,r),r) == idx_seed for every count. */
+			b = mem_buffer_b[map_index_from_fold_threaded((a ^ (a >> 33)) ^ next_b_fold_base)];
 			/* The two rounds cover scratch sequentially. Only rotates observe r
              * inside this loop, so the final MEMSIZE value is equivalent to
              * zero because MEMSIZE is a multiple of 64. Normalize before
@@ -1468,6 +1334,45 @@ static __attribute__((noinline, noclone)) uint64_t stage3_round1_threaded(uint64
 			__asm__ volatile("# jayxelis_dispatch_edge_15");
 			goto *targets[ROTL_threaded(result, (uint32_t)c) & 0xf];
 		}
+
+        jx_merged_tail_0: {
+			uint64_t idx_seed = v ^ result;
+			result = ROTL_threaded(idx_seed, r);
+            uint64_t result_fold = result ^ (result >> 33);
+            next_a_idx = map_index_from_fold_threaded(result_fold);
+            __builtin_prefetch(mem_buffer_a + next_a_idx, 0, 3);
+
+			uint64_t *t_half = pick_half_threaded(v, mem_buffer_a, mem_buffer_b);
+            uint64_t t_seed_fold = idx_seed ^ (idx_seed >> 33);
+            uint64_t idx_t = map_index_from_fold_threaded(t_seed_fold);
+            /* fold(~0) = 0xffffffff80000000. Reuse the T-map fold after
+             * the two original stores when deriving the next B address. */
+            uint64_t next_b_fold_base = t_seed_fold ^ UINT64_C(0xffffffff80000000);
+            __asm__("" : "+r" (next_b_fold_base));
+			uint64_t t = t_half[idx_t] ^ result;
+
+			uint64_t idx_a = map_index_a_salted_threaded(t ^ result);
+			uint64_t idx_b = map_index_from_fold_threaded(idx_a ^ result_fold ^ FOLDED_B_CONSTANT);
+
+			uint64_t mem_a = mem_buffer_a[idx_a];
+			mem_buffer_a[idx_a] = t;
+			mem_buffer_b[idx_b] ^= mem_a ^ ROTR_threaded(t, i + j);
+		
+			if (++j == BUFSIZE) goto jx_loop_done;
+
+			a = mem_buffer_a[next_a_idx];
+            /* ROTR(ROTL(idx_seed,r),r) == idx_seed for every count. */
+			b = mem_buffer_b[map_index_from_fold_threaded((a ^ (a >> 33)) ^ next_b_fold_base)];
+			/* The two rounds cover scratch sequentially. Only rotates observe r
+             * inside this loop, so the final MEMSIZE value is equivalent to
+             * zero because MEMSIZE is a multiple of 64. Normalize before
+             * the round's modular-power/address update below. */
+            c = mem_buffer_b[j];
+            r = i * BUFSIZE + j + 1;
+
+			__asm__ volatile("# jayxelis_merged_tail_0");
+			goto *targets[ROTL_threaded(result, (uint32_t)c) & 0xf];
+        }
 		jx_loop_done: ;
 		}
     return result;

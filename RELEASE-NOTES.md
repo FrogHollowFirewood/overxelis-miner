@@ -1,3 +1,106 @@
+# OverXelis Miner 1.0.0-beta.4 · Public source preview 1
+
+Experimental Linux x86-64 XelisHashV3 CPU miner. This prerelease distributes
+source only; build and qualify it locally. No precompiled desktop miner,
+private user configuration or deployment service package is included.
+
+## Download and identity
+
+- [Beta.4 source archive](https://github.com/FrogHollowFirewood/overxelis-miner/releases/download/v1.0.0-beta.4-public-preview.1/OverXelis-Miner-1.0.0-beta.4-public-source-preview.1.tar.gz)
+- [Matching checksum](https://github.com/FrogHollowFirewood/overxelis-miner/releases/download/v1.0.0-beta.4-public-preview.1/SHA256SUMS-beta.4-public-source-preview.1.txt)
+- [Public validation addendum and current build instructions](https://github.com/FrogHollowFirewood/overxelis-miner/releases/download/v1.0.0-beta.4-public-preview.1/BETA4-PUBLIC-VALIDATION-NOTES.md)
+- [Release page](https://github.com/FrogHollowFirewood/overxelis-miner/releases/tag/v1.0.0-beta.4-public-preview.1)
+
+Archive: **309,121 bytes**, 68 tracked source files plus SOURCE-MANIFEST.json.
+
+```text
+7c0e9bf745d22c86bf186e360ed2a8cc23ec5bdb7e188adf4fd1c7a4a24c5cd4
+```
+
+A checksum verifies file integrity; it is not a publisher signature. The exact
+archive preserves the included preparation-time documents. Later validation is
+reported outside that frozen source tree in the [dated evidence](docs/evidence/beta4-validation-20261106.json).
+The internal static VALIDATION.json describes an earlier development checkpoint
+and selected-kernel hashes, not the final-build report. The dated evidence for
+current source manifest `90ca3e0d…` and tested desktop native `f5072ba1…`
+supersedes those earlier validation descriptions. Read the linked public
+addendum for full identities and current build instructions; the internally
+mentioned development STAGING-METADATA is not shipped or required.
+
+## Changes
+
+The selected native kernel combines exact arithmetic/index-fold optimizations,
+shared arithmetic tails, guarded square-root estimates with exact correction,
+and the selected folded-A salt expression/compiler barrier. Reference hash and
+scratchpad behavior remains the correctness gate. Compiler and hardware choices
+can change performance. The worker runtime, configuration format, reference
+verification, bounded nonce tracking and developer-time policy are preserved.
+
+The disclosed 1% schedule remains 99 active USER minutes followed by a FEE
+window of up to 60 seconds. Mining still requires `--accept-dev-fee`. This
+scheduled-time policy does not promise an exact fraction of coins or earnings.
+
+## Recorded hour: GPU mining paused, Mining100 cooling
+
+**One Threadripper PRO 7995WX, 192 hugetlb workers, GCC 15.2.0, ordinary non-PGO
+build, GPU mining paused and all six fan channels on Mining100** recorded:
+
+| Observation | Result |
+| --- | ---: |
+| Settling period | 600 seconds |
+| Conservative post-settle active USER coverage | 3,671.545 seconds |
+| Counted Local display samples | 366 |
+| Arithmetic mean of rounded Local samples | 121.157224 kH/s |
+| Minimum counted Local sample | 120.908 kH/s |
+| Measurement accepted USER shares | 393 |
+| Rejected / unresolved work | 0 / 0 |
+
+CPU clock/voltage settings were unchanged for this test. No counted pause,
+reconnect or error was recorded; the miner shut down normally. The mean is
+unweighted and based on rounded displayed rates, not an independent raw-counter
+hour rate, pool-side estimate or earnings measurement. A separate GPU-on attempt
+failed the strict 120 kH/s displayed minimum. The passing result applies to the
+stated GPU-paused/cooling conditions, with no universal or GPU-on speed promise.
+
+## Separate shorter profiles and portability
+
+On the same desktop native artifact, still GPU-paused with Mining100 cooling,
+real Kryptex runs measured **23.844454 kH/s at 24 workers** over 311.380 seconds
+and **31.786244 kH/s at 32 workers** over 311.512 seconds after at least 60 seconds
+of settling. These use actual completed-hash counts and intervals. The measured
+windows accepted 3 and 13 USER shares respectively, with zero rejected/unresolved
+work. They are not one-hour results.
+
+Three other CPU rigs separately rebuilt this source and passed the full
+1,031-case/four-implementation qualification, reference scratchpads, actual
+huge-page worker checks and accepted Kryptex startup work at 32/24/24 workers.
+Their compilers were GCC 13.3.0/13.3.0/11.4.0. Configuration and service policies
+were preserved and no GPU change was reported. This is startup portability
+evidence, not the desktop lower-thread measurement or sustained rig performance.
+
+## Build and limits
+
+Use Linux x86-64 with AES-NI, Python 3.10+ and GNU binutils. GCC 15.2 was used for
+the recorded desktop compiler profile; other builds need their own correctness
+qualification and rate observations. Stop an existing CPU miner normally,
+build as a normal user on the mining computer and retain strict binary64 math.
+Do not add fast-math, transfer a `-march=native` library between different CPUs
+or substitute an unqualified build. See [README.md](README.md) for commands.
+
+No completed beta.4 fee cycle, deliberate live reconnect-recovery test, matched
+5% advantage over BzMiner or universal fastest setting is claimed. Historical
+beta.3/beta.2 observations below belong to their own artifacts and conditions;
+they are not matched beta.4 comparisons. The source archive has not been
+regenerated to insert later measurements or portable-compiler observations.
+
+---
+
+# Historical beta.3 and beta.2 release notes
+
+The following entries are preserved as historical release records. Their
+“latest” links, compiler requirements and validation limits refer to those
+editions.
+
 # OverXelis Miner 1.0.0-beta.3 · Public source preview 1
 
 Experimental Linux x86-64 CPU miner for XELIS. This is a **source-only prerelease**: build and qualify it on the computer that will mine. No precompiled miner or private user configuration is included.

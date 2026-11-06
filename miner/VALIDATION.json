@@ -1,45 +1,96 @@
 {
-  "version": "1.0.0-beta.3",
+  "version": "1.0.0-beta.4",
   "edition": "public-source-preview.1",
-  "starting_archive_sha256": "2f0e922007fc6a2fe2c36ad7d1c1cb3f69438ae08f1435d26ae93417ac29b847",
+  "document_role": "Static build/acceptance requirements and evidence references; not a test result.",
+  "starting_archive_sha256": "a53075dd73977796281780767ff4387c8c788a951630a468b5591fd6731cee12",
+  "starting_archive_scope": "User-supplied beta.3 source archive; provenance only, not qualification of beta.4.",
   "source_binary_included": false,
   "qualification_required_on_each_build": true,
   "performance_guaranteed": false,
-  "completed_checks_location": "Development kit validation-evidence/ and each local build/evidence directory; this static file is not a test result.",
+  "completed_checks_location": "Development kit validation-evidence/ and each exact local build/evidence directory; this static descriptor is not a test result.",
   "required_desktop_cpu": "AMD Threadripper PRO 7995WX",
-  "historical_reference_khs": 110.615,
-  "long_term_bzminer_target": "At least +5% under matched current conditions; historical arithmetic is insufficient.",
-  "release_status": "Public source preview prepared for validation and acceptance",
   "desktop_logical_threads": 192,
-  "benchmark_threads_explicit_required": true,
-  "owner_reported_beta2_fastest_threads": 160,
-  "worker_layout_qualification_threads": 192,
+  "selected_kernel": "experiments/dispatch_round_specialized.c",
+  "selected_kernel_sha256": "f10c075b8e069df926e6b62ac5ce3a8946537fc66ec19794345d474452aaff64",
+  "selected_kernel_body_marker": "#define _GNU_SOURCE",
+  "selected_kernel_body_sha256": "94c61501ff8f21e84c6fceb19dda5c6f8e19a0b5fb4416bcb2d9718205574dcb",
+  "selected_development_source": "tail-lab/c2-sqrt-probability/c2_sqrt_probability.c",
+  "selected_development_source_sha256": "75ddabf5cc45d5d861fd90b69af4b527a05e631d91bb4d746ad0d017545c5a9c",
+  "selected_changes": [
+    "Two exact modulo-2^64 C2 products use a local readonly memory operand in low64 IMUL.",
+    "Two existing square-root guard comparisons use compiler probability annotations; the model is not an observed distribution and no guard or correction path is removed."
+  ],
+  "worker_runtime": "experiments/runtime-topology-colored-huge.c",
+  "worker_runtime_sha256": "78bab73ae83e08c0f83490eebf26ec8d1065f86913eb72866e11b23e5902ccf8",
   "layout_constants": {
     "stride_bytes": 4160,
     "window_bytes": 524288
   },
-  "selected_kernel_sha256": "13b1ba601cda3c4d5c7ca90cfee15f128efcd36e15b73d92d4e3436a0ab6c80e",
-  "actual_hugetlb_worker_qualification_required": true,
-  "worker_runtime_sha256": "78bab73ae83e08c0f83490eebf26ec8d1065f86913eb72866e11b23e5902ccf8",
-  "selected_kernel_byte_identical_to_supplied_beta2": false,
-  "worker_runtime_byte_identical_to_supplied_beta2": true,
-  "pgo_enabled_by_default": false,
-  "initial_memory_mode": "ordinary",
-  "ordered_cpu_config_optional": true,
-  "absent_or_null_cpus_keeps_automatic_selection": true,
-  "target_fastest_thread_count_and_placement_established": false,
-  "owner_reported_160_advantage_reproduced_under_current_settings": false,
-  "arithmetic_helpers_byte_identical_to_supplied_beta2": true,
-  "guard_hoist_case11_case13_enabled": true,
-  "preparation_only": true,
-  "release_acceptance_established": false,
-  "selected_starting_edition": "development-preview.22",
-  "selected_starting_source_manifest_sha256": "485e03193411ba6ca10c762c9647ee7f25b196afa937fabf090b8d1c84549ba6",
-  "required_build_compiler_family": "GCC 14",
+  "required_build_compiler_family": "GCC 15",
   "recommended_build_mode": "ordinary non-PGO",
-  "production_python_test_count": 124,
-  "optional_proposal_test_count": 15,
-  "target_performance_claimed": false,
-  "live_pool_success_claimed": false,
-  "full_real_fee_cycle_claimed": false
+  "compiler_selection": "Pass an existing verified GCC 15 executable/private wrapper explicitly with --compiler; no global compiler or library-path change.",
+  "native_compilation": true,
+  "fast_math_permitted": false,
+  "required_kernel_qualification": {
+    "saved_answers": 1031,
+    "C_implementations": 4,
+    "complete_scratchpad_comparison": true,
+    "fresh_Rust_execution_claimed": false
+  },
+  "actual_hugetlb_worker_qualification_required": true,
+  "required_worker_qualification_threads": [
+    192,
+    32,
+    24
+  ],
+  "required_192_worker_sustained_gate": {
+    "matched_comparison_pairs": 3,
+    "measured_seconds_per_run": 60,
+    "minimum_sustained_khs": 118,
+    "method": "Completed hashes divided by actual measured time; retain raw counter/duration records and ordered CPU placement."
+  },
+  "required_low_thread_measurements": {
+    "worker_counts": [
+      24,
+      32
+    ],
+    "warmup_seconds_per_run": 30,
+    "minimum_measured_seconds_per_run": 300,
+    "scope": "Record actual count-specific rates for the same final artifact; these do not substitute for the 192-worker throughput gate."
+  },
+  "required_live_pool_gate": {
+    "minimum_post_settle_seconds": 3660,
+    "minimum_settle_seconds": 120,
+    "reviewed_soak_options": [
+      "--measure-seconds",
+      "3660",
+      "--settle-seconds",
+      "120",
+      "--max-runtime-seconds",
+      "7200"
+    ],
+    "required_records": [
+      "Production active-time duration proof",
+      "Accepted/rejected/unresolved counts and reconnect observations",
+      "Timestamped displayed rates and test conditions",
+      "Pinned final source manifest, library and build record"
+    ],
+    "rate_scope": "Displayed samples are rounded and do not replace the separate independent completed-hash throughput gate.",
+    "fee_scope": "61 post-settle minutes do not by themselves prove the first scheduled fee transition after 99 active USER minutes."
+  },
+  "evidence_references": {
+    "source_manifest": "SOURCE-MANIFEST.json",
+    "build_record": "build/build.json",
+    "compiled_library": "build/liboverxelis.so",
+    "kernel_qualification": "evidence/kernel-qualification.json",
+    "actual_worker_qualification_192": "evidence/worker-layout-qualification.json",
+    "actual_worker_qualification_32": "evidence/worker-layout-32.json",
+    "actual_worker_qualification_24": "evidence/worker-layout-24.json",
+    "sustained_192_worker_comparison": "evidence/sustained-screen/analysis.json",
+    "low_thread_rates": "low-thread-rates.json in the chosen measurement output directory",
+    "live_pool_report": "evidence/hour-test/report.json",
+    "live_pool_rate_samples": "evidence/hour-test/rates.csv",
+    "development_records": "validation-evidence/ in the development kit; retain each report with its original source/library identity and scope."
+  },
+  "evidence_reference_scope": "Required report locations and identity links. Their inclusion in this static file asserts neither completion nor a passing result. Only the actual matching report establishes a check."
 }

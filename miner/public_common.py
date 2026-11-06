@@ -2,7 +2,7 @@
 from pathlib import Path
 import datetime, fcntl, hashlib, json, os, platform, stat, tempfile
 
-VERSION = '1.0.0-beta.3'
+VERSION = '1.0.0-beta.4'
 EDITION = 'public-source-preview.1'
 ROOT = Path(__file__).resolve().parent
 

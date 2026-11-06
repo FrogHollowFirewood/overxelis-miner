@@ -1,0 +1,13 @@
+/* Beta.4 evidence panels: keep the result and its operating conditions together. */
+.beta4-result{border:1px solid #375b46;border-radius:16px;background:linear-gradient(140deg,#10291d,#09140f);overflow:hidden}
+.beta4-result-body{padding:26px}.beta4-result .eyebrow{font-size:10px;line-height:1.7;letter-spacing:1px}
+.beta4-result .beta4-rate{margin:8px 0 0;color:var(--mint);line-height:1.1;white-space:nowrap;font-variant-numeric:tabular-nums}
+.beta4-rate strong{font-size:clamp(48px,5.5vw,68px);font-weight:650;letter-spacing:-3px}.beta4-rate>span{font-size:18px;letter-spacing:0}
+.beta4-result .beta4-rate-label{font-size:13px;margin:10px 0 20px;color:#c0d6c8}
+.beta4-conditions{border:1px solid #736142;border-left:3px solid var(--warn);background:#292617;padding:15px 17px;border-radius:9px;color:#f4e4c8;font-size:13px;line-height:1.75}
+.beta4-conditions>strong{font-size:12px;letter-spacing:.06em;text-transform:uppercase}.beta4-result .beta4-conditions p{font-size:13px;line-height:1.75;color:#f4e4c8;margin:7px 0}.beta4-conditions p:last-child{margin-bottom:0}.beta4-conditions p+p{border-top:1px solid #736142;padding-top:9px}
+.beta4-stats{display:grid;grid-template-columns:1fr 1fr;gap:12px 18px;margin:20px 0}.beta4-stats>div:first-child{grid-column:1/-1}.beta4-stats dt{font-size:11px;color:var(--muted);line-height:1.6}.beta4-stats dd{margin:3px 0 0;font-size:19px;font-weight:600;font-variant-numeric:tabular-nums}
+.beta4-result .beta4-scope{font-size:12px;line-height:1.75;color:#bbcec1;margin:18px 0 12px}.beta4-evidence-panel{max-width:740px;margin:25px 0}.beta4-evidence-panel .beta4-stats{grid-template-columns:1.5fr 1fr 1fr}.beta4-evidence-panel .beta4-stats>div:first-child{grid-column:auto}
+#beta3-history{margin-top:52px;padding-top:30px;border-top:1px solid var(--line)}
+@media(max-width:680px){.beta4-result-body{padding:21px}.beta4-result .console-top{font-size:8px;padding:15px 18px;gap:12px}.beta4-rate strong{font-size:58px}.beta4-conditions{padding:13px 14px}.beta4-evidence-panel .beta4-stats{grid-template-columns:1fr 1fr}.beta4-evidence-panel .beta4-stats>div:first-child{grid-column:1/-1}}
+@media(forced-colors:active){.beta4-result,.beta4-conditions{border:1px solid CanvasText}}

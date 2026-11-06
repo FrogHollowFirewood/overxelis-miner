@@ -17,8 +17,8 @@ class ReleaseInventory(unittest.TestCase):
  def test_compilation_inputs_exist(self):
   for n,_ in b.SOURCES:self.assertTrue((R/n).is_file(),n)
   readme=(R/'README.md').read_text()
-  self.assertIn('sha256sum --check SHA256SUMS-beta.3-public-source-preview.1.txt &&',readme)
-  self.assertIn('python3 -I -B build_public.py --compiler /absolute/path/to/gcc14 &&',readme)
+  self.assertIn('sha256sum --check SHA256SUMS-beta.4-public-source-preview.1.txt &&',readme)
+  self.assertIn('python3 -I -B build_public.py --compiler /absolute/path/to/toolchains/gcc15-jammy-b/gcc15 &&',readme)
   self.assertIn('python3 -I -B qualify_public.py &&',readme)
  def test_tnn_path_disclosed_and_called(self):
   for n in ('experiments/dispatch_round_specialized.c','kernels/experimental.c','kernels/experimental_sqrt.c'):

@@ -22,7 +22,7 @@ from urllib.parse import urlsplit
 
 import topology
 
-VERSION = "OverXelisMiner/1.0.0-beta.3"
+VERSION = "OverXelisMiner/1.0.0-beta.4"
 MAX_FRAME = 65536
 MAX_TARGET = (1 << 256) - 1
 KERNELS = {"reference": 0, "rc1": 1, "experimental": 2, "experimental-sqrt": 3}

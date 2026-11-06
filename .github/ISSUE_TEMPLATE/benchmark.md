@@ -12,11 +12,14 @@ Source-manifest and native-library SHA-256:
 Threads used / CPU order (automatic or explicit):
 Memory mode / realized huge-page workers:
 Power/clock settings, temperature and competing workload:
+Was GPU mining running or paused? Cooling/fan profile:
 
 ## Measurement
 Warmup:
 Measured duration:
 Local average and pool accepted-work measurement:
+Rate method (rounded Local samples or completed-hash counters):
+Minimum interval rate and sample count:
 User accepted / rejected / unresolved:
 Fee accepted / rejected / unresolved:
 Reconnects, paused time, and completed fee cycles:
