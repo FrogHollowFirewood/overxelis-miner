@@ -1,0 +1,19 @@
+name: Publish beta4 logged-hour addendum
+on:
+  push:
+    branches: ['release/beta4-hour-report-20261106']
+permissions:
+  contents: write
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 2
+          persist-credentials: false
+      - name: Verify and append the reviewed release evidence
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 -I -B tools/publish-hour-addendum.py
