@@ -1,122 +1,97 @@
 # OverXelis Miner
 
-Independent XELIS CPU-mining software. **1.0.0-beta.4 / public-source-preview.1**
+Independent XELIS CPU-mining software. **1.0.0-beta.4 / public-source-preview.2 — checked crash fix**
 
 Experimental Linux x86-64 source preview. Build and qualify it on the computer
 that will mine. Configure your own public payout address, pool, worker, thread
 count, CPU order and memory mode. The disclosed **1% scheduled developer
-mining-time allocation** remains unchanged: 99 active USER minutes, followed
-by a fee window of up to 60 seconds.
+mining-time allocation** remains 99 active USER minutes followed by a fee window
+of up to 60 seconds.
 
-## Beta.4 source download
+## Upgrade from beta.4 preview 1
 
-- **[Download beta.4 source archive](https://github.com/FrogHollowFirewood/overxelis-miner/releases/download/v1.0.0-beta.4-public-preview.1/OverXelis-Miner-1.0.0-beta.4-public-source-preview.1.tar.gz)**
-- [Matching SHA-256 checksum](https://github.com/FrogHollowFirewood/overxelis-miner/releases/download/v1.0.0-beta.4-public-preview.1/SHA256SUMS-beta.4-public-source-preview.1.txt)
-- [Public validation addendum and current build instructions](https://github.com/FrogHollowFirewood/overxelis-miner/releases/download/v1.0.0-beta.4-public-preview.1/BETA4-PUBLIC-VALIDATION-NOTES.md)
-- [Beta.4 release page](https://github.com/FrogHollowFirewood/overxelis-miner/releases/tag/v1.0.0-beta.4-public-preview.1) · [All releases](https://github.com/FrogHollowFirewood/overxelis-miner/releases)
-- [Website guide](https://froghollowfirewood.github.io/overxelis-miner/guide.html) · [Current validation report](https://froghollowfirewood.github.io/overxelis-miner/site-status.html#beta4-validation)
+**The earlier beta.4 preview 1 is superseded because of a recorded integer
+divide-by-zero crash**, displayed by the shell as “floating point exception.”
+Use preview 2 in a fresh directory and rebuild and qualify it locally. Existing
+release tags, archives, checksums and historical test records remain unchanged.
+
+The selected production kernel now checks the zero-modulus state before division.
+A failed nonce is consumed, is not counted as a completed hash, and cannot enter
+the share queue. The first failing input is retained in native runtime memory for diagnostics; the public launcher does not automatically save it to disk.
+No replacement modulus or invented hash is submitted. The historical failing
+input was not saved, so the origin of its zero intermediate value remains
+unverified. This repair addresses the observed selected-kernel failure; it does
+not establish that every possible crash is prevented.
+
+## Current beta.4 source download
+
+- **[Download the beta.4 hotfix source archive](https://github.com/FrogHollowFirewood/overxelis-miner/releases/download/v1.0.0-beta.4-public-preview.2/OverXelis-Miner-1.0.0-beta.4-public-source-preview.2.tar.gz)**
+- [Matching SHA-256 checksum](https://github.com/FrogHollowFirewood/overxelis-miner/releases/download/v1.0.0-beta.4-public-preview.2/SHA256SUMS-beta.4-public-source-preview.2.txt)
+- [Hotfix validation notes](https://github.com/FrogHollowFirewood/overxelis-miner/releases/download/v1.0.0-beta.4-public-preview.2/BETA4-HOTFIX-VALIDATION-NOTES.md)
+- [Preview-2 release page](https://github.com/FrogHollowFirewood/overxelis-miner/releases/tag/v1.0.0-beta.4-public-preview.2) · [All releases](https://github.com/FrogHollowFirewood/overxelis-miner/releases)
+- [Website guide](https://froghollowfirewood.github.io/overxelis-miner/guide.html) · [Current hotfix report](https://froghollowfirewood.github.io/overxelis-miner/site-status.html#beta4-validation)
 
 Use the named **source-only prerelease** and its matching checksum, rather than
-GitHub's automatic repository ZIP. The archive is **309,121 bytes** and contains
-68 tracked source files plus their manifest. No precompiled miner, live user
-configuration, private deployment kit or mining logs are included.
+GitHub's automatic repository ZIP. The archive is **314326 bytes**.
+It contains public source, saved reference inputs and their manifest. No compiled
+workstation library, live user configuration, private deployment kit or raw mining
+logs are included.
 
 ```text
-SHA-256: 7c0e9bf745d22c86bf186e360ed2a8cc23ec5bdb7e188adf4fd1c7a4a24c5cd4
+SHA-256: 4ede37b957b5024611f63714f4593bd60a849c0dd9c14594490353c56bdb53da
 ```
 
-## Recorded beta.4 results: GPU mining paused
+## Measured hotfix results: short GPU-on tests
 
-**On one Threadripper PRO 7995WX, with GPU mining paused and all six fan channels
-at the Mining100 profile**, the 192-worker hugetlb build recorded a
-**121.157 kH/s mean displayed local rate**, with a **120.908 kH/s minimum**.
-The compiler was GCC 15.2.0, using the ordinary non-PGO recipe. CPU clock and
-voltage settings were unchanged for this test. These conditions are part of
-the result; this is not a GPU-on or other-hardware 120 kH/s promise.
+On one AMD Threadripper PRO 7995WX, **192 hugetlb workers, GCC 15.2, ordinary
+non-PGO build and GPU mining running**, the qualified development hotfix recorded:
 
-| Hour-run observation | Result |
-| --- | ---: |
-| Settling time before measurement | 600 seconds |
-| Conservative active USER coverage after settling | 3,671.545 seconds |
-| Counted displayed Local samples | 366 |
-| Mean of the counted displayed rates | 121.157224 kH/s |
-| Minimum counted displayed rate | 120.908 kH/s |
-| Accepted USER shares during measurement | 393 |
-| Rejected / unresolved work | 0 / 0 |
+| Run | Actual measured interval | Completed-hash local rate | Accepted USER shares in interval |
+| --- | ---: | ---: | ---: |
+| First hotfix run | 191.063907 seconds | 119.302920 kH/s | 25 |
+| Repeat hotfix run | 190.778115 seconds | 118.955001 kH/s | 28 |
 
-The mean is the **unweighted arithmetic mean of rounded Local display samples**.
-It is not an independently measured raw-counter hour rate, a pool-side hashrate
-estimate or a payout measurement. The counted samples span more than one hour;
-no counted pause, reconnect or error was recorded, and the owned miner shut
-down normally. A separate GPU-on attempt did not meet the strict displayed
-120 kH/s minimum and is not presented as a pass.
+Each interval follows at least 60 seconds of settling. Both measurements reported
+zero rejected, unresolved or queue-dropped work. Rates use completed-hash counter
+differences over the actual interval; they are not pool-side estimates or net
+payout measurements. These are **two short observations**, not one continuous
+combined window, an hour-long hotfix pass, a 24-hour soak or a universal speed promise.
 
-Two shorter **real Kryptex pool runs on the same 7995WX**, still with GPU mining
-paused and Mining100 cooling, tested lower worker counts on the same native
-artifact. These are separate from the hour run:
+The development hotfix passed 1,031 saved Rust-answer inputs through four C
+implementations, full scratchpad comparisons and verification of 192 actual
+huge-page workers. Forced-zero tests exercised 1, 24, 32 and 192 workers. Saved
+Rust answers were replayed; fresh Rust was not executed. Exact-package build and
+qualification identities are reported in the [hotfix evidence](docs/evidence/beta4-hotfix-validation-20261106.json)
+and linked validation notes, rather than inferred from the version name.
 
-| Desktop workers | Actual measured interval | Completed-hash local rate | Accepted USER shares in interval |
-| ---: | ---: | ---: | ---: |
-| 24 | 311.380 seconds | 23.844454 kH/s | 3 |
-| 32 | 311.512 seconds | 31.786244 kH/s | 13 |
-
-Those rates use completed-hash counter differences over the actual intervals,
-after at least 60 seconds of settling. Both runs recorded zero rejected or
-unresolved work. They do not establish one-hour results at those worker counts.
-
-Three **other CPU rigs** separately rebuilt this source and passed full native
-correctness, their actual huge-page worker checks and startup validation with
-accepted Kryptex USER shares: 32 and 24 workers with GCC 13.3.0, and 24 workers
-with GCC 11.4.0. Existing configuration and service policies were preserved,
-with no GPU changes reported. These startup checks are portability evidence;
-they are not the desktop measurements above or sustained speed claims.
-
-See the [dated sanitized evidence](docs/evidence/beta4-validation-20261106.json)
-for source/build identities, exact measurements and limits. No universal fastest
-profile, matched 5% advantage over BzMiner, completed beta.4 fee cycle or deliberate
-live reconnect-recovery test is claimed.
-
-## What changed from beta.3
-
-- Revised the selected XelisHashV3 kernel with exact arithmetic and index-fold
-  optimizations, shared arithmetic tails and guarded square-root estimates.
-  Full reference hash and scratchpad checks remain required.
-- Added the selected folded-A salt expression and compiler barrier while
-  preserving its arithmetic result. Performance remains compiler-dependent.
-- Preserved the worker runtime, configuration format, reference verification,
-  bounded nonce tracking and disclosed developer mining-time policy.
-
-The canonical archive is unchanged. Its included README, CHANGELOG and
-VALIDATION.json describe an **earlier development checkpoint**, including older
-selected-kernel hashes and an earlier 118 kH/s acceptance plan. The dated
-external report for current manifest `90ca3e0d…` and tested desktop native
-`f5072ba1…` **supersedes those earlier validation descriptions**. Read the
-[public addendum](https://github.com/FrogHollowFirewood/overxelis-miner/releases/download/v1.0.0-beta.4-public-preview.1/BETA4-PUBLIC-VALIDATION-NOTES.md)
-for the full identities and current build instructions. The development-side
-STAGING-METADATA mentioned internally is not shipped or needed to build.
+The checked path protects the selected production kernel. Reference and
+experimental kernels retain their earlier zero-modulus behavior, and the legacy
+void selected API deliberately traps on failure. A captured failing input and
+independent reference replay are still needed to determine whether the original
+zero arose from a reference edge case, an optimization discrepancy or a transient
+computation fault. No full hotfix fee cycle, deliberate live reconnect recovery,
+matched BzMiner advantage or broad compiler/hardware qualification is claimed.
 
 ## Build and run
 
-Use Linux x86-64, an AES-NI-capable CPU, Python 3.10+ and GNU binutils. GCC 15.2
-was used for the recorded desktop profile. Existing GCC 13.3 and 11.4 builds
-also passed correctness and pool startup on the separate rigs described above;
-every new compiler/CPU combination still needs its own qualification.
+Use Linux x86-64, an AES-NI-capable CPU, Python 3.10+, GNU binutils and an installed,
+trusted **GCC 15** executable. The recorded development hotfix used GCC 15.2.
+Older GCC 13.3/11.4 rig checks belong to the unpatched source and do not qualify
+this hotfix. Every new compiler/CPU combination needs its own qualification.
 
-Stop any existing CPU miner normally before building or qualifying. Build as
-a normal user on the mining computer: `-march=native` makes the output specific
-to that host's instruction support. Do not copy the desktop native library to
-another computer or add `-ffast-math`.
+Stop any existing CPU miner normally before building or qualifying. Build as a
+normal user on the mining computer: `-march=native` makes the library specific to
+that CPU. Do not transfer it to different instruction support or add fast-math.
 
-Download the archive and checksum into one directory, then stop on any failure:
+Download the named archive and matching checksum into one directory:
 
 ```bash
-sha256sum --check SHA256SUMS-beta.4-public-source-preview.1.txt &&
-tar -xzf OverXelis-Miner-1.0.0-beta.4-public-source-preview.1.tar.gz &&
-cd OverXelis-Miner-1.0.0-beta.4-public-source-preview.1
+sha256sum --check SHA256SUMS-beta.4-public-source-preview.2.txt &&
+tar -xzf OverXelis-Miner-1.0.0-beta.4-public-source-preview.2.tar.gz &&
+cd OverXelis-Miner-1.0.0-beta.4-public-source-preview.2
 ```
 
-Use the actual absolute path of an existing trusted GCC executable. To follow
-the recorded desktop compiler profile, select GCC 15.2:
+Replace the compiler placeholder with the actual trusted installed GCC 15 path:
 
 ```bash
 python3 -I -B build_public.py --compiler /absolute/path/to/gcc15 &&
@@ -124,10 +99,9 @@ python3 -I -B qualify_public.py &&
 bash run.sh --self-test
 ```
 
-Full qualification replays 1,031 saved Rust hash answers through four C
-implementations and compares complete reference scratchpads. It does not
-rerun Rust or benchmark throughput. Preserve the resulting local build and
-qualification records; build in a fresh verified directory when rebuilding.
+Stop on any failure. Full qualification replays 1,031 saved Rust answers through
+four C implementations and compares entire reference scratchpads. Preserve local
+build and qualification records and use a fresh verified directory when rebuilding.
 
 For a new setup, create and review a private configuration before mining:
 
@@ -137,26 +111,35 @@ bash run.sh --check &&
 bash run.sh --accept-dev-fee
 ```
 
-Use `--config /absolute/path/to/private-config.json` with `--check` and mining
-to read an existing configuration. The wizard refuses to overwrite an existing
-file. Enter only a **public payout address**; no seed phrase or private key is
-needed. The public examples contain invalid payout placeholders and cannot
-start mining as supplied.
+Use `--config /absolute/path/to/private-config.json` with `--check` and mining to
+read an existing configuration. The wizard refuses to overwrite an existing file.
+Use only your **public payout address**; no seed phrase or private key is needed.
+The examples contain invalid payout placeholders and cannot mine as supplied.
 
-Press **Ctrl+C** to stop. Ordinary memory is available for initial setup.
-`config.7995wx.example.json` requests 192 threads and hugetlb; use it only with
-huge pages and permissions already configured. The program refuses silent
-memory-mode fallback. The source preview installs no service, compiler or
-system package and changes no global clock, power or huge-page settings.
+Press **Ctrl+C** in the miner's own terminal to stop. Closing a separate log-viewer
+window does not stop a background test controller. A shared-lock refusal means
+another mining or test process may own the CPU session; stop it through its own
+controller rather than deleting a live lock or launching a second CPU miner.
 
-Read the [included source guide](miner/README.md),
-[packaging notes](miner/PUBLIC-PREVIEW-NOTES.md),
+Ordinary memory is available for initial setup. `config.7995wx.example.json`
+requests 192 threads and hugetlb; use it only with huge pages and permissions
+already configured. Requested hugetlb does not silently fall back. This preview
+installs no service, compiler or system package and changes no global clock,
+power, fan or huge-page settings.
+
+Read the [source guide](miner/README.md), [packaging notes](miner/PUBLIC-PREVIEW-NOTES.md),
 [security information](miner/SECURITY.md) and [release history](RELEASE-NOTES.md).
 A checksum detects unexpected file changes; it is not a publisher signature.
 
 ## Preserved history and project scope
 
-Beta.3 and beta.2 archives, tags and dated evidence remain available.
+Beta.4 preview 1, beta.3 and beta.2 archives, tags and dated evidence remain available.
+The unpatched beta.4 GPU-paused hour averaged 121.157224 kH/s across 366 rounded
+Local displays, minimum 120.908 kH/s, with 393 accepted USER shares. Its 24/32-thread
+measurements and three physical-rig startup checks also belong to that earlier
+source. Those records are historical evidence, not hotfix hour-long or rig
+qualification. Preview 1 is superseded because of its known crash. See the
+[preserved original beta.4 evidence](docs/evidence/beta4-validation-20261106.json).
 [Historical beta.3 validation](docs/evidence/beta3-validation-20261101.json)
 recorded a 110.870 kH/s local session average during a 300-second pool run on
 its own GCC14/192-worker desktop profile. Its earlier matched beta.2 comparison

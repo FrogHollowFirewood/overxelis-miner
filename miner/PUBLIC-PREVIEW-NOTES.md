@@ -1,22 +1,31 @@
-# Public source packaging notes - 1.0.0-beta.4 / public-source-preview.1
+# Public source packaging notes — beta.4 / public-source-preview.2
 
-Source archive: `OverXelis-Miner-1.0.0-beta.4-public-source-preview.1.tar.gz`.
-Checksum file: `SHA256SUMS-beta.4-public-source-preview.1.txt`.
+Source archive: `OverXelis-Miner-1.0.0-beta.4-public-source-preview.2.tar.gz`.
+Checksum file: `SHA256SUMS-beta.4-public-source-preview.2.txt`.
 
-This edition contains source, retained public test vectors and license notices.
-It includes no compiled native binary, compiler installation or private user
-configuration. Build on the mining host using the explicit GCC 15 recipe in
-README.md. The documented selection is non-PGO with the original runtime and
-its 4,160-byte worker color stride.
+This source-only prerelease supersedes preview 1 because that build can stop on
+an integer division-by-zero fault. Historical preview-1 archives and checksums
+remain unchanged for auditability. Use preview 2 for the selected-kernel fix.
 
-The selected kernel's release header describes its role and attribution;
-historical experiment labels have been removed from that header. Header
-replacement must leave all bytes from `#define _GNU_SOURCE` onward unchanged
-relative to the selected, qualified kernel.
+The package contains source, retained public correctness vectors and license
+notices. No native binary, compiler installation, private config or local raw log
+is included. Build on the mining host using the explicit trusted GCC 15 recipe
+in README.md; the documented mode is non-PGO with the existing 4,160-byte worker
+color stride. Never add fast-math flags.
 
-Correctness, performance and pool-operation evidence must identify this exact
-source manifest and resulting library. See README.md for kernel qualification,
-worker-layout qualification and the expected sustained-screen/hour-test records.
-No completed 118 kH/s, one-hour or fee-cycle result is asserted by this note.
-Beta.3 labels in retained historical records must not be rewritten as beta.4.
+The selected checked hash API rejects a zero round modulus before division or
+final digest generation. The runtime consumes the failed nonce, records a
+separate skip count and first-input capture, and continues. It neither submits
+nor counts the failed attempt, and it never creates a substitute hash. Reference
+and experimental kernels are outside this narrow protection. Legacy void
+selected-kernel calls deliberately trap on failure.
 
+The original failing input was not retained, so its zero-result origin remains
+unverified. A captured future input is needed for isolated reference replay.
+Qualification and performance records must identify the exact source manifest
+and compiled library. The release addendum states which checks were completed.
+The short GPU-on development hotfix measurements do not establish an hour-long
+hotfix run. The earlier GPU-paused hour used the unpatched build.
+
+The disclosed developer time policy and configuration behavior are unchanged.
+No 120 kH/s, 140 kH/s, full-fee-cycle or universal stability guarantee is made.

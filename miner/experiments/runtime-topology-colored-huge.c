@@ -32,6 +32,7 @@ _Static_assert(NX_COLOR_WINDOW - 64 + NX_SCRATCH_BYTES <= NX_HUGE_BYTES,
 
 extern void xelis_hash_v3(uint8_t *, uint8_t *, uint64_t *);
 extern void xelis_hash_v3_opt(uint8_t *, uint8_t *, uint64_t *);
+extern int xelis_hash_v3_opt_checked(uint8_t *, uint8_t *, uint64_t *);
 extern void xelis_hash_v3_experimental(uint8_t *, uint8_t *, uint64_t *);
 extern void xelis_hash_v3_exp_sqrt(uint8_t *, uint8_t *, uint64_t *);
 extern void chacha_init(void);
@@ -52,6 +53,7 @@ typedef struct {
      * completed/dropped/tail; the sole consumer writes head. */
     _Alignas(64) _Atomic uint64_t completed;
     _Alignas(64) _Atomic uint64_t dropped;
+    _Alignas(64) _Atomic uint64_t skipped;
     _Alignas(64) _Atomic uint64_t head;
     _Alignas(64) _Atomic uint64_t tail;
     _Alignas(64) nx_share shares[NX_RING_CAPACITY];
@@ -84,6 +86,8 @@ struct nx_runtime {
     uint8_t blob[112];
     uint8_t target[32];
     uint64_t epoch;
+    bool bad_input_recorded;
+    uint8_t bad_input[112];
 };
 
 
@@ -367,7 +371,21 @@ static void *nx_worker_main(void *opaque) {
             else worker->next_nonce = nonce + (uint64_t)runtime->threads;
             nx_nonce_encode(blob, nonce);
             uint8_t result[32];
-            runtime->hash(blob, result, worker->scratch);
+            int hash_status = 0;
+            if (runtime->hash == xelis_hash_v3_opt)
+                hash_status = xelis_hash_v3_opt_checked(blob, result, worker->scratch);
+            else runtime->hash(blob, result, worker->scratch);
+            if (__builtin_expect(hash_status != 0, 0)) {
+                pthread_mutex_lock(&runtime->mutex);
+                if (!runtime->bad_input_recorded) {
+                    memcpy(runtime->bad_input, blob, 112);
+                    runtime->bad_input_recorded = true;
+                }
+                atomic_fetch_add_explicit(&worker->skipped, 1, memory_order_relaxed);
+                pthread_mutex_unlock(&runtime->mutex);
+                if (worker->exhausted) break;
+                continue;  /* No completed hash and no share from this nonce. */
+            }
             ++completed;
             atomic_store_explicit(&worker->completed, completed,
                                   memory_order_relaxed);
@@ -445,6 +463,7 @@ void *nx_create(int threads, const int *cpus, int kernel, int page_mode) {
         worker->ordinal = (unsigned)i;
         atomic_init(&worker->completed, 0);
         atomic_init(&worker->dropped, 0);
+        atomic_init(&worker->skipped, 0);
         atomic_init(&worker->head, 0);
         atomic_init(&worker->tail, 0);
     }
@@ -620,9 +639,12 @@ int nx_hash(const uint8_t blob112[112], uint8_t hash32[32], int kernel) {
     if (scratch == NULL) return -1;
     uint8_t blob[112];
     memcpy(blob, blob112, 112);
-    hash(blob, hash32, scratch);
+    int status = 0;
+    if (kernel == 1) status = xelis_hash_v3_opt_checked(blob, hash32, scratch);
+    else hash(blob, hash32, scratch);
     free(scratch);
-    return 0;
+    if (status != 0) errno = EDOM;
+    return status;
 }
 
 static uint8_t nx_hex_digit(char c) {
@@ -675,4 +697,23 @@ int nx_selftest(void) {
         }
     }
     return 0;
+}
+
+/* Separate error accounting: skipped inputs are never counted as hashes. */
+uint64_t nx_skipped(void *opaque) {
+    nx_runtime *runtime = opaque;
+    if (!runtime) return 0;
+    uint64_t total = 0;
+    for (int i = 0; i < runtime->threads; ++i)
+        total += atomic_load_explicit(&runtime->workers[i].skipped, memory_order_relaxed);
+    return total;
+}
+int nx_bad_input(void *opaque, uint8_t output112[112]) {
+    nx_runtime *runtime = opaque;
+    if (!runtime || !output112) return -1;
+    pthread_mutex_lock(&runtime->mutex);
+    int found = runtime->bad_input_recorded;
+    if (found) memcpy(output112, runtime->bad_input, 112);
+    pthread_mutex_unlock(&runtime->mutex);
+    return found;
 }

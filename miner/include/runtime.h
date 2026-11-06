@@ -44,4 +44,8 @@ int nx_pages(void *runtime);
 #ifdef __cplusplus
 }
 #endif
+/* Undefined-input diagnostics for selected checked kernel. */
+uint64_t nx_skipped(void *opaque);
+int nx_bad_input(void *opaque, uint8_t output112[112]);
+
 #endif

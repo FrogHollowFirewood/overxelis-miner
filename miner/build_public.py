@@ -33,7 +33,8 @@ SELECTED_FLAGS = ('-Dxelis_hash_v3_round_specialized=xelis_hash_v3_opt', '-fno-c
 REQUIRED_EXPORTS = frozenset(('xelis_hash_v3', 'xelis_hash_v3_opt',
     'xelis_hash_v3_experimental', 'xelis_hash_v3_exp_sqrt', 'nx_create',
     'nx_destroy', 'nx_set_job', 'nx_pause', 'nx_pop', 'nx_count',
-    'nx_dropped', 'nx_pages', 'nx_hash', 'nx_selftest'))
+    'nx_dropped', 'nx_pages', 'nx_hash', 'nx_selftest',
+    'xelis_hash_v3_opt_checked', 'nx_skipped', 'nx_bad_input'))
 
 def compile_argv(cc, flags, source, obj):
     extra = SELECTED_FLAGS if source == 'experiments/dispatch_round_specialized.c' else ()
@@ -177,7 +178,7 @@ def main(argv=None):
         record['verified_native_exports'] = verify_export_names((out/'exports.log').read_text())
         record['selected_compile_flags'] = list(SELECTED_FLAGS)
         record['strict_undefined_symbol_check'] = True
-        record['packaging_revision'] = 'public-source-preview.1'
+        record['packaging_revision'] = 'public-source-preview.2'
         verify_package(ROOT)
         record.update(status='built_pending_qualification',finished_utc=utc(),library_sha256=sha(lib),
                       cpu_info=Path('/proc/cpuinfo').read_text().split('\n\n')[0],objects={x.name:sha(x) for x in objects})

@@ -1378,7 +1378,7 @@ static __attribute__((noinline, noclone)) uint64_t stage3_round1_threaded(uint64
     return result;
 }
 
-static void stage3_threaded(uint64_t *scratch) {
+static int stage3_threaded(uint64_t *scratch) {
 	uint64_t *mem_buffer_a = scratch;
 	uint64_t *mem_buffer_b = &scratch[BUFSIZE];
 
@@ -1402,18 +1402,27 @@ static void stage3_threaded(uint64_t *scratch) {
 		result = (i == 0) ? stage3_round0_threaded(scratch, result)
                           : stage3_round1_threaded(scratch, result);
 
+        /* The reference has no defined hash when this modulus is zero.
+         * Report an unhashable nonce instead of executing DIV or inventing a hash. */
+        if (__builtin_expect(result == 0, 0)) return -1;
         r = (i == 0) ? BUFSIZE : 0;
 		addr_a = modular_power_threaded(addr_a, addr_b, result);
 		addr_b = isqrt_threaded(result) * (r + 1) * isqrt_threaded(addr_a);
 	}
+    return 0;
 }
 
 
 
-void xelis_hash_v3_round_specialized(uint8_t in[INPUT_LEN], uint8_t hash[HASH_SIZE], uint64_t scratch[MEMSIZE]) {
-	uint8_t *scratch_uint8 = (uint8_t *)scratch;
+int xelis_hash_v3_opt_checked(uint8_t in[INPUT_LEN], uint8_t hash[HASH_SIZE], uint64_t scratch[MEMSIZE]) {
+    uint8_t *scratch_uint8 = (uint8_t *)scratch;
+    stage1_threaded(in, INPUT_LEN, scratch_uint8);
+    if (stage3_threaded(scratch) != 0) return -1;
+    blake3_threaded(scratch_uint8, OUTPUT_SIZE, hash);
+    return 0;
+}
 
-	stage1_threaded(in, INPUT_LEN, scratch_uint8);
-	stage3_threaded(scratch);
-	blake3_threaded(scratch_uint8, OUTPUT_SIZE, hash);
+/* Legacy void ABI is restricted to defined inputs. Mining uses checked status. */
+void xelis_hash_v3_round_specialized(uint8_t in[INPUT_LEN], uint8_t hash[HASH_SIZE], uint64_t scratch[MEMSIZE]) {
+    if (xelis_hash_v3_opt_checked(in, hash, scratch) != 0) __builtin_trap();
 }

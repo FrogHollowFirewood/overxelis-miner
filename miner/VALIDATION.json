@@ -1,96 +1,96 @@
 {
   "version": "1.0.0-beta.4",
-  "edition": "public-source-preview.1",
-  "document_role": "Static build/acceptance requirements and evidence references; not a test result.",
-  "starting_archive_sha256": "a53075dd73977796281780767ff4387c8c788a951630a468b5591fd6731cee12",
-  "starting_archive_scope": "User-supplied beta.3 source archive; provenance only, not qualification of beta.4.",
+  "edition": "public-source-preview.2",
+  "document_role": "Static hotfix description, per-build requirements and evidence references; not a completed test report.",
   "source_binary_included": false,
   "qualification_required_on_each_build": true,
   "performance_guaranteed": false,
-  "completed_checks_location": "Development kit validation-evidence/ and each exact local build/evidence directory; this static descriptor is not a test result.",
-  "required_desktop_cpu": "AMD Threadripper PRO 7995WX",
-  "desktop_logical_threads": 192,
+  "completed_checks_location": "Release BETA4-HOTFIX-VALIDATION-NOTES.md and sanitized validation-evidence; each matching local build/evidence directory contains its own reports.",
   "selected_kernel": "experiments/dispatch_round_specialized.c",
-  "selected_kernel_sha256": "f10c075b8e069df926e6b62ac5ce3a8946537fc66ec19794345d474452aaff64",
-  "selected_kernel_body_marker": "#define _GNU_SOURCE",
-  "selected_kernel_body_sha256": "94c61501ff8f21e84c6fceb19dda5c6f8e19a0b5fb4416bcb2d9718205574dcb",
-  "selected_development_source": "tail-lab/c2-sqrt-probability/c2_sqrt_probability.c",
-  "selected_development_source_sha256": "75ddabf5cc45d5d861fd90b69af4b527a05e631d91bb4d746ad0d017545c5a9c",
-  "selected_changes": [
-    "Two exact modulo-2^64 C2 products use a local readonly memory operand in low64 IMUL.",
-    "Two existing square-root guard comparisons use compiler probability annotations; the model is not an observed distribution and no guard or correction path is removed."
-  ],
+  "selected_kernel_sha256": "542a9f9321b00e6a746073534ed553b953d532ac7081a3236af6e3ceecdfd644",
   "worker_runtime": "experiments/runtime-topology-colored-huge.c",
-  "worker_runtime_sha256": "78bab73ae83e08c0f83490eebf26ec8d1065f86913eb72866e11b23e5902ccf8",
+  "worker_runtime_sha256": "4db5009b215a462d7ea56e2fb3d3340fab257fba919c3c4a04369abda700ba3f",
+  "runtime_header": "include/runtime.h",
+  "runtime_header_sha256": "f63e5a54c9c4e89d794837816cbe5fa05ed2c9a23c20bce2fa101cafeba4aa41",
+  "hotfix": {
+    "protected_production_kernel": 1,
+    "checked_hash_api": "xelis_hash_v3_opt_checked",
+    "zero_modulus_action": "Consume and skip the nonce before division or digest finalization; continue with subsequent work.",
+    "failed_work_counted_as_completed": false,
+    "failed_work_submitted": false,
+    "substitute_digest_generated": false,
+    "diagnostic_apis": [
+      "nx_skipped",
+      "nx_bad_input"
+    ],
+    "historical_failing_input_available": false,
+    "origin_of_zero_round_result": "unverified",
+    "unguarded_paths": [
+      "reference kernel",
+      "experimental kernels"
+    ],
+    "legacy_void_selected_api": "Deliberate trap on checked failure; not used by production mining."
+  },
   "layout_constants": {
     "stride_bytes": 4160,
     "window_bytes": 524288
   },
   "required_build_compiler_family": "GCC 15",
   "recommended_build_mode": "ordinary non-PGO",
-  "compiler_selection": "Pass an existing verified GCC 15 executable/private wrapper explicitly with --compiler; no global compiler or library-path change.",
+  "compiler_selection": "Pass an existing trusted GCC 15 executable or verified wrapper explicitly with --compiler. No global compiler or library-path change.",
   "native_compilation": true,
   "fast_math_permitted": false,
   "required_kernel_qualification": {
+    "native_self_test": true,
     "saved_answers": 1031,
     "C_implementations": 4,
     "complete_scratchpad_comparison": true,
     "fresh_Rust_execution_claimed": false
   },
-  "actual_hugetlb_worker_qualification_required": true,
-  "required_worker_qualification_threads": [
-    192,
-    32,
-    24
+  "required_hotfix_regressions": [
+    "Failed nonce consumed without replay",
+    "Failed attempt does not increment completed work",
+    "Failed attempt is never queued or submitted",
+    "Subsequent valid work continues",
+    "First failing input capture is retained"
   ],
-  "required_192_worker_sustained_gate": {
-    "matched_comparison_pairs": 3,
-    "measured_seconds_per_run": 60,
-    "minimum_sustained_khs": 118,
-    "method": "Completed hashes divided by actual measured time; retain raw counter/duration records and ordered CPU placement."
-  },
-  "required_low_thread_measurements": {
-    "worker_counts": [
-      24,
-      32
+  "actual_worker_qualification_required_for_claimed_profile": true,
+  "development_observations": {
+    "host_cpu": "AMD Threadripper PRO 7995WX",
+    "threads": 192,
+    "GPU_mining": "on",
+    "measured_seconds": [
+      191.06390702200588,
+      190.77811542450218
     ],
-    "warmup_seconds_per_run": 30,
-    "minimum_measured_seconds_per_run": 300,
-    "scope": "Record actual count-specific rates for the same final artifact; these do not substitute for the 192-worker throughput gate."
-  },
-  "required_live_pool_gate": {
-    "minimum_post_settle_seconds": 3660,
-    "minimum_settle_seconds": 120,
-    "reviewed_soak_options": [
-      "--measure-seconds",
-      "3660",
-      "--settle-seconds",
-      "120",
-      "--max-runtime-seconds",
-      "7200"
+    "local_khs": [
+      119.302919924979,
+      118.95500146598756
     ],
-    "required_records": [
-      "Production active-time duration proof",
-      "Accepted/rejected/unresolved counts and reconnect observations",
-      "Timestamped displayed rates and test conditions",
-      "Pinned final source manifest, library and build record"
+    "accepted_USER_shares_in_measured_windows": [
+      25,
+      28
     ],
-    "rate_scope": "Displayed samples are rounded and do not replace the separate independent completed-hash throughput gate.",
-    "fee_scope": "61 post-settle minutes do not by themselves prove the first scheduled fee transition after 99 active USER minutes."
+    "rejected_shares": [
+      0,
+      0
+    ],
+    "unresolved_shares": [
+      0,
+      0
+    ],
+    "scope": "Development hotfix observations only. Release addendum must establish applicability to the exact public package/library. Not a one-hour result."
   },
+  "long_soak_status": "Not established for this public hotfix package by this static descriptor.",
+  "historical_hour_scope": "The earlier 121.157 kH/s GPU-paused hour used unpatched beta.4; it is not hotfix qualification.",
   "evidence_references": {
     "source_manifest": "SOURCE-MANIFEST.json",
     "build_record": "build/build.json",
     "compiled_library": "build/liboverxelis.so",
     "kernel_qualification": "evidence/kernel-qualification.json",
-    "actual_worker_qualification_192": "evidence/worker-layout-qualification.json",
-    "actual_worker_qualification_32": "evidence/worker-layout-32.json",
-    "actual_worker_qualification_24": "evidence/worker-layout-24.json",
-    "sustained_192_worker_comparison": "evidence/sustained-screen/analysis.json",
-    "low_thread_rates": "low-thread-rates.json in the chosen measurement output directory",
-    "live_pool_report": "evidence/hour-test/report.json",
-    "live_pool_rate_samples": "evidence/hour-test/rates.csv",
-    "development_records": "validation-evidence/ in the development kit; retain each report with its original source/library identity and scope."
+    "actual_worker_qualification": "evidence/worker-layout-qualification.json",
+    "release_addendum": "BETA4-HOTFIX-VALIDATION-NOTES.md (separate release asset)",
+    "sanitized_public_evidence": "beta4-hotfix-validation-20261106.json (separate release asset)"
   },
-  "evidence_reference_scope": "Required report locations and identity links. Their inclusion in this static file asserts neither completion nor a passing result. Only the actual matching report establishes a check."
+  "evidence_reference_scope": "Report names do not assert completion. Match the exact source manifest, compiler, native library and test conditions to the actual report."
 }

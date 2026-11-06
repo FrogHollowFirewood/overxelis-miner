@@ -5,6 +5,7 @@ They do not qualify XelisHash or load the production shared library.
 """
 from pathlib import Path
 import ctypes as C
+import errno
 import os
 import platform
 import shutil
@@ -20,6 +21,7 @@ import miner
 
 STUB = r'''
 #include <stdint.h>
+#include <errno.h>
 #include <string.h>
 #include <unistd.h>
 #include <pthread.h>
@@ -51,6 +53,19 @@ void xelis_hash_v3(uint8_t *blob, uint8_t *hash, uint64_t *scratch) {
     memcpy(hash, blob + 40, 8);
 }
 void xelis_hash_v3_opt(uint8_t *b, uint8_t *h, uint64_t *s) { xelis_hash_v3(b,h,s); }
+int xelis_hash_v3_opt_checked(uint8_t *b, uint8_t *h, uint64_t *s) {
+    /* Test-only failure injection. These are deliberately not Xelis hashes.
+     * Leave h untouched on failure so a runtime using an invalid digest or
+     * incorrectly counting the failed nonce cannot pass the worker test. */
+    uint64_t nonce = 0;
+    for (unsigned i = 0; i < 8; ++i) nonce = (nonce << 8) | b[40 + i];
+    if (b[0] == 0xe7 && !(nonce & 1)) {
+        errno = EDOM;
+        return -1;
+    }
+    xelis_hash_v3(b,h,s);
+    return 0;
+}
 void xelis_hash_v3_experimental(uint8_t *b, uint8_t *h, uint64_t *s) { xelis_hash_v3(b,h,s); }
 void xelis_hash_v3_exp_sqrt(uint8_t *b, uint8_t *h, uint64_t *s) { xelis_hash_v3(b,h,s); }
 '''
@@ -110,6 +125,56 @@ class WorkerState(unittest.TestCase):
                 time.sleep(.001)
         self.assertEqual(len(rows), count)
         return rows
+
+    def diagnostics(self, engine):
+        engine.lib.nx_skipped.argtypes = [C.c_void_p]
+        engine.lib.nx_skipped.restype = C.c_uint64
+        engine.lib.nx_bad_input.argtypes = [C.c_void_p, C.c_void_p]
+        engine.lib.nx_bad_input.restype = C.c_int
+        blob = C.create_string_buffer(112)
+        found = engine.lib.nx_bad_input(engine.handle, blob)
+        self.assertIn(found, (0, 1))
+        return engine.lib.nx_skipped(engine.handle), blob.raw if found else None
+
+    def test_checked_failure_consumes_nonce_without_count_or_share_and_continues(self):
+        engine = self.engine(1)
+        self.assertEqual(self.diagnostics(engine), (0, None))
+        blob = bytes([0xe7]) + bytes(111)
+        # Four attempts exhaust the stream: even nonces fail, odd ones succeed.
+        # There must be no fabricated digest, failed-work count, or nonce replay.
+        start = MAX - 3
+        engine.set_job(blob, bytes([255]) * 32, 19, start)
+        self.wait_count(engine, 2)
+        rows = self.wait_shares(engine, 2)
+        self.assertEqual([nonce for _, nonce, _ in rows], [MAX - 2, MAX])
+        self.assertTrue(all(epoch == 19 and int.from_bytes(digest[:8], 'big') == nonce
+                            for epoch, nonce, digest in rows))
+        expected_first = bytearray(blob)
+        expected_first[40:48] = start.to_bytes(8, 'big')
+        self.assertEqual(self.diagnostics(engine), (2, bytes(expected_first)))
+        self.assertEqual(engine.dropped(), 0)
+        self.assertIsNone(engine.pop())
+        engine.pause()
+        engine.set_job(bytes(112), bytes([255]) * 32, 20, 0)
+        time.sleep(.015)
+        self.assertEqual(engine.count(), 2)
+        self.assertEqual(self.diagnostics(engine), (2, bytes(expected_first)))
+        self.assertIsNone(engine.pop())
+
+    def test_checked_single_hash_reports_domain_error_without_writing_digest(self):
+        lib = C.CDLL(str(self.library), use_errno=True)
+        lib.nx_hash.argtypes = [C.c_void_p, C.c_void_p, C.c_int]
+        lib.nx_hash.restype = C.c_int
+        blob = bytearray([0xe7]) + bytearray(111)
+        blob[40:48] = (MAX - 1).to_bytes(8, 'big')
+        output = C.create_string_buffer(bytes([0xa5]) * 32, 32)
+        C.set_errno(0)
+        self.assertEqual(lib.nx_hash(C.create_string_buffer(bytes(blob)), output, 1), -1)
+        self.assertEqual(C.get_errno(), errno.EDOM)
+        self.assertEqual(output.raw, bytes([0xa5]) * 32)
+        blob[40:48] = MAX.to_bytes(8, 'big')
+        self.assertEqual(lib.nx_hash(C.create_string_buffer(bytes(blob)), output, 1), 0)
+        self.assertEqual(output.raw, MAX.to_bytes(8, 'big') + bytes(24))
 
     def test_exhaustion_never_wraps_and_workers_partition_nonce_space(self):
         n = min(3, len(self.cpus))

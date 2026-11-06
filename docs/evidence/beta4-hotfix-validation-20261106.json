@@ -1,0 +1,330 @@
+{
+  "schema": "overxelis.beta4.hotfix.validation.v1",
+  "date": "2026-11-06",
+  "document_role": "Sanitized release addendum binding the exact public source package, native correctness qualification, forced-error checks and byte-identical development live measurements.",
+  "release": {
+    "version": "1.0.0-beta.4",
+    "edition": "public-source-preview.2",
+    "tag": "v1.0.0-beta.4-public-preview.2",
+    "prerelease": true,
+    "archive": "OverXelis-Miner-1.0.0-beta.4-public-source-preview.2.tar.gz",
+    "archive_bytes": 314326,
+    "archive_sha256": "4ede37b957b5024611f63714f4593bd60a849c0dd9c14594490353c56bdb53da",
+    "source_manifest_sha256": "3bcc699a8e7252584b2b0df15a0943b9299b35b4ba0c48e32982f9eb555f2b5e",
+    "tracked_source_files": 69,
+    "archive_regular_files": 70,
+    "source_only": true,
+    "compiled_binary_included": false,
+    "private_configuration_included": false,
+    "checksum_file": "SHA256SUMS-beta.4-public-source-preview.2.txt"
+  },
+  "exact_package_qualification": {
+    "status": "passed",
+    "finished_utc": "2026-11-06T19:44:18Z",
+    "public_archive_sha256": "4ede37b957b5024611f63714f4593bd60a849c0dd9c14594490353c56bdb53da",
+    "source_manifest_sha256": "3bcc699a8e7252584b2b0df15a0943b9299b35b4ba0c48e32982f9eb555f2b5e",
+    "native_library_sha256": "e519d8b10619776a16db50252f41b0fd70f300d0e2b05633577249cc9874faa9",
+    "build_record_sha256": "c255361e0f2b1c5b254932fa1ffdff8c720ed8cc50730690e671a10ed3f2fb7a",
+    "compiler": "x86_64-linux-gnu-gcc-15 (Ubuntu 15.2.0-15ubuntu1~22~ppa2) 15.2.0",
+    "byte_identical_to_development_library": true,
+    "native_self_test": true,
+    "saved_answer_and_scratchpad_qualification": {
+      "utc": "2026-11-06T19:44:16.833524+00:00",
+      "passed": true,
+      "library_sha256": "e519d8b10619776a16db50252f41b0fd70f300d0e2b05633577249cc9874faa9",
+      "cases": 1031,
+      "c_implementations": 4,
+      "full_scratchpad_comparisons": 1031,
+      "retained_rust_output_replay": true,
+      "rust_executed_on_rig": false,
+      "inputs_sha256": "b0afd167b54508d4a27527176637600ad9e1b08649efb767cb53cdfdd4b7e587",
+      "expected_sha256": "2c532a277b446ea5cf3cb751b390357f6f9dbc033f57bf3a084cf7d322651e73"
+    },
+    "actual_worker_qualification": {
+      "passed": true,
+      "threads": 192,
+      "huge_page_workers": 192,
+      "completed_hashes": 192,
+      "dropped_shares": 0,
+      "reference_verified_shares": 192,
+      "full_kernel_qualification_previously_passed": true,
+      "elapsed_seconds": 0.49494107700593304
+    },
+    "packaged_forced_zero_reproducer": {
+      "passed": true,
+      "network_used": false,
+      "pool_configuration_used": false,
+      "throughput_benchmark": false,
+      "page_mode": "hugetlb",
+      "production_library_sha256": "e519d8b10619776a16db50252f41b0fd70f300d0e2b05633577249cc9874faa9",
+      "selected_source_sha256": "542a9f9321b00e6a746073534ed553b953d532ac7081a3236af6e3ceecdfd644",
+      "forced_source_sha256": "6e0fb3258fb146aa2326deaf1548b10237df5f0f702b9ce38f03cabfc75ccef8",
+      "forced_library_sha256": "0a95864c06c70fe8cc354cc5b01c94b08266b23a137729662b5054b28b4d7cae",
+      "single_hash": {
+        "status": -1,
+        "errno": 33,
+        "output_untouched": true
+      },
+      "production_files_unchanged": true,
+      "finished_utc": "2026-11-06T19:44:18.405150+00:00",
+      "cases": [
+        {
+          "threads": 1,
+          "page_mode": "hugetlb",
+          "passed": true,
+          "completed_hashes": 0,
+          "skipped_inputs": 1,
+          "queued_shares": 0,
+          "dropped_shares": 0,
+          "huge_page_workers": 1
+        },
+        {
+          "threads": 24,
+          "page_mode": "hugetlb",
+          "passed": true,
+          "completed_hashes": 0,
+          "skipped_inputs": 24,
+          "queued_shares": 0,
+          "dropped_shares": 0,
+          "huge_page_workers": 24
+        },
+        {
+          "threads": 32,
+          "page_mode": "hugetlb",
+          "passed": true,
+          "completed_hashes": 0,
+          "skipped_inputs": 32,
+          "queued_shares": 0,
+          "dropped_shares": 0,
+          "huge_page_workers": 32
+        },
+        {
+          "threads": 192,
+          "page_mode": "hugetlb",
+          "passed": true,
+          "completed_hashes": 0,
+          "skipped_inputs": 192,
+          "queued_shares": 0,
+          "dropped_shares": 0,
+          "huge_page_workers": 192
+        }
+      ]
+    },
+    "source_package_unchanged": true,
+    "fresh_live_session_for_preview2_metadata": false,
+    "qualification_receipt_sha256": "1f2864d4eaed7823c3bd7881d783991833fae0ca656c4c782769d1c1b870da7b",
+    "command_results": [
+      {
+        "label": "exact-build",
+        "exit": 0,
+        "elapsed_seconds": 3.2721612860041205,
+        "log_sha256": "bea228980b47c4df0213391404c32becfe9efa496b5a4b897aa6396a3ea0467a"
+      },
+      {
+        "label": "exact-corpus",
+        "exit": 0,
+        "elapsed_seconds": 6.179473033000249,
+        "log_sha256": "e2c67d479e057592c5041d905498510282671fc09390bbf2f1b30ffb7aff392c"
+      },
+      {
+        "label": "exact-workers",
+        "exit": 0,
+        "elapsed_seconds": 0.5658722520020092,
+        "log_sha256": "a07591e84a5c832b02d47c117d3c98bccaca2c1f1e3fdc9351eae286a4c26f7a"
+      },
+      {
+        "label": "exact-zero-guard",
+        "exit": 0,
+        "elapsed_seconds": 1.0169981610088143,
+        "log_sha256": "e0747c32a7745dec964bb45afc4c763d7f67319320b667a200070106009850a9"
+      },
+      {
+        "label": "exact-self-test",
+        "exit": 0,
+        "elapsed_seconds": 0.21442581999872345,
+        "log_sha256": "8435912a0aa3503b26fdcc8e322f3b4c8afb5e3885b1b6f5089de84b305d2e7f"
+      }
+    ],
+    "scope": "The exact archive built and qualified locally. Its native library is byte-identical to the development hotfix used in the two short Kryptex runs. No fresh live session with the preview-2 edition metadata, hotfix hour or long soak is claimed."
+  },
+  "public_source_checks": {
+    "status": "passed",
+    "source_test_count": 126,
+    "elapsed_seconds": 1.202,
+    "native_runtime_stub_tests": 7,
+    "checked_failure_regressions": 2,
+    "test_log_sha256": "2efadb470c09a7f2e0da5b27cc9aba5599ef68e6b3ca97dacbe417c4c8e37eef",
+    "native_C_header_and_assembly_files_identical_to_development_hotfix": 24,
+    "forced_zero_tool_sha256": "0d5672c26a7605561f592c999fd4eccc123bb1e6af68715903e2f1ae7bda2b94",
+    "scope": "Source tests include non-consensus native hash stubs. They are separate from production hash and actual-worker qualification."
+  },
+  "native_source_pins": {
+    "experiments/dispatch_round_specialized.c": "542a9f9321b00e6a746073534ed553b953d532ac7081a3236af6e3ceecdfd644",
+    "experiments/runtime-topology-colored-huge.c": "4db5009b215a462d7ea56e2fb3d3340fab257fba919c3c4a04369abda700ba3f",
+    "include/runtime.h": "f63e5a54c9c4e89d794837816cbe5fa05ed2c9a23c20bce2fa101cafeba4aa41"
+  },
+  "recorded_fault": {
+    "signal": "SIGFPE",
+    "fault_type": "Integer division by zero at a round-end modular-power operation in the selected kernel",
+    "historical_failing_input_retained": false,
+    "origin_of_zero_round_result": "unverified",
+    "historical_input_reproduced_against_reference": false
+  },
+  "hotfix_scope": {
+    "protected_production_kernel": 1,
+    "checked_api": "xelis_hash_v3_opt_checked",
+    "failure_action": "Consume and skip nonce before division or digest finalization; continue later work",
+    "failed_attempt_counted_as_completed": false,
+    "failed_attempt_queued_or_submitted": false,
+    "substitute_digest_generated": false,
+    "diagnostic_apis": [
+      "nx_skipped",
+      "nx_bad_input"
+    ],
+    "unguarded_paths": [
+      "reference kernel",
+      "experimental kernels"
+    ],
+    "legacy_void_selected_api": "Deliberate trap on checked failure; production mining uses the checked API",
+    "all_possible_SIGFPE_causes_proven_eliminated": false
+  },
+  "development_hotfix": {
+    "source_manifest_sha256": "f38c2e8dbf30c100a81962a0a48f2f8a59a37ccd3fff926b3adbe428a252e9b0",
+    "native_library_sha256": "e519d8b10619776a16db50252f41b0fd70f300d0e2b05633577249cc9874faa9",
+    "build_record_sha256": "ef603fadb41da647aeff247535020dfb56e86016dc99783623a35163c9f36006",
+    "kernel_qualification": {
+      "passed": true,
+      "native_self_test_passed": true,
+      "saved_Rust_answer_inputs": 1031,
+      "C_implementations": 4,
+      "full_scratchpad_comparisons": 1031,
+      "saved_Rust_answers_replayed": true,
+      "fresh_Rust_execution": false,
+      "inputs_sha256": "b0afd167b54508d4a27527176637600ad9e1b08649efb767cb53cdfdd4b7e587",
+      "expected_answers_sha256": "2c532a277b446ea5cf3cb751b390357f6f9dbc033f57bf3a084cf7d322651e73"
+    },
+    "actual_worker_qualification": {
+      "passed": true,
+      "threads": 192,
+      "hugetlb_workers": 192,
+      "completed_terminal_hashes": 192,
+      "reference_verified_terminal_hashes": 192,
+      "dropped_shares": 0,
+      "scope": "Correctness and memory-layout evidence; not a throughput measurement"
+    },
+    "forced_zero_guard_regression": {
+      "passed": true,
+      "separate_test_copy": true,
+      "injection": "Set the round result to zero immediately before the selected guard",
+      "cases": [
+        {
+          "workers": 1,
+          "skipped_inputs": 1,
+          "completed_hashes": 0,
+          "queued_shares": 0,
+          "first_input_capture_valid": true
+        },
+        {
+          "workers": 24,
+          "skipped_inputs": 24,
+          "completed_hashes": 0,
+          "queued_shares": 0,
+          "first_input_capture_valid": true
+        },
+        {
+          "workers": 32,
+          "skipped_inputs": 32,
+          "completed_hashes": 0,
+          "queued_shares": 0,
+          "first_input_capture_valid": true
+        },
+        {
+          "workers": 192,
+          "skipped_inputs": 192,
+          "completed_hashes": 0,
+          "queued_shares": 0,
+          "first_input_capture_valid": true
+        }
+      ],
+      "naturally_failing_historical_input_reproduced": false,
+      "scope": "Deliberate correctness-only failure cases, not mining-rate tests or exact-package reproducer execution"
+    }
+  },
+  "development_live_pool_conditions": {
+    "cpu": "AMD Threadripper PRO 7995WX",
+    "threads": 192,
+    "memory": "hugetlb",
+    "compiler": "GCC 15.2",
+    "build_mode": "normal non-PGO",
+    "GPU_mining": "on",
+    "pool": "Kryptex",
+    "observed_role": "USER",
+    "independent_process_per_run": true,
+    "rate_definition": "Gross locally completed hashes divided by elapsed measurement time; includes work invalidated by subsequent jobs",
+    "pool_side_hashrate_or_earnings_measurement": false
+  },
+  "development_live_pool_runs": [
+    {
+      "run": 1,
+      "session_started_utc": "2026-11-06T18:52:31.575732+00:00",
+      "session_ended_utc": "2026-11-06T18:57:01.621837+00:00",
+      "nominal_session_seconds": 270,
+      "active_USER_seconds_reported_rounded": 269.446,
+      "settle_seconds": 60.362488379498245,
+      "measurement_seconds": 191.06390702200588,
+      "completed_counter_start": 8410446,
+      "completed_counter_end": 31204928,
+      "completed_hashes": 22794482,
+      "gross_completed_khs": 119.302919924979,
+      "accepted_USER_shares_at_measurement_start": 5,
+      "accepted_USER_shares_at_measurement_end": 30,
+      "accepted_USER_shares_in_measurement": 25,
+      "session_accepted_USER_shares": 31,
+      "session_rejected_shares": 0,
+      "session_unresolved_shares": 0,
+      "native_close_dropped_shares": 0,
+      "native_close_skipped_undefined_inputs": 0,
+      "native_close_first_bad_input_captured": false
+    },
+    {
+      "run": 2,
+      "session_started_utc": "2026-11-06T19:13:55.088615+00:00",
+      "session_ended_utc": "2026-11-06T19:18:25.147530+00:00",
+      "nominal_session_seconds": 270,
+      "active_USER_seconds_reported_rounded": 269.185,
+      "settle_seconds": 60.24389646950294,
+      "measurement_seconds": 190.77811542450218,
+      "completed_counter_start": 8284164,
+      "completed_counter_end": 30978175,
+      "completed_hashes": 22694011,
+      "gross_completed_khs": 118.95500146598756,
+      "accepted_USER_shares_at_measurement_start": 16,
+      "accepted_USER_shares_at_measurement_end": 44,
+      "accepted_USER_shares_in_measurement": 28,
+      "session_accepted_USER_shares": 44,
+      "session_rejected_shares": 0,
+      "session_unresolved_shares": 0,
+      "native_close_dropped_shares": 0,
+      "native_close_skipped_undefined_inputs": 0,
+      "native_close_first_bad_input_captured": false
+    }
+  ],
+  "qualification_limits": {
+    "one_hour_or_longer_hotfix_soak_established": false,
+    "historical_121_157_khs_GPU_paused_hour_applies_to_hotfix": false,
+    "full_live_developer_fee_cycle_qualified": false,
+    "deliberate_live_reconnect_recovery_qualified": false,
+    "cross_compiler_or_hardware_performance_guaranteed": false,
+    "hotfix_24_or_32_worker_mining_rates_established_by_forced_test": false,
+    "guaranteed_120_khs": false,
+    "demonstrated_140_khs_beta5": false,
+    "matched_ranking_against_another_miner_established": false,
+    "historical_scope": "Earlier unpatched beta.4 hour results remain historical evidence only"
+  },
+  "privacy": {
+    "hostnames_included": false,
+    "absolute_local_paths_included": false,
+    "payout_addresses_included": false,
+    "private_configuration_or_raw_logs_included": false
+  }
+}

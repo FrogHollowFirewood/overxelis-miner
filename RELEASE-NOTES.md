@@ -1,3 +1,84 @@
+# OverXelis Miner 1.0.0-beta.4 · Public source preview 2 · Crash fix
+
+**Preview 2 supersedes beta.4 preview 1 because of a recorded selected-kernel
+integer divide-by-zero crash**, reported by the shell as “floating point exception.”
+Earlier source archives, tags, checksums and evidence remain unchanged for audit.
+This release distributes Linux x86-64 source only; build and qualify locally.
+
+## Download and identity
+
+- [Hotfix source archive](https://github.com/FrogHollowFirewood/overxelis-miner/releases/download/v1.0.0-beta.4-public-preview.2/OverXelis-Miner-1.0.0-beta.4-public-source-preview.2.tar.gz)
+- [Matching checksum](https://github.com/FrogHollowFirewood/overxelis-miner/releases/download/v1.0.0-beta.4-public-preview.2/SHA256SUMS-beta.4-public-source-preview.2.txt)
+- [Hotfix validation notes](https://github.com/FrogHollowFirewood/overxelis-miner/releases/download/v1.0.0-beta.4-public-preview.2/BETA4-HOTFIX-VALIDATION-NOTES.md)
+- [Release page](https://github.com/FrogHollowFirewood/overxelis-miner/releases/tag/v1.0.0-beta.4-public-preview.2)
+
+Archive: **314326 bytes**. SHA-256:
+
+```text
+4ede37b957b5024611f63714f4593bd60a849c0dd9c14594490353c56bdb53da
+```
+
+## Repair and its limits
+
+The selected production kernel checks the round-result modulus before division.
+If it is zero, the checked API returns failure before digest finalization. The
+runtime consumes that nonce, skips completed-work accounting and submission,
+and records a separate skipped counter plus the first failing input in native runtime memory. The public launcher does not automatically save that input to disk.
+It does not substitute a modulus or fabricate a hash. The fee schedule,
+configuration format, pool behavior and bounded nonce tracking are unchanged.
+
+The original failing input was not retained. The cause of its zero intermediate
+value therefore remains unverified. Reference and experimental kernels retain
+their prior zero-modulus behavior; legacy void selected-kernel calls deliberately
+trap on failure. Production uses the checked selected path. Capture and independent
+replay are still needed to distinguish an undefined reference input, optimization
+discrepancy or transient computation fault. This is protection of the recorded
+failure path, not a claim that all possible crashes are fixed.
+
+## Qualification and real-pool observations
+
+The qualified development hotfix passed 1,031 retained Rust-answer inputs through
+four C implementations, full scratchpad comparisons and all 192 actual hugetlb
+workers. Forced-zero tests exercised 1, 24, 32 and 192 workers. Saved Rust answers
+were replayed; fresh Rust was not executed. Exact-public-package build and
+qualification identities are documented separately in the [hotfix evidence](docs/evidence/beta4-hotfix-validation-20261106.json)
+and release validation notes.
+
+Two short real Kryptex runs on the 7995WX, 192 hugetlb workers, GCC 15.2 non-PGO,
+with GPU mining running, recorded:
+
+| Run | Actual measured interval | Completed-hash local rate | Accepted USER shares |
+| --- | ---: | ---: | ---: |
+| First | 191.063907 seconds | 119.302920 kH/s | 25 |
+| Repeat | 190.778115 seconds | 118.955001 kH/s | 28 |
+
+Each measured interval follows at least 60 seconds of settling. Both reported
+zero rejected, unresolved or queue-dropped work. These are two separate short
+counter-based observations, not an hour, a long soak, a pool-side rate or earnings.
+A new hotfix hour, full live fee cycle, deliberate reconnect exercise, broad
+compiler/hardware qualification and matched BzMiner comparison remain open.
+
+The earlier **121.157224 kH/s GPU-paused hour belongs to unpatched preview 1**.
+Its separate desktop 24/32-worker and physical-rig startup records are also
+historical; none establishes hotfix hour-long performance or rig qualification.
+No 120 kH/s or beta.5 140 kH/s result is guaranteed.
+
+## Build
+
+Use Linux x86-64, AES-NI, Python 3.10+, GNU binutils and a trusted installed
+GCC 15 compiler. Build on the mining computer as a normal user, preserve strict
+binary64 behavior, and run full qualification plus the CLI self-test before mining.
+Use a fresh directory; do not replace old files in place or transfer a native
+library between CPUs. See [README.md](README.md) and the website guide.
+
+---
+
+# Historical beta.4 preview 1 — superseded because of the known crash
+
+The following original release entry is retained as historical documentation.
+Its download and validation claims refer to the unpatched source preview 1.
+The old hour record does not qualify the current hotfix.
+
 # OverXelis Miner 1.0.0-beta.4 · Public source preview 1
 
 Experimental Linux x86-64 XelisHashV3 CPU miner. This prerelease distributes

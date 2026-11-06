@@ -1,21 +1,32 @@
 # OverXelis Miner 1.0.0-beta.4
-## Public source preview 1 · Linux XelisHashV3 CPU miner
+## Public source preview 2 · Linux XelisHashV3 CPU miner
 
 This edition builds the miner from source on the mining computer. It includes
 the selected XelisHashV3 CPU kernel, a foreground Stratum client, a disclosed
 1% developer mining-time policy, and offline correctness checks. No native
 binary or private user configuration is distributed.
 
-The selected kernel expresses two C2 products through a readonly memory
-operand and adds compiler probability annotations to existing square-root
-guards. The low64 products, guard values and correction results stay exact.
-The annotation probability is a compiler model, not a measured distribution.
+This edition adds protection for the recorded beta.4 integer division-by-zero
+fault. The selected production kernel checks the round result before modular
+power. If that modulus is zero, the runtime consumes and skips the nonce,
+records a separate diagnostic, and continues. A failed attempt is never counted
+as a completed hash or submitted as a share; no substitute digest is invented.
 
-The development target is a Threadripper PRO 7995WX with 192 workers and
-already configured hugetlb memory. Performance depends on the exact compiler,
-CPU placement, memory, power and thermal conditions. This document makes no
-118 kH/s or completed one-hour acceptance claim. Use the matching evidence
-records described below to assess the exact final build.
+The historical failing input was not retained. The reason its round result
+became zero remains unverified. This patch protects the observed failure path;
+it does not establish that every possible native failure is eliminated.
+Reference and experimental kernels retain their original zero-modulus behavior.
+The legacy void selected-kernel API deliberately traps on an error; production
+mining uses its checked API.
+
+Two development-hotfix GPU-on tests on a Threadripper PRO 7995WX at 192 threads
+measured 119.303 and 118.955 kH/s over approximately 191 seconds after settling,
+with 25 and 28 accepted USER shares during those measured windows and zero
+rejected or unresolved shares. These are short local-rate observations, not a
+one-hour qualification or a performance guarantee. The older 121.157 kH/s
+GPU-paused hour used the unpatched build and is historical evidence only.
+Use the release validation addendum to match these results to the exact source
+package and resulting native library.
 
 ## Requirements
 
@@ -42,22 +53,22 @@ checksum with an independently displayed release digest when available.
 Checksums detect file changes; they are not publisher signatures.
 
 ~~~sh
-sha256sum --check SHA256SUMS-beta.4-public-source-preview.1.txt &&
-tar -xzf OverXelis-Miner-1.0.0-beta.4-public-source-preview.1.tar.gz &&
-cd OverXelis-Miner-1.0.0-beta.4-public-source-preview.1
+sha256sum --check SHA256SUMS-beta.4-public-source-preview.2.txt &&
+tar -xzf OverXelis-Miner-1.0.0-beta.4-public-source-preview.2.tar.gz &&
+cd OverXelis-Miner-1.0.0-beta.4-public-source-preview.2
 ~~~
 
 Stop if verification fails. Use an already installed, trusted GCC 15 executable
-or a previously verified private compiler wrapper. The target recipe passes the
-private wrapper by its absolute path; replace this example with its actual path:
+or a previously verified compiler wrapper. Replace the example below with the
+actual absolute path of that trusted executable:
 
 ~~~sh
-python3 -I -B build_public.py --compiler /absolute/path/to/toolchains/gcc15-jammy-b/gcc15 &&
+python3 -I -B build_public.py --compiler /absolute/path/to/gcc15 &&
 python3 -I -B qualify_public.py &&
 bash run.sh --self-test
 ~~~
 
-The wrapper and toolchain live outside the miner source tree. Passing
+The compiler and any wrapper live outside the miner source tree. Passing
 `--compiler` does not change the global compiler or require a global PATH or
 library-path override. The source archive does not download or install that
 toolchain. A different compiler or host needs its own qualification and rate
@@ -82,12 +93,26 @@ This offline check verifies one terminal nonce per worker against the C
 reference and requires all requested workers to use hugetlb. It is a correctness
 check, not a hashrate test or thread-count recommendation.
 
-Final acceptance also requires separate actual-worker checks at 24 and 32
-workers, followed by 300 measured seconds at each count after 30 seconds of
-warmup. Their results describe those profiles and do not replace the 192-worker
-throughput gate.
+For a thread profile you intend to use, retain its own actual-worker checks and
+rate measurements. A 24- or 32-worker result does not qualify 192-worker
+throughput. Forced-failure tests at 1, 24, 32 and 192 workers validate error
+handling; they are not hashrate measurements.
 
 ## Configure and check
+
+After normal build and kernel qualification, reproduce the zero-modulus guard
+using a separate test library. This is a correctness check and uses no pool or
+private configuration. Production sources and the mining library remain unchanged:
+
+~~~sh
+python3 -I -B tools/test_zero_modulus.py --compiler /absolute/path/to/gcc15 \
+  --threads 1 24 32 192 --page-mode ordinary
+~~~
+
+On a host with huge pages already configured, use `--page-mode hugetlb` to
+exercise those actual worker allocations. The test writes its own generated
+library and report into a fresh `evidence/zero-modulus-*` directory. Never use
+that deliberately failing test library for mining.
 
 Keep an existing pool/worker configuration in its current private location and
 pass it explicitly. The check and mining commands read that file; they do not
@@ -170,14 +195,18 @@ Match the source manifest, library digest, compiler, CPU order, thread count,
 memory mode and conditions before transferring a result to another build.
 Earlier beta.3 or development-candidate results do not qualify this edition.
 
-`VALIDATION.json` is a static description of the required checks and evidence
-locations, not a test result. Acceptance requires the exact final 192-worker
-build to sustain at least 118 kH/s in the independent completed-hash benchmark
-and a live-pool window of at least 3,660 seconds after settling. The reviewed
-external soak runner supports `--measure-seconds 3660 --settle-seconds 120
---max-runtime-seconds 7200`; its default one-hour duration is shorter than this
-release requirement. Retain its duration proof and displayed rate samples;
-rounded display samples do not replace the independent throughput gate.
+`VALIDATION.json` is a static description of this hotfix, per-build requirements
+and evidence locations. It is not a completed test report. Each local build must
+pass its native self-test and saved-answer qualification before mining. Retain
+actual worker-layout and live-pool reports for the settings you use. Longer live
+soak testing, a full scheduled fee transition, and matched performance
+comparisons remain separate checks; no fixed-build hour result is asserted here.
+
+A zero-modulus diagnostic is an error record, not an accepted share or completed
+hash. The native `nx_skipped` counter and `nx_bad_input` capture API distinguish
+these attempts from ordinary work. Preserve a captured failing input and report
+it with the exact source/library identities for isolated reference replay.
+Do not change the modulus, suppress correctness failures, or substitute a digest.
 
 If build or hash checks fail, preserve the logs and stop. If hugetlb is
 unavailable, use ordinary memory for setup or arrange host permissions outside
