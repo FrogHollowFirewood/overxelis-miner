@@ -41,6 +41,14 @@ logs are included.
 SHA-256: 4ede37b957b5024611f63714f4593bd60a849c0dd9c14594490353c56bdb53da
 ```
 
+## Beta.5 development update · 9 November 2026
+
+In a trial that ended November 9, 2026, a beta.5 development build ran on Kryptex for 33 hours, 31 minutes, 18 seconds on an AMD Threadripper PRO 7995WX with 192 huge-page workers. The miner displayed a session average of 124.060 kH/s. The run recorded 13,911 accepted user shares, 137 accepted fee shares, zero rejected shares and 13 unresolved submissions during connection interruptions. The CPU peaked at 83.875 °C, below the 85 °C guard. All workers closed normally after a requested stop.
+
+The rate comes from the miner’s session display. The run did not capture a completed-hash counter window or CPU package power. It does not establish a matched speed gain or qualify the 140 kH/s target.
+
+A separate Stage 3 patch passed offline checks against 1,031 saved Rust hash answers and full scratchpad comparisons. Single-worker forced-zero checks passed in both rounds. Desktop qualification and a matched Kryptex test are pending. **Beta.4 source preview 2 remains the public download.** See the [website development update](https://froghollowfirewood.github.io/overxelis-miner/#beta5-development).
+
 ## Added 6 November 2026: development-hotfix logged hour
 
 After warmup, a completed 192-huge-page-worker Kryptex run recorded **60 minutes
