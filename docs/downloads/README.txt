@@ -1,11 +1,10 @@
-OverXelis Miner 1.0.0-beta.4 / public-source-preview.2 — checked crash fix
+OverXelis Miner 1.0.0-beta.5 / public-source-preview.1
 
-Latest source archive: OverXelis-Miner-1.0.0-beta.4-public-source-preview.2.tar.gz
-Matching checksum: SHA256SUMS-beta.4-public-source-preview.2.txt
-Current validation notes: BETA4-HOTFIX-VALIDATION-NOTES.md
-Release page: https://github.com/FrogHollowFirewood/overxelis-miner/releases/tag/v1.0.0-beta.4-public-preview.2
+Current Linux x86-64 source archive: OverXelis-Miner-1.0.0-beta.5-public-source-preview.1.tar.gz
+Matching checksum: SHA256SUMS-beta.5-public-source-preview.1.txt
+Validation notes: BETA5-PUBLIC-VALIDATION-NOTES.md
+Release page: https://github.com/FrogHollowFirewood/overxelis-miner/releases/tag/v1.0.0-beta.5-public-preview.1
 
-Preview 1 is superseded because of a recorded selected-kernel division-by-zero crash.
-Older archives and checksums are preserved unchanged for historical audit.
-The old GPU-paused hour is not hour-long qualification of this hotfix.
-No workstation binary, private configuration or raw mining log is supplied.
+Verify the checksum and build and qualify on the computer that will mine.
+The archive contains source and saved public test vectors.
+Earlier archives and checksums remain available in release history.

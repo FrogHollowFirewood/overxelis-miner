@@ -1,96 +1,22 @@
 {
-  "version": "1.0.0-beta.4",
-  "edition": "public-source-preview.2",
-  "document_role": "Static hotfix description, per-build requirements and evidence references; not a completed test report.",
+  "version": "1.0.0-beta.5",
+  "edition": "public-source-preview.1",
+  "document_role": "Build and qualification requirements. See the release notes for measured results.",
   "source_binary_included": false,
   "qualification_required_on_each_build": true,
   "performance_guaranteed": false,
-  "completed_checks_location": "Release BETA4-HOTFIX-VALIDATION-NOTES.md and sanitized validation-evidence; each matching local build/evidence directory contains its own reports.",
+  "completed_checks_location": "Release validation-evidence and each local build/evidence directory.",
   "selected_kernel": "experiments/dispatch_round_specialized.c",
-  "selected_kernel_sha256": "542a9f9321b00e6a746073534ed553b953d532ac7081a3236af6e3ceecdfd644",
+  "selected_kernel_sha256": "a9bac36a89f13c17dbee020aea9115573206f750c9121ce239c03f372e267b68",
   "worker_runtime": "experiments/runtime-topology-colored-huge.c",
   "worker_runtime_sha256": "4db5009b215a462d7ea56e2fb3d3340fab257fba919c3c4a04369abda700ba3f",
-  "runtime_header": "include/runtime.h",
-  "runtime_header_sha256": "f63e5a54c9c4e89d794837816cbe5fa05ed2c9a23c20bce2fa101cafeba4aa41",
-  "hotfix": {
-    "protected_production_kernel": 1,
-    "checked_hash_api": "xelis_hash_v3_opt_checked",
-    "zero_modulus_action": "Consume and skip the nonce before division or digest finalization; continue with subsequent work.",
-    "failed_work_counted_as_completed": false,
-    "failed_work_submitted": false,
-    "substitute_digest_generated": false,
-    "diagnostic_apis": [
-      "nx_skipped",
-      "nx_bad_input"
-    ],
-    "historical_failing_input_available": false,
-    "origin_of_zero_round_result": "unverified",
-    "unguarded_paths": [
-      "reference kernel",
-      "experimental kernels"
-    ],
-    "legacy_void_selected_api": "Deliberate trap on checked failure; not used by production mining."
-  },
-  "layout_constants": {
-    "stride_bytes": 4160,
-    "window_bytes": 524288
-  },
-  "required_build_compiler_family": "GCC 15",
-  "recommended_build_mode": "ordinary non-PGO",
-  "compiler_selection": "Pass an existing trusted GCC 15 executable or verified wrapper explicitly with --compiler. No global compiler or library-path change.",
-  "native_compilation": true,
-  "fast_math_permitted": false,
+  "fee_runtime_sha256": "33bc65e3ff4d984b8504f3daefcdf94a180a87a94c56e34823b46cfba370919b",
+  "trial_source_manifest_sha256": "3dab34f06bb8a5b7698ee9800bca18f41ea20d3eed982eef90784c3b67d92598",
   "required_kernel_qualification": {
-    "native_self_test": true,
     "saved_answers": 1031,
     "C_implementations": 4,
-    "complete_scratchpad_comparison": true,
-    "fresh_Rust_execution_claimed": false
+    "complete_scratchpad_comparison": true
   },
-  "required_hotfix_regressions": [
-    "Failed nonce consumed without replay",
-    "Failed attempt does not increment completed work",
-    "Failed attempt is never queued or submitted",
-    "Subsequent valid work continues",
-    "First failing input capture is retained"
-  ],
-  "actual_worker_qualification_required_for_claimed_profile": true,
-  "development_observations": {
-    "host_cpu": "AMD Threadripper PRO 7995WX",
-    "threads": 192,
-    "GPU_mining": "on",
-    "measured_seconds": [
-      191.06390702200588,
-      190.77811542450218
-    ],
-    "local_khs": [
-      119.302919924979,
-      118.95500146598756
-    ],
-    "accepted_USER_shares_in_measured_windows": [
-      25,
-      28
-    ],
-    "rejected_shares": [
-      0,
-      0
-    ],
-    "unresolved_shares": [
-      0,
-      0
-    ],
-    "scope": "Development hotfix observations only. Release addendum must establish applicability to the exact public package/library. Not a one-hour result."
-  },
-  "long_soak_status": "Not established for this public hotfix package by this static descriptor.",
-  "historical_hour_scope": "The earlier 121.157 kH/s GPU-paused hour used unpatched beta.4; it is not hotfix qualification.",
-  "evidence_references": {
-    "source_manifest": "SOURCE-MANIFEST.json",
-    "build_record": "build/build.json",
-    "compiled_library": "build/liboverxelis.so",
-    "kernel_qualification": "evidence/kernel-qualification.json",
-    "actual_worker_qualification": "evidence/worker-layout-qualification.json",
-    "release_addendum": "BETA4-HOTFIX-VALIDATION-NOTES.md (separate release asset)",
-    "sanitized_public_evidence": "beta4-hotfix-validation-20261106.json (separate release asset)"
-  },
-  "evidence_reference_scope": "Report names do not assert completion. Match the exact source manifest, compiler, native library and test conditions to the actual report."
+  "target_140_khs_qualified": false,
+  "separate_stage3_split_store_included": false
 }

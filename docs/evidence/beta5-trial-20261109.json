@@ -1,0 +1,76 @@
+{
+  "schema": 1,
+  "version": "1.0.0-beta.5",
+  "evidence_scope": "completed development trial",
+  "trial": {
+    "pool": "Kryptex",
+    "cpu": "AMD Threadripper PRO 7995WX",
+    "workers": 192,
+    "huge_page_workers": 192,
+    "start_utc": "2026-11-08T03:09:17.877147+00:00",
+    "stop_utc": "2026-11-09T12:40:36.272326+00:00",
+    "elapsed_wall_seconds": 120678.395179,
+    "miner_display_session_average_khs": 124.06,
+    "user_shares_accepted": 13911,
+    "developer_fee_shares_accepted": 137,
+    "shares_rejected": 0,
+    "submissions_unresolved": 13,
+    "connection_interruptions_with_reauthorization": 3,
+    "connection_root_cause_confirmed": false,
+    "peak_cpu_sensor_celsius": 83.875,
+    "trial_launcher_cpu_guard_celsius": 85,
+    "trial_launcher_thermal_guard_trips": 0,
+    "stop_outcome": "requested stop, all native workers closed"
+  },
+  "original_build": {
+    "compiler": "GCC 15.2.0",
+    "profile_guided_optimization": false,
+    "source_manifest_sha256": "3dab34f06bb8a5b7698ee9800bca18f41ea20d3eed982eef90784c3b67d92598",
+    "native_library_sha256": "b4a5963177c96016fbfb4b90e672f8e4eddc2ed7bdcc2618ef236f78af8e0a8f",
+    "build_record_sha256": "8444bd62a91110806df1516f565db4eee89085e599ef34e2311afcfa27d178b6",
+    "inherited_launch_banner": "1.0.0-beta.4 (public-source-preview.1)",
+    "native_reused_unchanged_from_parent": true,
+    "offline_correctness": {
+      "saved_rust_answer_cases": 1031,
+      "c_implementations": 4,
+      "full_scratchpad_comparisons": 1031,
+      "saved_rust_answers_replayed": true,
+      "rust_executed": false,
+      "offline_tests_passed": 137,
+      "fee_tests_included": 46
+    }
+  },
+  "limits": {
+    "completed_hash_counter_window_available": false,
+    "pool_side_hashrate_measured": false,
+    "cpu_package_power_measured": false,
+    "matched_speed_gain_established": false,
+    "target_140_khs_qualified": false,
+    "separate_stage3_patch_included": false,
+    "fresh_public_archive_pool_trial": false
+  },
+  "public_preview": {
+    "archive_bytes": 315297,
+    "archive_sha256": "1c75f85aa9aba08abe3cd34fdc15aaceb1059c2292f3835c9c45e5b087c6678b",
+    "source_manifest_sha256": "27bf32a739e56692251601b474f342f91fdeba09a78869437cabacb5625dd17d",
+    "source_only": true,
+    "original_trial_selected_kernel_retained": true,
+    "isolated_archive_validation": {
+      "compiler": "GCC 14.2.0",
+      "native_library_sha256": "72c6da6b51d821f3a6aa4aabd94fe07befc4b5d63ebd473d71be2ee827016259",
+      "offline_tests_passed": 139,
+      "native_self_test_passed": true,
+      "saved_rust_answer_cases": 1031,
+      "c_implementations": 4,
+      "full_scratchpad_comparisons": 1031,
+      "forced_zero_rounds": [
+        0,
+        1
+      ],
+      "forced_zero_worker_count": 1,
+      "forced_zero_page_mode": "ordinary",
+      "desktop_huge_page_layout_retested": false,
+      "pool_tested": false
+    }
+  }
+}

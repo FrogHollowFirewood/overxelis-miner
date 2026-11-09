@@ -1,4 +1,28 @@
-# OverXelis Miner 1.0.0-beta.4 · Public source preview 2 · Crash fix
+# OverXelis Miner 1.0.0-beta.5 · Public source preview 1
+
+The current release packages the selected kernel, native runtime and pool
+handoff implementation used in the 33-hour beta.5 Kryptex trial, with beta.5
+public version metadata. This is a Linux x86-64 source-only prerelease.
+
+- [Source archive](https://github.com/FrogHollowFirewood/overxelis-miner/releases/download/v1.0.0-beta.5-public-preview.1/OverXelis-Miner-1.0.0-beta.5-public-source-preview.1.tar.gz)
+- [Matching SHA-256 checksum](https://github.com/FrogHollowFirewood/overxelis-miner/releases/download/v1.0.0-beta.5-public-preview.1/SHA256SUMS-beta.5-public-source-preview.1.txt)
+- [Validation notes](https://github.com/FrogHollowFirewood/overxelis-miner/releases/download/v1.0.0-beta.5-public-preview.1/BETA5-PUBLIC-VALIDATION-NOTES.md)
+- [Sanitized trial evidence](docs/evidence/beta5-trial-20261109.json)
+- [Public release](https://github.com/FrogHollowFirewood/overxelis-miner/releases/tag/v1.0.0-beta.5-public-preview.1) · [Install guide](https://froghollowfirewood.github.io/overxelis-miner/guide.html)
+
+The miner displayed a **124.060 kH/s session average** over **33 hours,
+31 minutes, 18 seconds** on one Threadripper PRO 7995WX with 192 huge-page
+workers. The trial recorded 13,911 accepted user shares, 137 accepted fee
+shares, zero rejected shares and 13 unresolved submissions. See the
+validation notes for the original and public build identities.
+
+Use the included setup and correctness checks on your own computer. The
+140 kH/s target, matched speed gain and CPU package-power comparison remain
+unqualified. The separate Stage 3 split-store experiment is excluded.
+
+---
+
+## Historical beta.4 crash-fix notes
 
 **Preview 2 supersedes beta.4 preview 1 because of a recorded selected-kernel
 integer divide-by-zero crash**, reported by the shell as “floating point exception.”

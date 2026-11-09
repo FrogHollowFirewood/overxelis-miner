@@ -70,9 +70,10 @@ print(json.dumps(result))
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--compiler', required=True, type=Path,
-                        help='Absolute path to a trusted GCC 15 executable')
+                        help='Absolute path to the compiler used for the original build')
     parser.add_argument('--threads', type=int, nargs='+', default=[1, 24, 32, 192])
     parser.add_argument('--page-mode', choices=('ordinary', 'hugetlb'), default='ordinary')
+    parser.add_argument('--round', type=int, choices=(0, 1), required=True)
     args = parser.parse_args(argv)
     lock = folder = None
     previous_signals = {}
@@ -93,9 +94,8 @@ def main(argv=None):
         verify_package(ROOT)
         compiler = args.compiler
         need(compiler.is_absolute() and compiler.is_file() and os.access(compiler, os.X_OK),
-             'Provide the absolute path of a trusted GCC 15 executable')
+             'Provide the absolute path of the compiler used for the original build')
         version = subprocess.check_output([str(compiler), '-dumpfullversion'], text=True, timeout=15).strip()
-        need(version.split('.')[0] == '15', 'This reproducer requires GCC 15; requested compiler reports ' + version)
         build = json.loads((ROOT / 'build/build.json').read_text())
         library = ROOT / 'build/liboverxelis.so'
         need(build.get('status') == 'built_pending_qualification', 'Complete a normal build first')
@@ -106,6 +106,7 @@ def main(argv=None):
                     if isinstance(entry.get('argv'), list) and SELECTED in entry['argv'] and '-c' in entry['argv']]
         need(len(commands) == 1, 'Expected exactly one normal selected-kernel compile command')
         command = list(commands[0])
+        need(compiler.resolve() == Path(command[0]).resolve(), 'Use the original build compiler')
         need(all(isinstance(x, str) for x in command) and command.count('-c') == command.count('-o') == 1,
              'Unexpected selected-kernel compile command')
         need(command[command.index('-c') + 1] == SELECTED, 'Selected compile command source mismatch')
@@ -127,7 +128,7 @@ def main(argv=None):
         folder = Path(tempfile.mkdtemp(prefix='zero-modulus-', dir=evidence))
         forced_source, forced_object = folder / 'forced-selected.c', folder / 'forced-selected.o'
         forced_library = folder / 'liboverxelis-forced-zero.so'
-        forced_source.write_text(source.replace(GUARD, '        result = 0; /* TEST COPY ONLY */\n' + GUARD))
+        forced_source.write_text(source.replace(GUARD, f'        if (i == {args.round}) result = 0; /* TEST COPY ONLY */\n' + GUARD))
         command[0] = str(compiler)
         command[command.index('-c') + 1] = str(forced_source)
         command[command.index('-o') + 1] = str(forced_object)
@@ -135,7 +136,7 @@ def main(argv=None):
                       source_manifest_sha256=pins['SOURCE-MANIFEST.json'],
                       production_library_sha256=pins['build/liboverxelis.so'],
                       selected_source_sha256=pins[SELECTED], forced_source_sha256=sha(forced_source),
-                      test_directory=str(folder), injection='Force result=0 immediately before the selected zero-modulus guard')
+                      test_directory=str(folder), forced_round=args.round, injection='Force result=0 immediately before the selected zero-modulus guard')
         link = [str(compiler), *map(str, (p for p in objects if p.name != 'selected.o')),
                 str(forced_object), '-shared', '-pthread', '-lm', '-Wl,--no-undefined',
                 '-Wl,-z,noexecstack', '-o', str(forced_library)]
