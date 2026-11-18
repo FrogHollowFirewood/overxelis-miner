@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""OverXelis Miner: configurable, foreground Linux CPU-mining source preview."""
+"""OverXelis Miner: foreground Linux CPU miner."""
 from pathlib import Path
 import argparse, datetime, getpass, json, math, os, re, signal, sys
 ROOT = Path(__file__).resolve().parent
@@ -29,7 +29,7 @@ def validate_settings(value):
 def configure(path):
     need(sys.stdin.isatty(), 'Configuration wizard requires an interactive terminal')
     need(not path.exists() and not path.is_symlink(), 'Configuration already exists; edit it instead of overwriting it')
-    print('OverXelis Miner ' + VERSION + ' — ' + EDITION)
+    print('OverXelis v' + VERSION + ' — ' + EDITION)
     print('No private key, seed phrase, exchange password, or payment is needed.')
     print('1% scheduled developer mining: 99 active user minutes, then up to 60 seconds.\n')
     wallet = input('Your XELIS mainnet payout address (xel:...): ').strip()
@@ -68,7 +68,7 @@ def main(argv=None):
     p.add_argument('--config', type=Path, default=ROOT / 'config.json')
     p.add_argument('--accept-dev-fee', action='store_true', help='acknowledge the disclosed 1% mining-time policy')
     p.add_argument('--duration', type=float, default=0, help='0: until Ctrl+C; otherwise a finite run in seconds')
-    p.add_argument('--version', action='version', version='OverXelis Miner ' + VERSION + ' (' + EDITION + ')')
+    p.add_argument('--version', action='version', version='OverXelis v' + VERSION + ' (' + EDITION + ')')
     a = p.parse_args(argv)
     engine = log = None; fd = None; code = 0
     try:
@@ -98,11 +98,10 @@ def main(argv=None):
         if a.self_test:
             print('Native hash self-test PASSED. No pool connection was made.'); return 0
         log = Logger()
-        log('OverXelis Miner Version ' + VERSION + ' | ' + EDITION)
-        log('Experimental source preview; no guaranteed speed or earnings.')
+        log('OverXelis v' + VERSION + ' | ' + EDITION)
         log('Developer fee: 99 active USER minutes then a FEE window up to 60 seconds; no catch-up.')
         log('Fee destination: ' + fee.FEE_POOL + ' | ' + fee.FEE_WALLET)
-        log('Gross local rate includes both roles. Restart resets the beta fee schedule.')
+        log('Gross local rate includes both roles. Restart resets the fee schedule.')
         log('User pool: ' + cfg['pool'] + ' | Worker: ' + cfg['worker'] + ' | Payout suffix: ' + cfg['wallet'][-8:])
         def stopped(*_): raise KeyboardInterrupt
         for sig in (signal.SIGINT, signal.SIGTERM, signal.SIGHUP): signal.signal(sig, stopped)

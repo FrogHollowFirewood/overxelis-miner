@@ -1,4 +1,4 @@
-# Source attribution — public-source-preview.2
+# Source attribution
 
 This document describes the files shipped in this public source package. Paths
 below are relative to the package root (the repository's `miner/` directory).

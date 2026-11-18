@@ -1,6 +1,6 @@
-# Beta.5 source and trial scope
+# Provenance of the v1.1.1 mining code
 
-This preview carries the selected C kernel, native worker runtime and
+This release carries the selected C kernel, native worker runtime and
 pool handoff implementation from the 33-hour beta.5 Kryptex development
 trial. Source manifests and the release notes identify the trial and public
 build separately. The trial used GCC 15.2 and 192 huge-page workers on a

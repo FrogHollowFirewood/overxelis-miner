@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "edition": "public-source-preview.1",
+  "edition": "final",
   "path_base": "package root",
   "components": [
     {

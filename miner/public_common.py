@@ -1,9 +1,9 @@
-"""Public beta validation helpers. No service management or privileged writes."""
+"""Public release validation helpers. No service management or privileged writes."""
 from pathlib import Path
 import datetime, fcntl, hashlib, json, os, platform, stat, tempfile
 
-VERSION = '1.0.0-beta.5'
-EDITION = 'public-source-preview.1'
+VERSION = '1.1.1'
+EDITION = 'final'
 ROOT = Path(__file__).resolve().parent
 
 def need(ok, message):
@@ -35,7 +35,7 @@ def verify_package(root=ROOT):
     return manifest
 
 def platform_check():
-    need(platform.system() == 'Linux' and platform.machine() == 'x86_64', 'This preview requires Linux x86-64')
+    need(platform.system() == 'Linux' and platform.machine() == 'x86_64', 'OverXelis requires Linux x86-64')
     need(os.geteuid() != 0, 'Run as a normal user, not root; no sudo is required for this program')
     flags = Path('/proc/cpuinfo').read_text().lower().split()
     need('aes' in flags, 'CPU AES-NI support is required')

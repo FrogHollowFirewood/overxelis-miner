@@ -1,19 +1,21 @@
-# OverXelis Miner 1.0.0-beta.5
+# OverXelis v1.1.1
 
-Experimental Linux x86-64 CPU miner for XELIS. Public source preview 1
-contains the selected kernel and pool runtime used in the beta.5 development
-trial, with public version metadata. Build and qualify it locally as a normal
-user. Use an AES-NI-capable CPU, Python 3.10+, GNU binutils and a trusted GCC
-15 compiler. Build with strict math and preserve the normal non-PGO settings.
-The native library is compiled for the build host.
+OverXelis v1.1.1 is the final Linux x86-64 CPU miner for XELIS. Beta testing is complete. This release promotes the selected beta.5 kernel and pool runtime. Build and qualify on each mining host using Python 3.10+, GNU binutils, an AES-NI-capable CPU and a trusted GCC installation.
 
-The Kryptex trial lasted 33 hours, 31 minutes, 18 seconds on one AMD
-Threadripper PRO 7995WX with 192 huge-page workers. The miner displayed a
-124.060 kH/s session average. Kryptex accepted 13,911 user and 137 fee shares.
-The run recorded zero rejected shares and 13 unresolved submissions. The CPU
-peaked at 83.875 °C under the separate desktop trial launcher's 85 °C guard.
-The public CLI does not include that desktop-specific temperature monitor.
-See the release notes for the limits of this trial and local build evidence.
+## Recorded performance
+
+The four machines recorded **608.07 machine-hours** of Kryptex testing before promotion, through **18 November 2026 at 15:20 UTC**. Each ran one huge-page worker per configured thread. The two 24-thread rigs contributed **290.30 machine-hours** together.
+
+| Machine | Threads | Total recorded hours | Average across sessions (kH/s) | Last session (hours) | Last session average (kH/s) |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Threadripper PRO 7995WX desktop | 192 | 170.87 | 122.698 | 70.34 | 123.115 |
+| CPU Rig 1 | 32 | 146.91 | 12.469 | 94.01 | 12.462 |
+| CPU Rig 2 | 24 | 143.67 | 8.561 | 94.01 | 8.558 |
+| CPU Rig 3 | 24 | 146.63 | 9.152 | 94.01 | 9.152 |
+
+The rates are gross local displays. The average across sessions weights each recorded session by its elapsed time. The last-session rate covers the session running at the cutoff. Total recorded runtime includes warmup and reconnects and excludes downtime between sessions and failed starts. Thread count alone does not determine speed.
+
+Across 55 sessions, Kryptex accepted 85,130 user shares and 858 fee shares. The logs recorded 9 rejected shares and 195 unresolved submissions. Rig 2 had 1,336 additional starts without a recorded mining status. Package power was not measured and the 140 kH/s desktop target remains unverified.
 
 Use ordinary pages for a first run unless your host already provides huge
 pages. The miner checks the requested memory mode. Stop an existing CPU
@@ -26,16 +28,16 @@ checksum with an independently displayed release digest when available.
 Checksums detect file changes; they are not publisher signatures.
 
 ~~~sh
-sha256sum --check SHA256SUMS-beta.5-public-source-preview.1.txt &&
-tar -xzf OverXelis-Miner-1.0.0-beta.5-public-source-preview.1.tar.gz &&
-cd OverXelis-Miner-1.0.0-beta.5-public-source-preview.1
+sha256sum --check SHA256SUMS-v1.1.1.txt &&
+tar -xzf OverXelis-Miner-1.1.1-source.tar.gz &&
+cd OverXelis-Miner-1.1.1
 ~~~
 
-Stop if verification fails. Use an already installed, trusted GCC 15 executable
+Stop if verification fails. Use an already installed, trusted GCC executable
 or a previously verified private compiler wrapper. Replace the example below with your installed compiler path:
 
 ~~~sh
-python3 -I -B build_public.py --compiler /absolute/path/to/gcc15 &&
+python3 -I -B build_public.py --compiler /usr/bin/gcc &&
 python3 -I -B qualify_public.py &&
 bash run.sh --self-test
 ~~~
@@ -53,8 +55,8 @@ Keep `build/build.json` and `evidence/kernel-qualification.json`. Existing
 build output is not overwritten; rebuild in a fresh verified source directory
 to preserve the previous build and evidence.
 
-On the target host, check the actual 192-worker hugetlb layout after kernel
-qualification:
+For a hugetlb configuration, check the worker layout after kernel qualification.
+Replace 192 with the number of configured threads on this host:
 
 ~~~sh
 python3 -I -B tools/qualify_worker_layout.py --threads 192 \
@@ -104,7 +106,7 @@ and FEE use separate connections and worker names. Fee destinations remain
 visible in `overxelis_fee.py` and the run log.
 
 Paused/offline USER time does not advance the schedule. Failed fee connections
-are skipped without debt or catch-up, and restarting resets this beta's
+are skipped without debt or catch-up, and restarting resets the miner’s
 schedule. The user's worker password is not reused for the developer login.
 Share discovery is random: 1% scheduled time does not mean exactly 1% of coins.
 Pool fees, energy costs and connection handovers are separate.
@@ -136,8 +138,3 @@ library and host. Stop on verification failure or invalid share diagnostics.
 Report reproducible issues with redacted logs and the CPU, compiler, thread
 count, memory mode, elapsed time and share counts. Keep payout configuration,
 credentials and raw logs private.
-
-The trial rate is a session display value. CPU package power and a matched
-speed comparison were outside the measured scope. The 140 kH/s target
-remains open. The separate Stage 3 split-store experiment is outside this
-source preview.

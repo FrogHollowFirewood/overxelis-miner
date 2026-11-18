@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build the source preview on the mining computer as a normal user."""
+"""Build OverXelis on the mining computer as a normal user."""
 from pathlib import Path
 import argparse
 import hashlib
@@ -178,7 +178,7 @@ def main(argv=None):
         record['verified_native_exports'] = verify_export_names((out/'exports.log').read_text())
         record['selected_compile_flags'] = list(SELECTED_FLAGS)
         record['strict_undefined_symbol_check'] = True
-        record['packaging_revision'] = 'public-source-preview.1'
+        record['packaging_revision'] = 'final'
         verify_package(ROOT)
         record.update(status='built_pending_qualification',finished_utc=utc(),library_sha256=sha(lib),
                       cpu_info=Path('/proc/cpuinfo').read_text().split('\n\n')[0],objects={x.name:sha(x) for x in objects})

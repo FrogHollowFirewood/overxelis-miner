@@ -1,1 +1,15 @@
-window.OVERXELIS_RELEASE = {"ready": true, "version": "1.0.0-beta.5", "edition": "public-source-preview.1", "archive": "https://github.com/FrogHollowFirewood/overxelis-miner/releases/download/v1.0.0-beta.5-public-preview.1/OverXelis-Miner-1.0.0-beta.5-public-source-preview.1.tar.gz", "checksum": "https://github.com/FrogHollowFirewood/overxelis-miner/releases/download/v1.0.0-beta.5-public-preview.1/SHA256SUMS-beta.5-public-source-preview.1.txt", "sha256": "1c75f85aa9aba08abe3cd34fdc15aaceb1059c2292f3835c9c45e5b087c6678b", "bytes": 315297, "repository": "https://github.com/FrogHollowFirewood/overxelis-miner", "release": "https://github.com/FrogHollowFirewood/overxelis-miner/releases/tag/v1.0.0-beta.5-public-preview.1", "prerelease": true, "mirror": "downloads/OverXelis-Miner-1.0.0-beta.5-public-source-preview.1.tar.gz", "mirror_checksum": "downloads/SHA256SUMS-beta.5-public-source-preview.1.txt", "validation": "evidence/beta5-trial-20261109.json"};
+window.OVERXELIS_RELEASE = {
+  "ready": true,
+  "version": "1.1.1",
+  "edition": "final",
+  "archive": "downloads/OverXelis-Miner-1.1.1-source.tar.gz",
+  "checksum": "downloads/SHA256SUMS-v1.1.1.txt",
+  "sha256": "d642675d737c244ac15e00d07bca9d7febd5a70f0e2976244c510748139f82a7",
+  "bytes": 315376,
+  "repository": "https://github.com/FrogHollowFirewood/overxelis-miner",
+  "release": "https://github.com/FrogHollowFirewood/overxelis-miner/releases/tag/v1.1.1",
+  "prerelease": false,
+  "mirror": "downloads/OverXelis-Miner-1.1.1-source.tar.gz",
+  "mirror_checksum": "downloads/SHA256SUMS-v1.1.1.txt",
+  "validation": "evidence/v1.1.1-runtime.json"
+};

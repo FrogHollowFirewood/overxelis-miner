@@ -6,7 +6,7 @@ import public_common as c
 import build_public as b
 class ReleaseInventory(unittest.TestCase):
  def test_edition(self):
-  self.assertEqual((c.VERSION, c.EDITION), ('1.0.0-beta.5', 'public-source-preview.1'))
+  self.assertEqual((c.VERSION, c.EDITION), ('1.1.1', 'final'))
   self.assertEqual(json.loads((R/'SOURCE-MANIFEST.json').read_text())['edition'],c.EDITION)
  def test_attribution_paths(self):
   for item in json.loads((R/'ATTRIBUTION.json').read_text())['components']:
@@ -17,8 +17,8 @@ class ReleaseInventory(unittest.TestCase):
  def test_compilation_inputs_exist(self):
   for n,_ in b.SOURCES:self.assertTrue((R/n).is_file(),n)
   readme=(R/'README.md').read_text()
-  self.assertIn('sha256sum --check SHA256SUMS-beta.5-public-source-preview.1.txt &&',readme)
-  self.assertIn('python3 -I -B build_public.py --compiler /absolute/path/to/gcc15 &&',readme)
+  self.assertIn('sha256sum --check SHA256SUMS-v1.1.1.txt &&',readme)
+  self.assertIn('python3 -I -B build_public.py --compiler /usr/bin/gcc &&',readme)
   self.assertIn('python3 -I -B qualify_public.py &&',readme)
  def test_tnn_path_disclosed_and_called(self):
   for n in ('experiments/dispatch_round_specialized.c','kernels/experimental.c','kernels/experimental_sqrt.c'):

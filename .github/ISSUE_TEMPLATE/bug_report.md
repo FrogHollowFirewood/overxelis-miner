@@ -1,6 +1,6 @@
 ---
 name: Bug report
-about: Report a reproducible beta problem without sharing secrets
+about: Report a reproducible miner problem without sharing secrets
 labels: ''
 ---
 ## Privacy check

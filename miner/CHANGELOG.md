@@ -1,5 +1,9 @@
 # Release history
 
+## v1.1.1 · final
+
+Promotes the tested beta.5 mining implementation. Updates the miner banner, pool client version, source package and installation guide. The hashing implementation and developer fee policy are unchanged.
+
 ## 1.0.0-beta.5 · public-source-preview.1
 
 - Selects the checked beta.5 development kernel with revised Stage 3 addressing.
