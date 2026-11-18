@@ -1,0 +1,66 @@
+{
+  "version": "1.1.1",
+  "measured_version": "beta.5",
+  "cutoff_utc": "2026-11-18T15:20:00Z",
+  "pool": "Kryptex XELIS",
+  "rate_unit": "kH/s",
+  "method": "Elapsed miner-session time through the last logged observation at the cutoff. Includes warmup, fee work and reconnects. Excludes downtime between sessions, duplicate intervals and startups without recorded work. Cumulative rates are session-duration-weighted means of rounded miner session averages. Last-session rates are gross local averages displayed for the session running at the cutoff.",
+  "hours_by_host": [
+    {
+      "host": "Desktop (Threadripper PRO 7995WX)",
+      "threads": 192,
+      "recorded_session_seconds": 615115.584532,
+      "sessions": 34,
+      "last_session_seconds": 253216.283549,
+      "last_session_khs": 123.115,
+      "time_weighted_session_khs": 122.6975,
+      "accepted_user": 70282,
+      "accepted_fee": 706,
+      "rejected": 8,
+      "unresolved": 171
+    },
+    {
+      "host": "CPU Rig 1",
+      "threads": 32,
+      "recorded_session_seconds": 528860.968012,
+      "sessions": 5,
+      "last_session_seconds": 338447.427427,
+      "last_session_khs": 12.462,
+      "time_weighted_session_khs": 12.4686,
+      "accepted_user": 6074,
+      "accepted_fee": 68,
+      "rejected": 0,
+      "unresolved": 9
+    },
+    {
+      "host": "CPU Rig 2",
+      "threads": 24,
+      "recorded_session_seconds": 517213.15197,
+      "sessions": 11,
+      "last_session_seconds": 338445.048276,
+      "last_session_khs": 8.558,
+      "time_weighted_session_khs": 8.5605,
+      "accepted_user": 4204,
+      "accepted_fee": 36,
+      "rejected": 0,
+      "unresolved": 4
+    },
+    {
+      "host": "CPU Rig 3",
+      "threads": 24,
+      "recorded_session_seconds": 527867.9287,
+      "sessions": 5,
+      "last_session_seconds": 338450.290531,
+      "last_session_khs": 9.152,
+      "time_weighted_session_khs": 9.152,
+      "accepted_user": 4570,
+      "accepted_fee": 48,
+      "rejected": 1,
+      "unresolved": 11
+    }
+  ],
+  "aggregate_recorded_hours": 608.0715648,
+  "combined_24_thread_rig_hours": 290.3003002,
+  "failed_startups_excluded_on_rig_2": 1336,
+  "measured_cpu_package_power_watts": null
+}

@@ -1,66 +1,71 @@
 {
   "version": "1.1.1",
   "measured_version": "beta.5",
-  "cutoff_utc": "2026-11-18T15:20:00Z",
+  "cutoff_utc": "2026-11-18T15:37:41.619091Z",
   "pool": "Kryptex XELIS",
   "rate_unit": "kH/s",
-  "method": "Elapsed miner-session time through the last logged observation at the cutoff. Includes warmup, fee work and reconnects. Excludes downtime between sessions, duplicate intervals and startups without recorded work. Cumulative rates are session-duration-weighted means of rounded miner session averages. Last-session rates are gross local averages displayed for the session running at the cutoff.",
+  "method": "Each host is counted through the closure of its final beta.5 session. Elapsed miner-session time includes warmup, fee work and reconnects. Gaps between sessions, duplicate intervals and startups without recorded work are excluded. Cumulative rates are session-duration-weighted means of rounded miner session averages. Final-session rates are the gross local averages displayed by the miner at shutdown.",
   "hours_by_host": [
     {
       "host": "Desktop (Threadripper PRO 7995WX)",
       "threads": 192,
-      "recorded_session_seconds": 615115.584532,
+      "recorded_session_seconds": 616143.10708,
       "sessions": 34,
-      "last_session_seconds": 253216.283549,
-      "last_session_khs": 123.115,
-      "time_weighted_session_khs": 122.6975,
-      "accepted_user": 70282,
+      "last_session_seconds": 254243.806097,
+      "last_session_khs": 123.114,
+      "time_weighted_session_khs": 122.697782,
+      "accepted_user": 70403,
       "accepted_fee": 706,
       "rejected": 8,
-      "unresolved": 171
+      "unresolved": 171,
+      "closed_utc": "2026-11-18T15:36:57.752992Z"
     },
     {
       "host": "CPU Rig 1",
       "threads": 32,
-      "recorded_session_seconds": 528860.968012,
+      "recorded_session_seconds": 529924.260217,
       "sessions": 5,
-      "last_session_seconds": 338447.427427,
+      "last_session_seconds": 339510.719632,
       "last_session_khs": 12.462,
-      "time_weighted_session_khs": 12.4686,
-      "accepted_user": 6074,
+      "time_weighted_session_khs": 12.468581,
+      "accepted_user": 6088,
       "accepted_fee": 68,
       "rejected": 0,
-      "unresolved": 9
+      "unresolved": 9,
+      "closed_utc": "2026-11-18T15:37:41.619091Z"
     },
     {
       "host": "CPU Rig 2",
       "threads": 24,
-      "recorded_session_seconds": 517213.15197,
+      "recorded_session_seconds": 518274.543742,
       "sessions": 11,
-      "last_session_seconds": 338445.048276,
+      "last_session_seconds": 339506.440048,
       "last_session_khs": 8.558,
-      "time_weighted_session_khs": 8.5605,
-      "accepted_user": 4204,
+      "time_weighted_session_khs": 8.560503,
+      "accepted_user": 4209,
       "accepted_fee": 36,
       "rejected": 0,
-      "unresolved": 4
+      "unresolved": 4,
+      "closed_utc": "2026-11-18T15:37:33.363133Z"
     },
     {
       "host": "CPU Rig 3",
       "threads": 24,
-      "recorded_session_seconds": 527867.9287,
+      "recorded_session_seconds": 528912.778834,
       "sessions": 5,
-      "last_session_seconds": 338450.290531,
+      "last_session_seconds": 339495.140665,
       "last_session_khs": 9.152,
-      "time_weighted_session_khs": 9.152,
-      "accepted_user": 4570,
+      "time_weighted_session_khs": 9.152039,
+      "accepted_user": 4576,
       "accepted_fee": 48,
       "rejected": 1,
-      "unresolved": 11
+      "unresolved": 11,
+      "closed_utc": "2026-11-18T15:37:22.662386Z"
     }
   ],
-  "aggregate_recorded_hours": 608.0715648,
-  "combined_24_thread_rig_hours": 290.3003002,
+  "aggregate_recorded_hours": 609.237413854,
+  "combined_24_thread_rig_hours": 290.885367382,
   "failed_startups_excluded_on_rig_2": 1336,
-  "measured_cpu_package_power_watts": null
+  "measured_cpu_package_power_watts": null,
+  "earlier_snapshot": "beta5-runtime-20261118T152000Z.json"
 }

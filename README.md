@@ -6,20 +6,20 @@ OverXelis v1.1.1 is the final Linux x86-64 CPU miner for XELIS. Beta testing is 
 
 ## Recorded performance
 
-The four machines recorded **608.07 machine-hours** of Kryptex testing before promotion, through **18 November 2026 at 15:20 UTC**. Each ran one huge-page worker per configured thread. The two 24-thread rigs contributed **290.30 machine-hours** together.
+The four machines recorded **609.24 machine-hours** of beta.5 testing on Kryptex through their final shutdowns on **18 November 2026**. Each ran one huge-page worker per configured thread. The two 24-thread rigs contributed **290.89 machine-hours** together.
 
-| Machine | Threads | Total recorded hours | Average across sessions (kH/s) | Last session (hours) | Last session average (kH/s) |
-| --- | ---: | ---: | ---: | ---: | ---: |
-| Threadripper PRO 7995WX desktop | 192 | 170.87 | 122.698 | 70.34 | 123.115 |
-| CPU Rig 1 | 32 | 146.91 | 12.469 | 94.01 | 12.462 |
-| CPU Rig 2 | 24 | 143.67 | 8.561 | 94.01 | 8.558 |
-| CPU Rig 3 | 24 | 146.63 | 9.152 | 94.01 | 9.152 |
+| Machine | Threads | Total recorded hours | Average across sessions (kH/s) | Final session (hours) | Final session average (kH/s) | Final shutdown (UTC) |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| Threadripper PRO 7995WX desktop | 192 | 171.15 | 122.698 | 70.62 | 123.114 | 15:36:57 |
+| CPU Rig 1 | 32 | 147.20 | 12.469 | 94.31 | 12.462 | 15:37:41 |
+| CPU Rig 2 | 24 | 143.97 | 8.561 | 94.31 | 8.558 | 15:37:33 |
+| CPU Rig 3 | 24 | 146.92 | 9.152 | 94.30 | 9.152 | 15:37:22 |
 
-The rates are gross local displays. The average across sessions weights each recorded session by its elapsed time. The last-session rate covers the session running at the cutoff. Total recorded runtime includes warmup and reconnects and excludes downtime between sessions and failed starts. Thread count alone does not determine speed.
+The rates are gross local displays. The average across sessions weights each recorded session by its elapsed time. The final-session rate covers the last beta.5 session on that machine. Total recorded runtime includes warmup and reconnects and excludes downtime between sessions and failed starts. Thread count alone does not determine speed.
 
-Across 55 sessions, Kryptex accepted 85,130 user shares and 858 fee shares. The logs recorded 9 rejected shares and 195 unresolved submissions. Rig 2 had 1,336 additional starts without a recorded mining status. Package power was not measured and the 140 kH/s desktop target remains unverified.
+Across 55 sessions, Kryptex accepted 85,276 user shares and 858 fee shares (86,134 total). The logs recorded 9 rejected shares and 195 unresolved submissions. Rig 2 had 1,336 additional starts without a recorded mining status. Package power was not measured and the 140 kH/s desktop target remains unverified.
 
-[Recorded measurements and share counts](docs/evidence/v1.1.1-runtime.json) · [Beta.1–beta.5 history](RELEASE-NOTES.md)
+[Earlier 15:20 UTC snapshot included in the release archive](docs/evidence/beta5-runtime-20261118T152000Z.json) · [Recorded measurements and share counts](docs/evidence/v1.1.1-runtime.json) · [Beta.1–beta.5 history](RELEASE-NOTES.md)
 
 Use ordinary pages for a first run unless your host already provides huge
 pages. The miner checks the requested memory mode. Stop an existing CPU
