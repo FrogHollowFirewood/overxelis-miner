@@ -1,6 +1,6 @@
 # OverXelis v1.1.1
 
-[Download v1.1.1 source](https://froghollowfirewood.github.io/overxelis-miner/downloads/OverXelis-Miner-1.1.1-source.tar.gz) · [SHA-256 checksum](https://froghollowfirewood.github.io/overxelis-miner/downloads/SHA256SUMS-v1.1.1.txt) · [Install guide](https://froghollowfirewood.github.io/overxelis-miner/guide.html) · [Release history](https://github.com/FrogHollowFirewood/overxelis-miner/releases)
+[Download v1.1.1 source](https://froghollowfirewood.github.io/overxelis-miner/downloads/OverXelis-Miner-1.1.1-source.tar.gz) · [SHA-256 checksum](https://froghollowfirewood.github.io/overxelis-miner/downloads/SHA256SUMS-v1.1.1.txt) · [Install guide](https://froghollowfirewood.github.io/overxelis-miner/guide.html) · [GitHub release notes](https://github.com/FrogHollowFirewood/overxelis-miner/blob/main/RELEASE-NOTES.md) · [Release history](https://github.com/FrogHollowFirewood/overxelis-miner/releases)
 
 OverXelis v1.1.1 is the final Linux x86-64 CPU miner for XELIS. Beta testing is complete. This release promotes the selected beta.5 kernel and pool runtime. Build and qualify on each mining host using Python 3.10+, GNU binutils, an AES-NI-capable CPU and a trusted GCC installation.
 
